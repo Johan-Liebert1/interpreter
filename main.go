@@ -5,8 +5,16 @@ import (
 	"fmt"
 	"os"
 
+	"interpreter/interpreter"
 	"interpreter/types"
 )
+
+func parsedInput(input string) {
+	for char := range input {
+		switch char {
+		}
+	}
+}
 
 func getUserInput(reader *bufio.Reader) {
 	for {
@@ -21,6 +29,12 @@ func getUserInput(reader *bufio.Reader) {
 		}
 
 		fmt.Printf("%s\n\n", line)
+
+		lexer := interpreter.Interpreter{}
+		lexer.Init(userInput)
+
+		fmt.Println(lexer)
+
 	}
 }
 
