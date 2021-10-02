@@ -1,9 +1,11 @@
 package interpreter
 
 import (
-	"interpreter/constants"
+	"fmt"
 	"strconv"
 	"unicode"
+
+	"interpreter/constants"
 )
 
 type Interpreter struct {
@@ -47,9 +49,6 @@ func (i *Interpreter) SkipWhitespace() {
 
 func (i *Interpreter) ConstructInteger() int {
 	var s string = ""
-
-	// asciiZero := constants.NUMBER_ASCII_RANGE[0]
-	// asciiNine := constants.NUMBER_ASCII_RANGE[1]
 
 	for !i.EndOfInput && unicode.IsDigit(rune(i.CurrentChar)) {
 		s += string(i.CurrentChar)
@@ -104,4 +103,57 @@ func (i *Interpreter) GetNextToken() Token {
 	return Token{
 		Type: constants.EOF,
 	}
+}
+
+/*
+	Validate whether the current token maches the token type passed in, and if valid,
+	advances the parser pointer. If not valid, prints an error
+*/
+func (i *Interpreter) ValidateToken(tokenType string) {
+	if i.CurrentToken.Type == tokenType {
+		i.CurrentToken = i.GetNextToken()
+	} else {
+		// i.error()
+		fmt.Println("Bad Token")
+	}
+}
+
+/*
+	Parser / Interpreter
+
+	expr -> INTEGER PLUS INTEGER
+	expr -> INTEGER MINUS INTEGER
+
+*/
+func (i *Interpreter) Parse() int {
+	i.CurrentToken = i.GetNextToken()
+
+	leftOperand := i.CurrentToken
+
+	// left token needs to be an integer
+	i.ValidateToken(constants.INTEGER)
+
+	operator := i.CurrentToken
+
+	// only works for addition and subtraction for now
+	if operator.Type == constants.PLUS {
+		i.ValidateToken(constants.PLUS)
+	} else {
+		i.ValidateToken(constants.MINUS)
+	}
+
+	// don't need to do i.GetNextToken() as i.ValidateToken() advances the pointer
+	rightOperand := i.CurrentToken
+
+	i.ValidateToken(constants.INTEGER)
+
+	var result int
+
+	if operator.Type == constants.PLUS {
+		result = leftOperand.IntegerValue + rightOperand.IntegerValue
+	} else {
+		result = leftOperand.IntegerValue - rightOperand.IntegerValue
+	}
+
+	return result
 }

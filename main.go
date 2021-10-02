@@ -9,13 +9,6 @@ import (
 	"interpreter/types"
 )
 
-func parsedInput(input string) {
-	for char := range input {
-		switch char {
-		}
-	}
-}
-
 func getUserInput(reader *bufio.Reader) {
 	for {
 		fmt.Printf(">>> ")
@@ -28,12 +21,14 @@ func getUserInput(reader *bufio.Reader) {
 			os.Exit(0)
 		}
 
-		fmt.Printf("%s\n\n", line)
+		// fmt.Printf("%s\n\n", line)
 
 		lexer := interpreter.Interpreter{}
 		lexer.Init(userInput)
 
-		fmt.Println(lexer)
+		result := lexer.Parse()
+
+		fmt.Println(result)
 
 	}
 }
