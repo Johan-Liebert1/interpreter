@@ -6,6 +6,7 @@ import (
 	"unicode"
 
 	"interpreter/constants"
+	"interpreter/helpers"
 )
 
 type Interpreter struct {
@@ -112,6 +113,11 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
+		return Token{
+			Type:  constants.INVALID,
+			Value: string(i.CurrentChar),
+		}
+
 	}
 
 	return Token{
@@ -120,26 +126,56 @@ func (i *Interpreter) GetNextToken() Token {
 }
 
 /*
-	Validate whether the current token maches the token type passed in, and if valid,
-	advances the parser pointer. If not valid, prints an error
+	Validate whether the current token maches the token type passed in.
+
+	If valid advances the parser pointer.
+
+	If not valid, prints a fatal error and exits
 */
 func (i *Interpreter) ValidateToken(tokenType string) {
 	if i.CurrentToken.Type == tokenType {
 		i.CurrentToken = i.GetNextToken()
 	} else {
-		// i.error()
-		log.Fatal("Bad Token")
+		log.Fatal(
+			"Bad Token",
+			"\nCurrent Token: ", i.CurrentToken.Print(),
+			"\nToken Type to check with ", tokenType,
+		)
 	}
 }
 
 /*
 	1. Gets the current token
+
 	2. Validates the current token as integer
+
 	3. Returns the IntegerValue of the token
+
+	TERM --> FACTOR ((MUL | DIV) FACTOR)*
 */
 func (i *Interpreter) Term() int {
-	token := i.CurrentToken
+	result := i.Factor()
 
+	for helpers.ValueInSlice(i.CurrentToken.Type, constants.MUL_DIV_SLICE) {
+		switch i.CurrentToken.Type {
+		case constants.DIV:
+			i.ValidateToken(constants.DIV)
+			result /= i.Factor()
+
+		case constants.MUL:
+			i.ValidateToken(constants.MUL)
+			result *= i.Factor()
+		}
+	}
+
+	return result
+}
+
+/*
+	FACTOR --> INTEGER
+*/
+func (i *Interpreter) Factor() int {
+	token := i.CurrentToken
 	i.ValidateToken(constants.INTEGER)
 
 	return token.IntegerValue
@@ -148,20 +184,16 @@ func (i *Interpreter) Term() int {
 /*
 	Parser / Interpreter
 
-	expr -> INTEGER PLUS INTEGER
-	expr -> INTEGER MINUS INTEGER
-
+	EXPRESSION --> TERM ((PLUS | MINUS) TERM)*
 */
 func (i *Interpreter) Parse() int {
 	i.CurrentToken = i.GetNextToken()
 
 	var result int = i.Term()
 
-	operator, ok := constants.OPERANDS[i.CurrentToken.Type]
+	for helpers.ValueInSlice(i.CurrentToken.Type, constants.PLUS_MINUS_SLICE) {
 
-	for ok {
-
-		switch operator {
+		switch i.CurrentToken.Value {
 		case constants.PLUS_SYMBOL:
 			// this will advance the pointer
 			i.ValidateToken(constants.PLUS)
@@ -171,20 +203,7 @@ func (i *Interpreter) Parse() int {
 			// this will advance the pointer
 			i.ValidateToken(constants.MINUS)
 			result -= i.Term()
-
-		case constants.MUL_SYMBOL:
-			// this will advance the pointer
-			i.ValidateToken(constants.MUL)
-			result *= i.Term()
-
-		case constants.DIV_SYMBOL:
-			// this will advance the pointer
-			i.ValidateToken(constants.DIV)
-			result /= i.Term()
 		}
-
-		operator, ok = constants.OPERANDS[i.CurrentToken.Type]
-
 	}
 
 	return result

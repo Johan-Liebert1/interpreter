@@ -8,6 +8,6 @@ type Token struct {
 	IntegerValue int
 }
 
-func (token Token) Print() {
-	fmt.Printf("Type = %s, Value = %s", token.Type, token.Value)
+func (token Token) Print() string {
+	return fmt.Sprintf("Type = %s, Value = %s", token.Type, token.Value)
 }
