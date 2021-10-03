@@ -1,149 +1,25 @@
 package interpreter
 
 import (
-	"fmt"
 	"log"
-	"strconv"
-	"unicode"
 
 	"interpreter/constants"
 	"interpreter/helpers"
 )
 
 type Interpreter struct {
-	Text         string
-	Position     int
+	Lexer        LexicalAnalyzer
 	CurrentToken Token
-	CurrentChar  byte
-	EndOfInput   bool
 }
 
 func (i *Interpreter) Init(text string) {
-	i.Text = text
-	i.Position = 0
-	i.CurrentChar = text[0]
-	i.EndOfInput = false
-	i.CurrentToken = i.GetNextToken()
-}
-
-/*
-	Advance the pointer into the string
-*/
-func (i *Interpreter) Advance() {
-	i.Position++
-
-	if i.Position >= len(i.Text) {
-		i.EndOfInput = true
-	} else {
-		i.CurrentChar = i.Text[i.Position]
-	}
-}
-
-func (i *Interpreter) SkipWhitespace() {
-	for !i.EndOfInput && unicode.IsSpace(rune(i.CurrentChar)) {
-		i.Advance()
-	}
-}
-
-func (i *Interpreter) ConstructInteger() int {
-	var s string = ""
-
-	for !i.EndOfInput && unicode.IsDigit(rune(i.CurrentChar)) {
-		s += string(i.CurrentChar)
-		i.Advance()
+	i.Lexer = LexicalAnalyzer{
+		Text: text,
 	}
 
-	integer, _ := strconv.Atoi(s)
+	i.Lexer.Init()
 
-	return integer
-}
-
-/*
-	The lexical analyzer / scanner / tokenizer which will convert the input string to
-	tokens
-*/
-func (i *Interpreter) GetNextToken() Token {
-	for !i.EndOfInput {
-		charToString := string(i.CurrentChar)
-
-		if unicode.IsSpace(rune(i.CurrentChar)) {
-			i.SkipWhitespace()
-			continue
-		}
-
-		if unicode.IsDigit(rune(i.CurrentChar)) {
-			integer := i.ConstructInteger()
-
-			return Token{
-				Type:         constants.INTEGER,
-				IntegerValue: integer,
-			}
-		}
-
-		if charToString == constants.OPERANDS[constants.PLUS] {
-			i.Advance()
-
-			return Token{
-				Type:  constants.PLUS,
-				Value: constants.OPERANDS[constants.PLUS],
-			}
-		}
-
-		if charToString == constants.OPERANDS[constants.MINUS] {
-			i.Advance()
-
-			return Token{
-				Type:  constants.MINUS,
-				Value: constants.OPERANDS[constants.MINUS],
-			}
-		}
-
-		if charToString == constants.OPERANDS[constants.MUL] {
-			i.Advance()
-
-			return Token{
-				Type:  constants.MUL,
-				Value: constants.OPERANDS[constants.MUL],
-			}
-		}
-
-		if charToString == constants.OPERANDS[constants.DIV] {
-			i.Advance()
-
-			return Token{
-				Type:  constants.DIV,
-				Value: constants.OPERANDS[constants.DIV],
-			}
-		}
-
-		if charToString == constants.LPAREN_SYMBOL {
-			i.Advance()
-
-			return Token{
-				Type:  constants.LPAREN,
-				Value: constants.LPAREN_SYMBOL,
-			}
-		}
-
-		if charToString == constants.RPAREN_SYMBOL {
-			i.Advance()
-
-			return Token{
-				Type:  constants.RPAREN,
-				Value: constants.RPAREN_SYMBOL,
-			}
-		}
-
-		return Token{
-			Type:  constants.INVALID,
-			Value: charToString,
-		}
-
-	}
-
-	return Token{
-		Type: constants.EOF,
-	}
+	i.CurrentToken = i.Lexer.GetNextToken()
 }
 
 /*
@@ -155,7 +31,7 @@ func (i *Interpreter) GetNextToken() Token {
 */
 func (i *Interpreter) ValidateToken(tokenType string) {
 	if i.CurrentToken.Type == tokenType {
-		i.CurrentToken = i.GetNextToken()
+		i.CurrentToken = i.Lexer.GetNextToken()
 	} else {
 		log.Fatal(
 			"Bad Token",
@@ -208,7 +84,6 @@ func (i *Interpreter) Factor() int {
 	case constants.LPAREN:
 		i.ValidateToken(constants.LPAREN)
 		result = i.Expression()
-		fmt.Println("result of i.Expression() in Factor = ", result)
 		i.ValidateToken(constants.RPAREN)
 	}
 
