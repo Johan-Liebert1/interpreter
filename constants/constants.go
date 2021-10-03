@@ -8,13 +8,17 @@ const (
 	DIV     = "DIV"
 	EOF     = "EOF"
 	INVALID = "INVALID"
+	LPAREN  = "LPAREN"
+	RPAREN  = "RAPREN"
 )
 
 const (
-	PLUS_SYMBOL  = "+"
-	MINUS_SYMBOL = "-"
-	MUL_SYMBOL   = "*"
-	DIV_SYMBOL   = "/"
+	PLUS_SYMBOL   = "+"
+	MINUS_SYMBOL  = "-"
+	MUL_SYMBOL    = "*"
+	DIV_SYMBOL    = "/"
+	LPAREN_SYMBOL = "("
+	RPAREN_SYMBOL = ")"
 )
 
 /*

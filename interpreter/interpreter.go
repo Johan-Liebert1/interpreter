@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 	"unicode"
@@ -20,9 +21,9 @@ type Interpreter struct {
 func (i *Interpreter) Init(text string) {
 	i.Text = text
 	i.Position = 0
-	i.CurrentToken = Token{}
 	i.CurrentChar = text[0]
 	i.EndOfInput = false
+	i.CurrentToken = i.GetNextToken()
 }
 
 /*
@@ -63,6 +64,8 @@ func (i *Interpreter) ConstructInteger() int {
 */
 func (i *Interpreter) GetNextToken() Token {
 	for !i.EndOfInput {
+		charToString := string(i.CurrentChar)
+
 		if unicode.IsSpace(rune(i.CurrentChar)) {
 			i.SkipWhitespace()
 			continue
@@ -77,7 +80,7 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
-		if string(i.CurrentChar) == constants.OPERANDS[constants.PLUS] {
+		if charToString == constants.OPERANDS[constants.PLUS] {
 			i.Advance()
 
 			return Token{
@@ -86,7 +89,7 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
-		if string(i.CurrentChar) == constants.OPERANDS[constants.MINUS] {
+		if charToString == constants.OPERANDS[constants.MINUS] {
 			i.Advance()
 
 			return Token{
@@ -95,7 +98,7 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
-		if string(i.CurrentChar) == constants.OPERANDS[constants.MUL] {
+		if charToString == constants.OPERANDS[constants.MUL] {
 			i.Advance()
 
 			return Token{
@@ -104,7 +107,7 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
-		if string(i.CurrentChar) == constants.OPERANDS[constants.DIV] {
+		if charToString == constants.OPERANDS[constants.DIV] {
 			i.Advance()
 
 			return Token{
@@ -113,9 +116,27 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
+		if charToString == constants.LPAREN_SYMBOL {
+			i.Advance()
+
+			return Token{
+				Type:  constants.LPAREN,
+				Value: constants.LPAREN_SYMBOL,
+			}
+		}
+
+		if charToString == constants.RPAREN_SYMBOL {
+			i.Advance()
+
+			return Token{
+				Type:  constants.RPAREN,
+				Value: constants.RPAREN_SYMBOL,
+			}
+		}
+
 		return Token{
 			Type:  constants.INVALID,
-			Value: string(i.CurrentChar),
+			Value: charToString,
 		}
 
 	}
@@ -172,13 +193,26 @@ func (i *Interpreter) Term() int {
 }
 
 /*
-	FACTOR --> INTEGER
+	FACTOR --> INTEGER | LPAREN EXPRESSION RPAREN
 */
 func (i *Interpreter) Factor() int {
 	token := i.CurrentToken
-	i.ValidateToken(constants.INTEGER)
 
-	return token.IntegerValue
+	var result int
+
+	switch token.Type {
+	case constants.INTEGER:
+		i.ValidateToken(constants.INTEGER)
+		result = token.IntegerValue
+
+	case constants.LPAREN:
+		i.ValidateToken(constants.LPAREN)
+		result = i.Expression()
+		fmt.Println("result of i.Expression() in Factor = ", result)
+		i.ValidateToken(constants.RPAREN)
+	}
+
+	return result
 }
 
 /*
@@ -186,9 +220,7 @@ func (i *Interpreter) Factor() int {
 
 	EXPRESSION --> TERM ((PLUS | MINUS) TERM)*
 */
-func (i *Interpreter) Parse() int {
-	i.CurrentToken = i.GetNextToken()
-
+func (i *Interpreter) Expression() int {
 	var result int = i.Term()
 
 	for helpers.ValueInSlice(i.CurrentToken.Type, constants.PLUS_MINUS_SLICE) {

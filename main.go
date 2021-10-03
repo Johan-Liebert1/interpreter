@@ -26,7 +26,7 @@ func getUserInput(reader *bufio.Reader) {
 		lexer := interpreter.Interpreter{}
 		lexer.Init(userInput)
 
-		result := lexer.Parse()
+		result := lexer.Expression()
 
 		fmt.Println(result)
 
