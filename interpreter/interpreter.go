@@ -1,7 +1,7 @@
 package interpreter
 
 import (
-	"fmt"
+	"log"
 	"strconv"
 	"unicode"
 
@@ -14,10 +14,6 @@ type Interpreter struct {
 	CurrentToken Token
 	CurrentChar  byte
 	EndOfInput   bool
-}
-
-func isSpace(char byte) bool {
-	return char == ' ' || char == '\n' || char == '\t' || char == '\r'
 }
 
 func (i *Interpreter) Init(text string) {
@@ -42,7 +38,7 @@ func (i *Interpreter) Advance() {
 }
 
 func (i *Interpreter) SkipWhitespace() {
-	for !i.EndOfInput && isSpace(i.CurrentChar) {
+	for !i.EndOfInput && unicode.IsSpace(rune(i.CurrentChar)) {
 		i.Advance()
 	}
 }
@@ -98,6 +94,24 @@ func (i *Interpreter) GetNextToken() Token {
 			}
 		}
 
+		if string(i.CurrentChar) == constants.OPERANDS[constants.MUL] {
+			i.Advance()
+
+			return Token{
+				Type:  constants.MUL,
+				Value: constants.OPERANDS[constants.MUL],
+			}
+		}
+
+		if string(i.CurrentChar) == constants.OPERANDS[constants.DIV] {
+			i.Advance()
+
+			return Token{
+				Type:  constants.DIV,
+				Value: constants.OPERANDS[constants.DIV],
+			}
+		}
+
 	}
 
 	return Token{
@@ -114,8 +128,21 @@ func (i *Interpreter) ValidateToken(tokenType string) {
 		i.CurrentToken = i.GetNextToken()
 	} else {
 		// i.error()
-		fmt.Println("Bad Token")
+		log.Fatal("Bad Token")
 	}
+}
+
+/*
+	1. Gets the current token
+	2. Validates the current token as integer
+	3. Returns the IntegerValue of the token
+*/
+func (i *Interpreter) Term() int {
+	token := i.CurrentToken
+
+	i.ValidateToken(constants.INTEGER)
+
+	return token.IntegerValue
 }
 
 /*
@@ -128,31 +155,36 @@ func (i *Interpreter) ValidateToken(tokenType string) {
 func (i *Interpreter) Parse() int {
 	i.CurrentToken = i.GetNextToken()
 
-	leftOperand := i.CurrentToken
+	var result int = i.Term()
 
-	// left token needs to be an integer
-	i.ValidateToken(constants.INTEGER)
+	operator, ok := constants.OPERANDS[i.CurrentToken.Type]
 
-	operator := i.CurrentToken
+	for ok {
 
-	// only works for addition and subtraction for now
-	if operator.Type == constants.PLUS {
-		i.ValidateToken(constants.PLUS)
-	} else {
-		i.ValidateToken(constants.MINUS)
-	}
+		switch operator {
+		case constants.PLUS_SYMBOL:
+			// this will advance the pointer
+			i.ValidateToken(constants.PLUS)
+			result += i.Term()
 
-	// don't need to do i.GetNextToken() as i.ValidateToken() advances the pointer
-	rightOperand := i.CurrentToken
+		case constants.MINUS_SYMBOL:
+			// this will advance the pointer
+			i.ValidateToken(constants.MINUS)
+			result -= i.Term()
 
-	i.ValidateToken(constants.INTEGER)
+		case constants.MUL_SYMBOL:
+			// this will advance the pointer
+			i.ValidateToken(constants.MUL)
+			result *= i.Term()
 
-	var result int
+		case constants.DIV_SYMBOL:
+			// this will advance the pointer
+			i.ValidateToken(constants.DIV)
+			result /= i.Term()
+		}
 
-	if operator.Type == constants.PLUS {
-		result = leftOperand.IntegerValue + rightOperand.IntegerValue
-	} else {
-		result = leftOperand.IntegerValue - rightOperand.IntegerValue
+		operator, ok = constants.OPERANDS[i.CurrentToken.Type]
+
 	}
 
 	return result
