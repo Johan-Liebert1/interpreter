@@ -23,10 +23,10 @@ func getUserInput(reader *bufio.Reader) {
 
 		// fmt.Printf("%s\n\n", line)
 
-		lexer := interpreter.Interpreter{}
-		lexer.Init(userInput)
+		langInterpreter := interpreter.Interpreter{}
+		langInterpreter.Init(userInput)
 
-		result := lexer.Expression()
+		result := langInterpreter.TextParser.Parse()
 
 		fmt.Println(result)
 
