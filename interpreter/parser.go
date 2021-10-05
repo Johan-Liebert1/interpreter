@@ -82,7 +82,7 @@ func (p *Parser) Term() ast.AbstractSyntaxTree {
 }
 
 /*
-	FACTOR --> INTEGER | LPAREN EXPRESSION RPAREN
+	FACTOR --> ((PLUS | MINUS) FACTOR) | INTEGER | LPAREN EXPRESSION RPAREN
 */
 func (p *Parser) Factor() ast.AbstractSyntaxTree {
 	token := p.CurrentToken
@@ -90,6 +90,20 @@ func (p *Parser) Factor() ast.AbstractSyntaxTree {
 	var returningValue ast.AbstractSyntaxTree
 
 	switch token.Type {
+	case constants.PLUS:
+		p.ValidateToken(constants.PLUS)
+		returningValue = ast.UnaryOperationNode{
+			Operation: token,
+			Operand:   p.Factor(),
+		}
+
+	case constants.MINUS:
+		p.ValidateToken(constants.MINUS)
+		returningValue = ast.UnaryOperationNode{
+			Operation: token,
+			Operand:   p.Factor(),
+		}
+
 	case constants.INTEGER:
 		p.ValidateToken(constants.INTEGER)
 		returningValue = ast.Number{

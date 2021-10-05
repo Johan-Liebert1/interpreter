@@ -15,32 +15,37 @@ type BinaryOperationNode struct {
 	Right     AbstractSyntaxTree
 }
 
-func (n Number) TraverseTree(traversalType string) {
-}
-
-func (n BinaryOperationNode) TraverseTree(traversalType string) {
+type UnaryOperationNode struct {
+	Operation types.Token
+	Operand   AbstractSyntaxTree
 }
 
 func (n Number) Op() types.Token {
 	return n.Token
 }
-
-func (n BinaryOperationNode) Op() types.Token {
-	return n.Operation
-}
-
 func (n Number) LeftOperand() AbstractSyntaxTree {
 	return n
 }
-
-func (n BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
-	return n.Left
-}
-
 func (n Number) RightOperand() AbstractSyntaxTree {
 	return n
 }
 
-func (n BinaryOperationNode) RightOperand() AbstractSyntaxTree {
-	return n.Right
+func (b BinaryOperationNode) Op() types.Token {
+	return b.Operation
+}
+func (b BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
+	return b.Left
+}
+func (b BinaryOperationNode) RightOperand() AbstractSyntaxTree {
+	return b.Right
+}
+
+func (u UnaryOperationNode) Op() types.Token {
+	return u.Operation
+}
+func (u UnaryOperationNode) LeftOperand() AbstractSyntaxTree {
+	return u.Operand
+}
+func (u UnaryOperationNode) RightOperand() AbstractSyntaxTree {
+	return u.Operand
 }

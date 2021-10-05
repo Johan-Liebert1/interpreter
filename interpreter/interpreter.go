@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"reflect"
 
 	"interpreter/constants"
@@ -22,8 +23,25 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) int {
 
 	if reflect.TypeOf(node) == reflect.TypeOf(ast.Number{}) {
 		// node is a Number struct, which is the base case
+		fmt.Println("found number")
 		return node.Op().IntegerValue
 	}
+
+	if reflect.TypeOf(node) == reflect.TypeOf(ast.UnaryOperationNode{}) {
+		fmt.Println("found UnaryOperationNode")
+
+		if node.Op().Type == constants.PLUS {
+
+			return +i.Visit(node.LeftOperand(), depth+1)
+
+		} else if node.Op().Type == constants.MINUS {
+
+			return -i.Visit(node.LeftOperand(), depth+1)
+
+		}
+	}
+
+	fmt.Println("found BinaryOperationNode")
 
 	if node.Op().Type == constants.PLUS {
 
@@ -46,7 +64,7 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) int {
 func (i *Interpreter) Interpret() int {
 	tree := i.TextParser.Parse()
 
-	// fmt.Println(tree)
+	fmt.Println(tree)
 
 	return i.Visit(tree, 1)
 }
