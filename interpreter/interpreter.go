@@ -1,6 +1,8 @@
 package interpreter
 
 import (
+	"reflect"
+
 	"interpreter/constants"
 	"interpreter/interpreter/ast"
 )
@@ -18,7 +20,7 @@ func (i *Interpreter) Init(text string) {
 func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) int {
 	// fmt.Println("Visiting node ", node, "Left : ", node.LeftOperand(), "Right : ", node.RightOperand())
 
-	if node.LeftOperand() == node && node.RightOperand() == node {
+	if reflect.TypeOf(node) == reflect.TypeOf(ast.Number{}) {
 		// node is a Number struct, which is the base case
 		return node.Op().IntegerValue
 	}

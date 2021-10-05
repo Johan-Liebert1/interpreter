@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"log"
 
 	"interpreter/constants"
@@ -55,9 +56,10 @@ func (p *Parser) ValidateToken(tokenType string) {
 func (p *Parser) Term() ast.AbstractSyntaxTree {
 	returningValue := p.Factor()
 
-	currentToken := p.CurrentToken
-
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.MUL_DIV_SLICE) {
+		currentToken := p.CurrentToken
+
+		fmt.Println("current token in term is saved")
 
 		switch p.CurrentToken.Type {
 		case constants.DIV:
@@ -90,12 +92,10 @@ func (p *Parser) Factor() ast.AbstractSyntaxTree {
 	switch token.Type {
 	case constants.INTEGER:
 		p.ValidateToken(constants.INTEGER)
-		structure := ast.Number{
+		returningValue = ast.Number{
 			Token: token,
 			Value: token.IntegerValue,
 		}
-
-		returningValue = structure
 
 	case constants.LPAREN:
 		p.ValidateToken(constants.LPAREN)
@@ -118,9 +118,8 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 
 	// fmt.Println("\nin Expression p.Term = ", result)
 
-	currentToken := p.CurrentToken
-
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.PLUS_MINUS_SLICE) {
+		currentToken := p.CurrentToken
 
 		switch p.CurrentToken.Value {
 		case constants.PLUS_SYMBOL:
@@ -135,7 +134,7 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 		result = ast.BinaryOperationNode{
 			Left:      result,
 			Operation: currentToken,
-			Right:     p.Expression(),
+			Right:     p.Term(),
 		}
 	}
 

@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"strconv"
 	"unicode"
 
@@ -104,6 +105,8 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 
 		if charToString == constants.OPERANDS[constants.DIV] {
 			lex.Advance()
+
+			fmt.Println("adding a division token")
 
 			return types.Token{
 				Type:  constants.DIV,
