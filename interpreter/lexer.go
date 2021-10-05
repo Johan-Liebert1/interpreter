@@ -1,9 +1,11 @@
 package interpreter
 
 import (
-	"interpreter/constants"
 	"strconv"
 	"unicode"
+
+	"interpreter/constants"
+	"interpreter/types"
 )
 
 type LexicalAnalyzer struct {
@@ -55,7 +57,7 @@ func (lex *LexicalAnalyzer) ConstructInteger() int {
 	The lexical analyzer / scanner / tokenizer which will convert the input string to
 	tokens
 */
-func (lex *LexicalAnalyzer) GetNextToken() Token {
+func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 	for !lex.EndOfInput {
 		charToString := string(lex.CurrentChar)
 
@@ -67,7 +69,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if unicode.IsDigit(rune(lex.CurrentChar)) {
 			integer := lex.ConstructInteger()
 
-			return Token{
+			return types.Token{
 				Type:         constants.INTEGER,
 				IntegerValue: integer,
 			}
@@ -76,7 +78,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.OPERANDS[constants.PLUS] {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.PLUS,
 				Value: constants.OPERANDS[constants.PLUS],
 			}
@@ -85,7 +87,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.OPERANDS[constants.MINUS] {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.MINUS,
 				Value: constants.OPERANDS[constants.MINUS],
 			}
@@ -94,7 +96,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.OPERANDS[constants.MUL] {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.MUL,
 				Value: constants.OPERANDS[constants.MUL],
 			}
@@ -103,7 +105,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.OPERANDS[constants.DIV] {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.DIV,
 				Value: constants.OPERANDS[constants.DIV],
 			}
@@ -112,7 +114,7 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.LPAREN_SYMBOL {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.LPAREN,
 				Value: constants.LPAREN_SYMBOL,
 			}
@@ -121,20 +123,20 @@ func (lex *LexicalAnalyzer) GetNextToken() Token {
 		if charToString == constants.RPAREN_SYMBOL {
 			lex.Advance()
 
-			return Token{
+			return types.Token{
 				Type:  constants.RPAREN,
 				Value: constants.RPAREN_SYMBOL,
 			}
 		}
 
-		return Token{
+		return types.Token{
 			Type:  constants.INVALID,
 			Value: charToString,
 		}
 
 	}
 
-	return Token{
+	return types.Token{
 		Type: constants.EOF,
 	}
 }

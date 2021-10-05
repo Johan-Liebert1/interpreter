@@ -5,11 +5,23 @@ import (
 
 	"interpreter/constants"
 	"interpreter/helpers"
+	"interpreter/interpreter/ast"
+	"interpreter/types"
 )
 
 type Parser struct {
 	Lexer        LexicalAnalyzer
-	CurrentToken Token
+	CurrentToken types.Token
+}
+
+func (p *Parser) Init(text string) {
+	p.Lexer = LexicalAnalyzer{
+		Text: text,
+	}
+
+	p.Lexer.Init()
+
+	p.CurrentToken = p.Lexer.GetNextToken()
 }
 
 /*
@@ -40,44 +52,60 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	TERM --> FACTOR ((MUL | DIV) FACTOR)*
 */
-func (p *Parser) Term() int {
-	result := p.Factor()
+func (p *Parser) Term() ast.AbstractSyntaxTree {
+	returningValue := p.Factor()
+
+	currentToken := p.CurrentToken
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.MUL_DIV_SLICE) {
+
 		switch p.CurrentToken.Type {
 		case constants.DIV:
 			p.ValidateToken(constants.DIV)
-			result /= p.Factor()
 
 		case constants.MUL:
 			p.ValidateToken(constants.MUL)
-			result *= p.Factor()
+		}
+
+		returningValue = ast.BinaryOperationNode{
+			Left:      returningValue,
+			Operation: currentToken,
+			Right:     p.Factor(),
 		}
 	}
 
-	return result
+	// fmt.Println("\nreturinig from p.Term = ", returningValue)
+
+	return returningValue
 }
 
 /*
 	FACTOR --> INTEGER | LPAREN EXPRESSION RPAREN
 */
-func (p *Parser) Factor() int {
+func (p *Parser) Factor() ast.AbstractSyntaxTree {
 	token := p.CurrentToken
 
-	var result int
+	var returningValue ast.AbstractSyntaxTree
 
 	switch token.Type {
 	case constants.INTEGER:
 		p.ValidateToken(constants.INTEGER)
-		result = token.IntegerValue
+		structure := ast.Number{
+			Token: token,
+			Value: token.IntegerValue,
+		}
+
+		returningValue = structure
 
 	case constants.LPAREN:
 		p.ValidateToken(constants.LPAREN)
-		result = p.Expression()
+		returningValue = p.Expression()
 		p.ValidateToken(constants.RPAREN)
 	}
 
-	return result
+	// fmt.Println("\nreturining from Factor = ", returningValue)
+
+	return returningValue
 }
 
 /*
@@ -85,8 +113,12 @@ func (p *Parser) Factor() int {
 
 	EXPRESSION --> TERM ((PLUS | MINUS) TERM)*
 */
-func (p *Parser) Expression() int {
-	var result int = p.Term()
+func (p *Parser) Expression() ast.AbstractSyntaxTree {
+	result := p.Term()
+
+	// fmt.Println("\nin Expression p.Term = ", result)
+
+	currentToken := p.CurrentToken
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.PLUS_MINUS_SLICE) {
 
@@ -94,18 +126,22 @@ func (p *Parser) Expression() int {
 		case constants.PLUS_SYMBOL:
 			// this will advance the pointer
 			p.ValidateToken(constants.PLUS)
-			result += p.Term()
 
 		case constants.MINUS_SYMBOL:
 			// this will advance the pointer
 			p.ValidateToken(constants.MINUS)
-			result -= p.Term()
+		}
+
+		result = ast.BinaryOperationNode{
+			Left:      result,
+			Operation: currentToken,
+			Right:     p.Expression(),
 		}
 	}
 
 	return result
 }
 
-func (p *Parser) Parse() int {
+func (p *Parser) Parse() ast.AbstractSyntaxTree {
 	return p.Expression()
 }

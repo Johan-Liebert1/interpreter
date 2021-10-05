@@ -1,5 +1,10 @@
 package interpreter
 
+import (
+	"interpreter/constants"
+	"interpreter/interpreter/ast"
+)
+
 type Interpreter struct {
 	TextParser Parser
 }
@@ -7,11 +12,39 @@ type Interpreter struct {
 func (i *Interpreter) Init(text string) {
 	i.TextParser = Parser{}
 
-	i.TextParser.Lexer = LexicalAnalyzer{
-		Text: text,
+	i.TextParser.Init(text)
+}
+
+func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) int {
+	// fmt.Println("Visiting node ", node, "Left : ", node.LeftOperand(), "Right : ", node.RightOperand())
+
+	if node.LeftOperand() == node && node.RightOperand() == node {
+		// node is a Number struct, which is the base case
+		return node.Op().IntegerValue
 	}
 
-	i.TextParser.Lexer.Init()
+	if node.Op().Type == constants.PLUS {
 
-	i.TextParser.CurrentToken = i.TextParser.Lexer.GetNextToken()
+		return i.Visit(node.LeftOperand(), depth+1) + i.Visit(node.RightOperand(), depth+1)
+
+	} else if node.Op().Type == constants.MINUS {
+
+		return i.Visit(node.LeftOperand(), depth+1) - i.Visit(node.RightOperand(), depth+1)
+
+	} else if node.Op().Type == constants.MUL {
+
+		return i.Visit(node.LeftOperand(), depth+1) * i.Visit(node.RightOperand(), depth+1)
+
+	} else {
+
+		return i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
+	}
+}
+
+func (i *Interpreter) Interpret() int {
+	tree := i.TextParser.Parse()
+
+	// fmt.Println(tree)
+
+	return i.Visit(tree, 1)
 }
