@@ -1,0 +1,16 @@
+terminals - uppercase
+non_terminals - lowercase
+
+
+
+PROGRAM --> statement_list DOT
+statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
+statement --> assignment_statement | blank
+assignment_statement --> variable ASSIGN expression
+variable --> ID
+blank --> 
+expression --> term ((PLUS | MINUS) term)*
+term --> factor ((MUL | DIV) factor)*
+factor --> ((PLUS | MINUS) factor) | INTEGER | LPAREN expression RPAREN | variable
+LPAREN --> (
+RPAREN --> )

@@ -6,6 +6,7 @@ import (
 	"unicode"
 
 	"interpreter/constants"
+	"interpreter/helpers"
 	"interpreter/types"
 )
 
@@ -54,6 +55,33 @@ func (lex *LexicalAnalyzer) ConstructInteger() int {
 	return integer
 }
 
+func (lex *LexicalAnalyzer) Peek() int {
+	peekPos := lex.Position + 1
+
+	if peekPos > len(lex.Text)-1 {
+		return -1
+	} else {
+		return peekPos
+	}
+}
+
+/*
+	Handles identifiers (variables) and reserved keywords
+*/
+func (lex *LexicalAnalyzer) Identifier() types.Token {
+	identifier := ""
+
+	for !lex.EndOfInput && helpers.IsAlphaNum(lex.CurrentChar) {
+		identifier += string(lex.CurrentChar)
+		lex.Advance()
+	}
+
+	return types.Token{
+		Type:  constants.IDENTIFIER,
+		Value: identifier,
+	}
+}
+
 /*
 	The lexical analyzer / scanner / tokenizer which will convert the input string to
 	tokens
@@ -67,12 +95,61 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			continue
 		}
 
+		// starts with a number, is a digit
 		if unicode.IsDigit(rune(lex.CurrentChar)) {
 			integer := lex.ConstructInteger()
 
 			return types.Token{
 				Type:         constants.INTEGER,
 				IntegerValue: integer,
+			}
+		}
+
+		// starts with a letter, is an identifier
+		if unicode.IsLetter(rune(lex.CurrentChar)) {
+			return lex.Identifier()
+		}
+
+		if charToString == constants.EQUAL_SYMBOL {
+			peekPos := lex.Peek()
+
+			if peekPos != -1 {
+
+				if string(lex.Text[peekPos]) == constants.COLON_SYMBOL {
+					lex.Advance()
+					lex.Advance()
+
+					return types.Token{
+						Type:  constants.ASSIGN,
+						Value: ":=",
+					}
+				} else {
+					// throw an error as the syntax is wrong
+					break
+				}
+
+			} else {
+				return types.Token{
+					Type: constants.EOF,
+				}
+			}
+		}
+
+		if charToString == constants.SEMI_COLON_SYMBOL {
+			lex.Advance()
+
+			return types.Token{
+				Type:  constants.SEMI_COLON,
+				Value: constants.SEMI_COLON_SYMBOL,
+			}
+		}
+
+		if charToString == constants.DOT_SYMBOL {
+			lex.Advance()
+
+			return types.Token{
+				Type:  constants.DOT,
+				Value: constants.DOT_SYMBOL,
 			}
 		}
 

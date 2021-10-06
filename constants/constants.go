@@ -1,24 +1,32 @@
 package constants
 
 const (
-	INTEGER = "INTEGER"
-	PLUS    = "PLUS"
-	MINUS   = "MINUS"
-	MUL     = "MUL"
-	DIV     = "DIV"
-	EOF     = "EOF"
-	INVALID = "INVALID"
-	LPAREN  = "LPAREN"
-	RPAREN  = "RAPREN"
+	INTEGER    = "INTEGER"
+	PLUS       = "PLUS"
+	MINUS      = "MINUS"
+	MUL        = "MUL"
+	DIV        = "DIV"
+	EOF        = "EOF"
+	INVALID    = "INVALID"
+	LPAREN     = "LPAREN"
+	RPAREN     = "RAPREN"
+	IDENTIFIER = "IDENTIFIER"
+	ASSIGN     = "ASSIGN"
+	SEMI_COLON = "SEMI_COLON"
+	DOT        = "DOT"
 )
 
 const (
-	PLUS_SYMBOL   = "+"
-	MINUS_SYMBOL  = "-"
-	MUL_SYMBOL    = "*"
-	DIV_SYMBOL    = "/"
-	LPAREN_SYMBOL = "("
-	RPAREN_SYMBOL = ")"
+	PLUS_SYMBOL       = "+"
+	MINUS_SYMBOL      = "-"
+	MUL_SYMBOL        = "*"
+	DIV_SYMBOL        = "/"
+	LPAREN_SYMBOL     = "("
+	RPAREN_SYMBOL     = ")"
+	EQUAL_SYMBOL      = "="
+	COLON_SYMBOL      = ":"
+	SEMI_COLON_SYMBOL = ";"
+	DOT_SYMBOL        = "."
 )
 
 /*
