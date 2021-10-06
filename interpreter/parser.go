@@ -119,6 +119,9 @@ func (p *Parser) Factor() ast.AbstractSyntaxTree {
 		p.ValidateToken(constants.LPAREN)
 		returningValue = p.Expression()
 		p.ValidateToken(constants.RPAREN)
+
+	default:
+		returningValue = p.Variable()
 	}
 
 	// fmt.Println("\nreturining from Factor = ", returningValue)
@@ -161,7 +164,7 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 
 func (p *Parser) Program() ast.AbstractSyntaxTree {
 	node := p.CompoundStatement()
-	p.ValidateToken(constants.DOT)
+	// p.ValidateToken(constants.DOT)
 
 	return node
 }
@@ -248,5 +251,5 @@ func (p *Parser) Variable() ast.AbstractSyntaxTree {
 }
 
 func (p *Parser) Parse() ast.AbstractSyntaxTree {
-	return p.Expression()
+	return p.Program()
 }

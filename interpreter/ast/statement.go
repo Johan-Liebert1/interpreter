@@ -31,6 +31,9 @@ func (cs CompoundStatement) LeftOperand() AbstractSyntaxTree {
 func (cs CompoundStatement) RightOperand() AbstractSyntaxTree {
 	return cs.Children[0]
 }
+func (cs CompoundStatement) GetChildren() []AbstractSyntaxTree {
+	return cs.Children
+}
 
 func (v AssignmentStatement) Op() types.Token {
 	return v.Token

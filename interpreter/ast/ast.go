@@ -7,3 +7,7 @@ type AbstractSyntaxTree interface {
 	LeftOperand() AbstractSyntaxTree
 	RightOperand() AbstractSyntaxTree
 }
+
+type CompoundStatementNode interface {
+	GetChildren() []AbstractSyntaxTree
+}

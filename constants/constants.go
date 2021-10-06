@@ -28,6 +28,7 @@ const (
 	COLON_SYMBOL      = ":"
 	SEMI_COLON_SYMBOL = ";"
 	DOT_SYMBOL        = "."
+	ASSIGN_SYMBOL     = ":="
 )
 
 /*

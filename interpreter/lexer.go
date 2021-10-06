@@ -110,18 +110,22 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return lex.Identifier()
 		}
 
-		if charToString == constants.EQUAL_SYMBOL {
+		if charToString == constants.COLON_SYMBOL {
 			peekPos := lex.Peek()
+
+			fmt.Println("peekPos = ", peekPos)
 
 			if peekPos != -1 {
 
-				if string(lex.Text[peekPos]) == constants.COLON_SYMBOL {
+				if string(lex.Text[lex.Position]) == constants.COLON_SYMBOL &&
+					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
+
 					lex.Advance()
 					lex.Advance()
 
 					return types.Token{
 						Type:  constants.ASSIGN,
-						Value: ":=",
+						Value: constants.ASSIGN_SYMBOL,
 					}
 				} else {
 					// throw an error as the syntax is wrong
