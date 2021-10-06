@@ -25,6 +25,14 @@ func (p *Parser) Init(text string) {
 	p.CurrentToken = p.Lexer.GetNextToken()
 }
 
+func (p *Parser) Error(tokenType string) {
+	log.Fatal(
+		"Bad Token",
+		"\nCurrent Token: ", p.CurrentToken.Print(),
+		"\nToken Type to check with ", tokenType,
+	)
+}
+
 /*
 	Validate whether the current token maches the token type passed in.
 
@@ -36,11 +44,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
 	} else {
-		log.Fatal(
-			"Bad Token",
-			"\nCurrent Token: ", p.CurrentToken.Print(),
-			"\nToken Type to check with ", tokenType,
-		)
+		p.Error(tokenType)
 	}
 }
 
@@ -153,6 +157,94 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 	}
 
 	return result
+}
+
+func (p *Parser) Program() ast.AbstractSyntaxTree {
+	node := p.CompoundStatement()
+	p.ValidateToken(constants.DOT)
+
+	return node
+}
+
+func (p *Parser) CompoundStatement() ast.AbstractSyntaxTree {
+	nodes := p.StatementList()
+
+	root := ast.CompoundStatement{}
+
+	root.Children = append(root.Children, nodes...)
+
+	return root
+}
+
+// statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
+func (p *Parser) StatementList() []ast.AbstractSyntaxTree {
+	node := p.Statement()
+
+	results := []ast.AbstractSyntaxTree{node}
+
+	for p.CurrentToken.Type == constants.SEMI_COLON {
+		p.ValidateToken(constants.SEMI_COLON)
+		results = append(results, p.Statement())
+	}
+
+	if p.CurrentToken.Type == constants.IDENTIFIER {
+		p.Error(constants.SEMI_COLON)
+	}
+
+	return results
+}
+
+/*
+	statement --> assignment_statement | blank
+*/
+func (p *Parser) Statement() ast.AbstractSyntaxTree {
+	var node ast.AbstractSyntaxTree
+
+	if p.CurrentToken.Type == constants.IDENTIFIER {
+		node = p.AssignmentStatement()
+	} else {
+		node = ast.BlankStatement{
+			Token: types.Token{
+				Type:  constants.BLANK,
+				Value: "",
+			},
+		}
+	}
+
+	return node
+
+}
+
+/*
+	assignment_statement --> variable ASSIGN expression
+*/
+func (p *Parser) AssignmentStatement() ast.AbstractSyntaxTree {
+	left := p.Variable()
+
+	token := p.CurrentToken
+	p.ValidateToken(constants.ASSIGN)
+
+	right := p.Expression()
+
+	return ast.AssignmentStatement{
+		Left:  left,
+		Token: token,
+		Right: right,
+	}
+}
+
+/*
+	variable --> ID
+*/
+func (p *Parser) Variable() ast.AbstractSyntaxTree {
+	variable := ast.Variable{
+		Token: p.CurrentToken,
+		Value: p.CurrentToken.Value,
+	}
+
+	p.ValidateToken(constants.IDENTIFIER)
+
+	return variable
 }
 
 func (p *Parser) Parse() ast.AbstractSyntaxTree {

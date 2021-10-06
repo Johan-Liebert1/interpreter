@@ -14,6 +14,7 @@ const (
 	ASSIGN     = "ASSIGN"
 	SEMI_COLON = "SEMI_COLON"
 	DOT        = "DOT"
+	BLANK      = "BLANK"
 )
 
 const (
