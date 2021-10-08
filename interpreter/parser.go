@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	"interpreter/constants"
-	"interpreter/helpers"
-	"interpreter/interpreter/ast"
-	"interpreter/types"
+	"programminglang/constants"
+	"programminglang/helpers"
+	"programminglang/interpreter/ast"
+	"programminglang/types"
 )
 
 type Parser struct {

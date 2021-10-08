@@ -1,5 +1,7 @@
 package constants
 
+import "programminglang/types"
+
 const (
 	INTEGER    = "INTEGER"
 	PLUS       = "PLUS"
@@ -31,6 +33,13 @@ const (
 	ASSIGN_SYMBOL     = ":="
 )
 
+// keywords
+const (
+	LET          = "let"
+	INTEGER_TYPE = "int"
+	FLOAT_TYPE   = "float"
+)
+
 /*
 	Maps "PLUS" to "+", "MINUS" to "-", "MUL" to "*" and "DIV" to "/"
 */
@@ -39,6 +48,23 @@ var OPERANDS = map[string]string{
 	MINUS: MINUS_SYMBOL,
 	MUL:   MUL_SYMBOL,
 	DIV:   DIV_SYMBOL,
+}
+
+var RESERVED = map[string]types.Token{
+	LET: types.Token{
+		Type:  LET,
+		Value: LET,
+	},
+
+	INTEGER_TYPE: types.Token{
+		Type:  INTEGER_TYPE,
+		Value: INTEGER_TYPE,
+	},
+
+	FLOAT_TYPE: types.Token{
+		Type:  FLOAT_TYPE,
+		Value: FLOAT_TYPE,
+	},
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}

@@ -5,8 +5,8 @@ import (
 	"log"
 	"reflect"
 
-	"interpreter/constants"
-	"interpreter/interpreter/ast"
+	"programminglang/constants"
+	"programminglang/interpreter/ast"
 )
 
 type Interpreter struct {

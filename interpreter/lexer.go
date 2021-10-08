@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"unicode"
 
-	"interpreter/constants"
-	"interpreter/helpers"
-	"interpreter/types"
+	"programminglang/constants"
+	"programminglang/helpers"
+	"programminglang/types"
 )
 
 type LexicalAnalyzer struct {

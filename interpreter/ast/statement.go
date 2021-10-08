@@ -1,6 +1,6 @@
 package ast
 
-import "interpreter/types"
+import "programminglang/types"
 
 type CompoundStatement struct {
 	Token    types.Token

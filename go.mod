@@ -1,3 +1,3 @@
-module interpreter
+module programminglang
 
 go 1.17

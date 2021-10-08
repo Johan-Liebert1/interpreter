@@ -1,7 +1,7 @@
 package ast
 
 import (
-	"interpreter/types"
+	"programminglang/types"
 )
 
 type Number struct {

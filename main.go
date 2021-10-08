@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"interpreter/interpreter"
-	"interpreter/types"
+	"programminglang/interpreter"
+	"programminglang/types"
 )
 
 func getUserInput(reader *bufio.Reader) {
@@ -21,7 +21,9 @@ func getUserInput(reader *bufio.Reader) {
 			os.Exit(0)
 		}
 
-		// fmt.Printf("%s\n\n", line)
+		if len(userInput) == 0 {
+			continue
+		}
 
 		langInterpreter := interpreter.Interpreter{}
 		langInterpreter.Init(userInput)

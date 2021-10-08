@@ -1,6 +1,6 @@
 package ast
 
-import "interpreter/types"
+import "programminglang/types"
 
 type AbstractSyntaxTree interface {
 	Op() types.Token
