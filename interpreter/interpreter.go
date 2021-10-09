@@ -26,42 +26,36 @@ func (i *Interpreter) Init(text string) {
 }
 
 func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
-	// fmt.Println("Visiting node ", node, "Left : ", node.LeftOperand(), "Right : ", node.RightOperand())
-
 	// fmt.Print("\n\n")
-	// i.spewPrinter.Dump("Node = ", node)
+	// i.spewPrinter.Dump("Depth = ", depth, "Node = ", node)
 	// fmt.Print("\n\n")
 
-	// if depth >= 5 {
-	// 	return 0.0
-	// }
+	var result float32
 
 	if reflect.TypeOf(node) == reflect.TypeOf(ast.IntegerNumber{}) {
 		// node is a Number struct, which is the base case
-		fmt.Println("found number")
-		return float32(node.Op().IntegerValue)
-	}
+		fmt.Println("found number", node.Op().IntegerValue)
 
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.FloatNumber{}) {
+		// meed to return an integer here
+		result = float32(node.Op().IntegerValue)
+
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.FloatNumber{}) {
 		// node is a Number struct, which is the base case
 		fmt.Println("found float")
-		// meed to return a floating point here
-		return node.Op().FloatValue
-	}
+		result = node.Op().FloatValue
 
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.UnaryOperationNode{}) {
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.UnaryOperationNode{}) {
 		fmt.Println("found UnaryOperationNode")
 
 		if node.Op().Type == constants.PLUS {
-			return +i.Visit(node.LeftOperand(), depth+1)
+			result = +i.Visit(node.LeftOperand(), depth+1)
 
 		} else if node.Op().Type == constants.MINUS {
-			return -i.Visit(node.LeftOperand(), depth+1)
+			result = -i.Visit(node.LeftOperand(), depth+1)
 
 		}
-	}
 
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.Program{}) {
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.Program{}) {
 		fmt.Println("found program")
 		// i.spewPrinter.Dump(node)
 
@@ -70,22 +64,28 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 				i.Visit(child, depth+1)
 			}
 
-			i.Visit(c.CompoundStatement, depth+1)
+			result = i.Visit(c.CompoundStatement, depth+1)
 		}
-	}
 
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.CompoundStatement{}) {
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.CompoundStatement{}) {
+
 		fmt.Println("found CompoundStatement")
 		// i.spewPrinter.Dump(node)
 
 		if c, ok := node.(ast.CompoundStatementNode); ok {
 			for _, child := range c.GetChildren() {
-				i.Visit(child, depth+1)
+				// fmt.Println("iterating over compoundStatement child")
+
+				if child.Op().Type == constants.BLANK {
+					continue
+				}
+
+				result = i.Visit(child, depth+1)
 			}
 		}
-	}
 
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.AssignmentStatement{}) {
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.AssignmentStatement{}) {
+
 		variableName := node.LeftOperand().Op().Value
 
 		// fmt.Println(
@@ -94,39 +94,46 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 		// )
 
 		i.GlobalScope[variableName] = i.Visit(node.RightOperand(), depth+1)
-	}
 
-	// if we encounter a variable, look for it in the GlobalScope and respond accordingly
-	if reflect.TypeOf(node) == reflect.TypeOf(ast.Variable{}) {
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.Variable{}) {
+
+		// if we encounter a variable, look for it in the GlobalScope and respond accordingly
 		variableName := node.Op().Value
 
 		if value, ok := i.GlobalScope[variableName]; ok {
-			return value
+			result = value
 		} else {
 			log.Fatal("Variable ", value, " not defined.")
 		}
 
+	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.BinaryOperationNode{}) {
+
+		// BinaryOperationNode
+		if node.Op().Type == constants.PLUS {
+			fmt.Print("adding \n")
+			result = i.Visit(node.LeftOperand(), depth+1) + i.Visit(node.RightOperand(), depth+1)
+			fmt.Println("addition result = ", result)
+
+		} else if node.Op().Type == constants.MINUS {
+
+			result = i.Visit(node.LeftOperand(), depth+1) - i.Visit(node.RightOperand(), depth+1)
+
+		} else if node.Op().Type == constants.MUL {
+
+			result = i.Visit(node.LeftOperand(), depth+1) * i.Visit(node.RightOperand(), depth+1)
+
+		} else if node.Op().Type == constants.FLOAT_DIV {
+
+			result = i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
+		} else {
+			// integer division
+			result = i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
+		}
+
 	}
 
-	if node.Op().Type == constants.PLUS {
-
-		return i.Visit(node.LeftOperand(), depth+1) + i.Visit(node.RightOperand(), depth+1)
-
-	} else if node.Op().Type == constants.MINUS {
-
-		return i.Visit(node.LeftOperand(), depth+1) - i.Visit(node.RightOperand(), depth+1)
-
-	} else if node.Op().Type == constants.MUL {
-
-		return i.Visit(node.LeftOperand(), depth+1) * i.Visit(node.RightOperand(), depth+1)
-
-	} else if node.Op().Type == constants.FLOAT_DIV {
-
-		return i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
-	} else {
-		// integer division
-		return i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
-	}
+	fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)
+	return result
 }
 
 func (i *Interpreter) Interpret() float32 {
@@ -135,7 +142,7 @@ func (i *Interpreter) Interpret() float32 {
 	// fmt.Print(tree)
 	// fmt.Printf(" type = %t", tree)
 
-	i.spewPrinter.Dump(tree)
+	// i.spewPrinter.Dump(tree)
 
 	return i.Visit(tree, 1)
 	// return 12.34

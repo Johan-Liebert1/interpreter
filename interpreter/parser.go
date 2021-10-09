@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"fmt"
 	"log"
 
 	"programminglang/constants"
@@ -46,7 +45,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
-		fmt.Println("\n\n", p.CurrentToken, "\n\n")
+		// fmt.Println("\n\n", p.CurrentToken, "\n\n")
 	} else {
 		p.Error(tokenType)
 	}
@@ -345,4 +344,5 @@ func (p *Parser) Variable() ast.AbstractSyntaxTree {
 
 func (p *Parser) Parse() ast.AbstractSyntaxTree {
 	return p.Program()
+	// return p.Expression()
 }
