@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"fmt"
 	"log"
 	"reflect"
 
@@ -34,18 +33,18 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 
 	if reflect.TypeOf(node) == reflect.TypeOf(ast.IntegerNumber{}) {
 		// node is a Number struct, which is the base case
-		fmt.Println("found number", node.Op().IntegerValue)
+		// fmt.Println("found number", node.Op().IntegerValue)
 
 		// meed to return an integer here
 		result = float32(node.Op().IntegerValue)
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.FloatNumber{}) {
 		// node is a Number struct, which is the base case
-		fmt.Println("found float")
+		// fmt.Println("found float")
 		result = node.Op().FloatValue
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.UnaryOperationNode{}) {
-		fmt.Println("found UnaryOperationNode")
+		// fmt.Println("found UnaryOperationNode")
 
 		if node.Op().Type == constants.PLUS {
 			result = +i.Visit(node.LeftOperand(), depth+1)
@@ -56,7 +55,7 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.Program{}) {
-		fmt.Println("found program")
+		// fmt.Println("found program")
 		// i.spewPrinter.Dump(node)
 
 		if c, ok := node.(ast.Program); ok {
@@ -69,7 +68,7 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.CompoundStatement{}) {
 
-		fmt.Println("found CompoundStatement")
+		// fmt.Println("found CompoundStatement")
 		// i.spewPrinter.Dump(node)
 
 		if c, ok := node.(ast.CompoundStatementNode); ok {
@@ -110,9 +109,9 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 
 		// BinaryOperationNode
 		if node.Op().Type == constants.PLUS {
-			fmt.Print("adding \n")
+			// fmt.Print("adding \n")
 			result = i.Visit(node.LeftOperand(), depth+1) + i.Visit(node.RightOperand(), depth+1)
-			fmt.Println("addition result = ", result)
+			// fmt.Println("addition result = ", result)
 
 		} else if node.Op().Type == constants.MINUS {
 
@@ -132,7 +131,7 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 
 	}
 
-	fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)
+	// fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)
 	return result
 }
 

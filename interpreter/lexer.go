@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"fmt"
 	"strconv"
 	"unicode"
 
@@ -149,7 +148,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 		if unicode.IsLetter(rune(lex.CurrentChar)) {
 			identifier := lex.Identifier()
 
-			fmt.Println("Constructed Identifier = ", identifier)
+			// fmt.Println("Constructed Identifier = ", identifier)
 
 			return identifier
 
@@ -158,7 +157,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 		if charToString == constants.COLON_SYMBOL {
 			peekPos := lex.Peek()
 
-			fmt.Println("peekPos = ", peekPos)
+			// fmt.Println("peekPos = ", peekPos)
 
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.COLON_SYMBOL &&
