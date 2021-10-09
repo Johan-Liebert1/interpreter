@@ -36,12 +36,14 @@ func (lex *LexicalAnalyzer) Advance() {
 	}
 }
 
+// skip all the whitespaces between two tokens
 func (lex *LexicalAnalyzer) SkipWhitespace() {
 	for !lex.EndOfInput && unicode.IsSpace(rune(lex.CurrentChar)) {
 		lex.Advance()
 	}
 }
 
+// skip a comment
 func (lex *LexicalAnalyzer) SkipComment() {
 	for !lex.EndOfInput && string(lex.CurrentChar) != "\n" {
 		lex.Advance()
@@ -73,7 +75,7 @@ func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
 		realNumber, _ := strconv.ParseFloat(integerPart+s+fractionalPart, 32)
 
 		return types.Token{
-			Type:       constants.FLOAT_TYPE,
+			Type:       constants.FLOAT,
 			FloatValue: float32(realNumber),
 		}
 
@@ -82,7 +84,7 @@ func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
 	integer, _ := strconv.Atoi(integerPart)
 
 	return types.Token{
-		Type:         constants.INTEGER_TYPE,
+		Type:         constants.INTEGER,
 		IntegerValue: integer,
 	}
 }
@@ -106,6 +108,11 @@ func (lex *LexicalAnalyzer) Identifier() types.Token {
 	for !lex.EndOfInput && helpers.IsAlphaNum(lex.CurrentChar) {
 		identifier += string(lex.CurrentChar)
 		lex.Advance()
+	}
+
+	if token, ok := constants.RESERVED[identifier]; ok {
+		// is a reserved keyword
+		return token
 	}
 
 	return types.Token{
@@ -140,7 +147,12 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 
 		// starts with a letter, is an identifier
 		if unicode.IsLetter(rune(lex.CurrentChar)) {
-			return lex.Identifier()
+			identifier := lex.Identifier()
+
+			fmt.Println("Constructed Identifier = ", identifier)
+
+			return identifier
+
 		}
 
 		if charToString == constants.COLON_SYMBOL {
@@ -159,12 +171,10 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 						Type:  constants.ASSIGN,
 						Value: constants.ASSIGN_SYMBOL,
 					}
-				} else {
-					// throw an error as the syntax is wrong
-					break
 				}
-
 			}
+
+			lex.Advance()
 
 			// just a colon
 			return types.Token{

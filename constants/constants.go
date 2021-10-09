@@ -4,6 +4,7 @@ import "programminglang/types"
 
 const (
 	INTEGER     = "INTEGER"
+	FLOAT       = "FLOAT"
 	PLUS        = "PLUS"
 	MINUS       = "MINUS"
 	MUL         = "MUL"
@@ -75,6 +76,6 @@ var RESERVED = map[string]types.Token{
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
-var MUL_DIV_SLICE = []string{MUL, DIV}
+var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
 
 var NUMBER_ASCII_RANGE = [2]int{48, 57}

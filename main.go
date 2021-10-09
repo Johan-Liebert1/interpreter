@@ -27,9 +27,9 @@ func getUserInput(reader *bufio.Reader) {
 
 		langInterpreter := interpreter.Interpreter{}
 		langInterpreter.Init(userInput)
-		langInterpreter.Interpret()
+		result := langInterpreter.Interpret()
 
-		fmt.Println(langInterpreter.GlobalScope)
+		fmt.Println(result)
 
 	}
 }

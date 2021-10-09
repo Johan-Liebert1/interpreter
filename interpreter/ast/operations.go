@@ -4,9 +4,14 @@ import (
 	"programminglang/types"
 )
 
-type Number struct {
+type IntegerNumber struct {
 	Token types.Token
 	Value int
+}
+
+type FloatNumber struct {
+	Token types.Token
+	Value float32
 }
 
 type BinaryOperationNode struct {
@@ -20,13 +25,23 @@ type UnaryOperationNode struct {
 	Operand   AbstractSyntaxTree
 }
 
-func (n Number) Op() types.Token {
+func (n IntegerNumber) Op() types.Token {
 	return n.Token
 }
-func (n Number) LeftOperand() AbstractSyntaxTree {
+func (n IntegerNumber) LeftOperand() AbstractSyntaxTree {
 	return n
 }
-func (n Number) RightOperand() AbstractSyntaxTree {
+func (n IntegerNumber) RightOperand() AbstractSyntaxTree {
+	return n
+}
+
+func (n FloatNumber) Op() types.Token {
+	return n.Token
+}
+func (n FloatNumber) LeftOperand() AbstractSyntaxTree {
+	return n
+}
+func (n FloatNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
 

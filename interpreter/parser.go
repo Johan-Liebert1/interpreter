@@ -41,8 +41,12 @@ func (p *Parser) Error(tokenType string) {
 	If not valid, prints a fatal error and exits
 */
 func (p *Parser) ValidateToken(tokenType string) {
+	// fmt.Println("Validating Token ", p.CurrentToken)
+	// fmt.Println("Validating against ", tokenType, "\n\n")
+
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
+		fmt.Println("\n\n", p.CurrentToken, "\n\n")
 	} else {
 		p.Error(tokenType)
 	}
@@ -63,11 +67,14 @@ func (p *Parser) Term() ast.AbstractSyntaxTree {
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.MUL_DIV_SLICE) {
 		currentToken := p.CurrentToken
 
-		fmt.Println("current token in term is saved")
+		// fmt.Println("current token in term is saved")
 
 		switch p.CurrentToken.Type {
-		case constants.DIV:
-			p.ValidateToken(constants.DIV)
+		case constants.INTEGER_DIV:
+			p.ValidateToken(constants.INTEGER_DIV)
+
+		case constants.FLOAT_DIV:
+			p.ValidateToken(constants.FLOAT_DIV)
 
 		case constants.MUL:
 			p.ValidateToken(constants.MUL)
@@ -110,9 +117,16 @@ func (p *Parser) Factor() ast.AbstractSyntaxTree {
 
 	case constants.INTEGER:
 		p.ValidateToken(constants.INTEGER)
-		returningValue = ast.Number{
+		returningValue = ast.IntegerNumber{
 			Token: token,
 			Value: token.IntegerValue,
+		}
+
+	case constants.FLOAT:
+		p.ValidateToken(constants.FLOAT)
+		returningValue = ast.FloatNumber{
+			Token: token,
+			Value: token.FloatValue,
 		}
 
 	case constants.LPAREN:
@@ -180,6 +194,7 @@ func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
 
 	// variables are defined as, let varialble_name(s) : variable_type;
 	if p.CurrentToken.Type == constants.LET {
+		// this is messed up. there is no type called constants.LET
 		p.ValidateToken(constants.LET)
 
 		for p.CurrentToken.Type == constants.IDENTIFIER {
@@ -266,9 +281,9 @@ func (p *Parser) StatementList() []ast.AbstractSyntaxTree {
 		results = append(results, p.Statement())
 	}
 
-	if p.CurrentToken.Type == constants.IDENTIFIER {
-		p.Error(constants.SEMI_COLON)
-	}
+	// if p.CurrentToken.Type == constants.IDENTIFIER {
+	// 	p.Error(constants.SEMI_COLON)
+	// }
 
 	return results
 }
@@ -281,6 +296,8 @@ func (p *Parser) Statement() ast.AbstractSyntaxTree {
 
 	if p.CurrentToken.Type == constants.IDENTIFIER {
 		node = p.AssignmentStatement()
+	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
+		node = p.Expression()
 	} else {
 		node = ast.BlankStatement{
 			Token: types.Token{
