@@ -1,8 +1,6 @@
 terminals - uppercase
 non_terminals - lowercase
 
-
-
 PROGRAM --> block
 block --> declarations statement_list
 declarations --> LET (variable_declaration SEMI)+ | blank

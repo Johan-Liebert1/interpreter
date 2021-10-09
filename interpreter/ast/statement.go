@@ -2,6 +2,11 @@ package ast
 
 import "programminglang/types"
 
+type Program struct {
+	Declarations      []AbstractSyntaxTree
+	CompoundStatement AbstractSyntaxTree
+}
+
 type CompoundStatement struct {
 	Token    types.Token
 	Children []AbstractSyntaxTree
@@ -20,6 +25,16 @@ type Variable struct {
 
 type BlankStatement struct {
 	Token types.Token
+}
+
+func (p Program) Op() types.Token {
+	return types.Token{}
+}
+func (p Program) LeftOperand() AbstractSyntaxTree {
+	return p
+}
+func (p Program) RightOperand() AbstractSyntaxTree {
+	return p
 }
 
 func (cs CompoundStatement) Op() types.Token {

@@ -163,10 +163,86 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 }
 
 func (p *Parser) Program() ast.AbstractSyntaxTree {
-	node := p.CompoundStatement()
-	// p.ValidateToken(constants.DOT)
+	declarationNodes := p.Declarations()
+	compoundStatementNodes := p.CompoundStatement()
+
+	node := ast.Program{
+		Declarations:      declarationNodes,
+		CompoundStatement: compoundStatementNodes,
+	}
 
 	return node
+}
+
+// declarations --> LET (variable_declaration SEMI)+ | blank
+func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
+	var declarations []ast.AbstractSyntaxTree
+
+	// variables are defined as, let varialble_name(s) : variable_type;
+	if p.CurrentToken.Type == constants.LET {
+		p.ValidateToken(constants.LET)
+
+		for p.CurrentToken.Type == constants.IDENTIFIER {
+			varDeclaration := p.VariableDeclaration()
+			declarations = append(declarations, varDeclaration...)
+			p.ValidateToken(constants.SEMI_COLON)
+		}
+
+	}
+
+	return declarations
+}
+
+// variable_declaration --> ID (COMMA ID)* COLON var_type
+func (p *Parser) VariableDeclaration() []ast.AbstractSyntaxTree {
+	// current node is a variable node
+	variableNodes := []ast.AbstractSyntaxTree{ast.Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value}}
+	p.ValidateToken(constants.IDENTIFIER)
+
+	// variables can be separated by comma so keep iterating while there's a comma
+	for p.CurrentToken.Type == constants.COMMA {
+		p.ValidateToken(constants.COMMA)
+
+		variableNodes = append(variableNodes, ast.Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value})
+
+		p.ValidateToken(constants.IDENTIFIER)
+	}
+
+	// var variableName : variableType
+	// variable name and type will be separated by a colon
+	p.ValidateToken(constants.COLON)
+
+	variableType := p.VarType()
+
+	// make a new slice to store all the variable declarations
+	var variableDeclarations []ast.AbstractSyntaxTree
+
+	for _, node := range variableNodes {
+		newVarDeclr := ast.VariableDeclaration{
+			VariableNode: node,
+			TypeNode:     variableType,
+		}
+
+		variableDeclarations = append(variableDeclarations, newVarDeclr)
+	}
+
+	return variableDeclarations
+}
+
+// var_type --> INTEGER_TYPE | FLOAT_TYPE
+func (p *Parser) VarType() ast.AbstractSyntaxTree {
+	token := p.CurrentToken
+
+	if token.Type == constants.INTEGER_TYPE {
+		p.ValidateToken(constants.INTEGER_TYPE)
+	} else {
+		p.ValidateToken(constants.FLOAT_TYPE)
+	}
+
+	return ast.VariableType{
+		Token: token,
+	}
+
 }
 
 func (p *Parser) CompoundStatement() ast.AbstractSyntaxTree {

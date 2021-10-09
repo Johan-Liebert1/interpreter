@@ -42,7 +42,15 @@ func (lex *LexicalAnalyzer) SkipWhitespace() {
 	}
 }
 
-func (lex *LexicalAnalyzer) ConstructInteger() int {
+func (lex *LexicalAnalyzer) SkipComment() {
+	for !lex.EndOfInput && string(lex.CurrentChar) != "\n" {
+		lex.Advance()
+	}
+
+	lex.Advance() // for the new line character
+}
+
+func (lex *LexicalAnalyzer) ConstructInteger() string {
 	var s string = ""
 
 	for !lex.EndOfInput && unicode.IsDigit(rune(lex.CurrentChar)) {
@@ -50,9 +58,33 @@ func (lex *LexicalAnalyzer) ConstructInteger() int {
 		lex.Advance()
 	}
 
-	integer, _ := strconv.Atoi(s)
+	return s
+}
 
-	return integer
+func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
+	integerPart := lex.ConstructInteger()
+
+	if string(lex.CurrentChar) == "." {
+		// is a floating point number
+		s := string(lex.CurrentChar)
+
+		fractionalPart := lex.ConstructInteger()
+
+		realNumber, _ := strconv.ParseFloat(integerPart+s+fractionalPart, 32)
+
+		return types.Token{
+			Type:       constants.FLOAT_TYPE,
+			FloatValue: float32(realNumber),
+		}
+
+	}
+
+	integer, _ := strconv.Atoi(integerPart)
+
+	return types.Token{
+		Type:         constants.INTEGER_TYPE,
+		IntegerValue: integer,
+	}
 }
 
 func (lex *LexicalAnalyzer) Peek() int {
@@ -95,14 +127,15 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			continue
 		}
 
-		// starts with a number, is a digit
-		if unicode.IsDigit(rune(lex.CurrentChar)) {
-			integer := lex.ConstructInteger()
+		if charToString == constants.COMMENT_SYMBOL {
+			lex.Advance()
+			lex.SkipComment()
+			continue
+		}
 
-			return types.Token{
-				Type:         constants.INTEGER,
-				IntegerValue: integer,
-			}
+		// starts with a digit, is a number
+		if unicode.IsDigit(rune(lex.CurrentChar)) {
+			return lex.ConstructNumber()
 		}
 
 		// starts with a letter, is an identifier
@@ -116,7 +149,6 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			fmt.Println("peekPos = ", peekPos)
 
 			if peekPos != -1 {
-
 				if string(lex.Text[lex.Position]) == constants.COLON_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
 
@@ -132,10 +164,12 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 					break
 				}
 
-			} else {
-				return types.Token{
-					Type: constants.EOF,
-				}
+			}
+
+			// just a colon
+			return types.Token{
+				Type:  constants.COLON,
+				Value: constants.COLON_SYMBOL,
 			}
 		}
 
@@ -184,14 +218,36 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			}
 		}
 
+		// could be an integer division or a float division
+		// need to peek
 		if charToString == constants.OPERANDS[constants.DIV] {
+			peekPos := lex.Peek()
+
+			if peekPos != -1 {
+				if string(lex.Text[peekPos]) == constants.OPERANDS[constants.DIV] {
+					// integer division
+					lex.Advance()
+					lex.Advance()
+
+					return types.Token{
+						Type:  constants.INTEGER_DIV,
+						Value: constants.INTEGER_DIV_SYMBOL,
+					}
+				}
+			} else {
+				return types.Token{
+					Type: constants.EOF,
+				}
+			}
+
+			// otherwise float division
 			lex.Advance()
 
-			fmt.Println("adding a division token")
+			// fmt.Println("adding a division token")
 
 			return types.Token{
-				Type:  constants.DIV,
-				Value: constants.OPERANDS[constants.DIV],
+				Type:  constants.FLOAT_DIV,
+				Value: constants.FLOAT_DIV_SYMBOL,
 			}
 		}
 
@@ -210,6 +266,15 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return types.Token{
 				Type:  constants.RPAREN,
 				Value: constants.RPAREN_SYMBOL,
+			}
+		}
+
+		if charToString == constants.COMMA_SYMBOL {
+			lex.Advance()
+
+			return types.Token{
+				Type:  constants.COMMA,
+				Value: constants.COMMA_SYMBOL,
 			}
 		}
 

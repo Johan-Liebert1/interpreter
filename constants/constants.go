@@ -3,34 +3,41 @@ package constants
 import "programminglang/types"
 
 const (
-	INTEGER    = "INTEGER"
-	PLUS       = "PLUS"
-	MINUS      = "MINUS"
-	MUL        = "MUL"
-	DIV        = "DIV"
-	EOF        = "EOF"
-	INVALID    = "INVALID"
-	LPAREN     = "LPAREN"
-	RPAREN     = "RAPREN"
-	IDENTIFIER = "IDENTIFIER"
-	ASSIGN     = "ASSIGN"
-	SEMI_COLON = "SEMI_COLON"
-	DOT        = "DOT"
-	BLANK      = "BLANK"
+	INTEGER     = "INTEGER"
+	PLUS        = "PLUS"
+	MINUS       = "MINUS"
+	MUL         = "MUL"
+	INTEGER_DIV = "INTEGER_DIV"
+	FLOAT_DIV   = "FLOAT_DIV"
+	DIV         = "DIV"
+	EOF         = "EOF"
+	INVALID     = "INVALID"
+	LPAREN      = "LPAREN"
+	RPAREN      = "RAPREN"
+	IDENTIFIER  = "IDENTIFIER"
+	ASSIGN      = "ASSIGN"
+	SEMI_COLON  = "SEMI_COLON"
+	COLON       = "COLON"
+	DOT         = "DOT"
+	BLANK       = "BLANK"
+	COMMA       = "COMMA"
 )
 
 const (
-	PLUS_SYMBOL       = "+"
-	MINUS_SYMBOL      = "-"
-	MUL_SYMBOL        = "*"
-	DIV_SYMBOL        = "/"
-	LPAREN_SYMBOL     = "("
-	RPAREN_SYMBOL     = ")"
-	EQUAL_SYMBOL      = "="
-	COLON_SYMBOL      = ":"
-	SEMI_COLON_SYMBOL = ";"
-	DOT_SYMBOL        = "."
-	ASSIGN_SYMBOL     = ":="
+	PLUS_SYMBOL        = "+"
+	MINUS_SYMBOL       = "-"
+	MUL_SYMBOL         = "*"
+	INTEGER_DIV_SYMBOL = "//"
+	FLOAT_DIV_SYMBOL   = "/"
+	LPAREN_SYMBOL      = "("
+	RPAREN_SYMBOL      = ")"
+	EQUAL_SYMBOL       = "="
+	COLON_SYMBOL       = ":"
+	SEMI_COLON_SYMBOL  = ";"
+	DOT_SYMBOL         = "."
+	ASSIGN_SYMBOL      = ":="
+	COMMENT_SYMBOL     = "#"
+	COMMA_SYMBOL       = ","
 )
 
 // keywords
@@ -47,21 +54,21 @@ var OPERANDS = map[string]string{
 	PLUS:  PLUS_SYMBOL,
 	MINUS: MINUS_SYMBOL,
 	MUL:   MUL_SYMBOL,
-	DIV:   DIV_SYMBOL,
+	DIV:   FLOAT_DIV_SYMBOL,
 }
 
 var RESERVED = map[string]types.Token{
-	LET: types.Token{
+	LET: {
 		Type:  LET,
 		Value: LET,
 	},
 
-	INTEGER_TYPE: types.Token{
+	INTEGER_TYPE: {
 		Type:  INTEGER_TYPE,
 		Value: INTEGER_TYPE,
 	},
 
-	FLOAT_TYPE: types.Token{
+	FLOAT_TYPE: {
 		Type:  FLOAT_TYPE,
 		Value: FLOAT_TYPE,
 	},
