@@ -2,7 +2,6 @@ package ast
 
 import (
 	"log"
-	"programminglang/constants"
 	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
@@ -78,11 +77,10 @@ func (v AssignmentStatement) RightOperand() AbstractSyntaxTree {
 }
 func (as AssignmentStatement) Visit(s *symbols.SymbolsTable) {
 	variableName := as.Left.Op().Value
-	val, exists := s.LookupSymbol(variableName)
+	_, exists := s.LookupSymbol(variableName)
 
 	if !exists {
-		constants.SpewPrinter.Dump(s)
-		log.Fatal("AssignmentStatement, ", variableName, " is not defined. Value = ", val)
+		log.Fatal("AssignmentStatement, ", variableName, " is not defined")
 	}
 
 	as.Right.Visit(s)

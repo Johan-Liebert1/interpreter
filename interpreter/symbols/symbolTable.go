@@ -4,9 +4,13 @@ import (
 	"programminglang/constants"
 )
 
+type SymbolType struct {
+}
+
 type Symbol struct {
-	Name string
-	Type string
+	Name     string // name of the identifier / symbol
+	Category string // whether the symbol is a built in type, or a variable, or a function name
+	Type     string // integer, float, string, etc
 }
 
 type SymbolsTable struct {

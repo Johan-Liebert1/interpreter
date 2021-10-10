@@ -1,6 +1,7 @@
 package ast
 
 import (
+	"log"
 	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
@@ -38,6 +39,14 @@ func (v VariableDeclaration) Visit(s *symbols.SymbolsTable) {
 	typeSymbol, _ := s.LookupSymbol(typeName)
 
 	variableName := v.VariableNode.Op().Value
+
+	alreadyDeclaredVarName, exists := s.LookupSymbol(variableName)
+
+	if exists {
+		// variable alreadyDeclaredVarName has already been declared
+
+		log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
+	}
 
 	s.DefineSymbol(symbols.Symbol{
 		Name: variableName,
