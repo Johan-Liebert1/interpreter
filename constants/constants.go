@@ -1,6 +1,10 @@
 package constants
 
-import "programminglang/types"
+import (
+	"programminglang/types"
+
+	"github.com/davecgh/go-spew/spew"
+)
 
 const (
 	INTEGER     = "INTEGER"
@@ -85,3 +89,5 @@ var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
 
 var NUMBER_ASCII_RANGE = [2]int{48, 57}
+
+var SpewPrinter = spew.ConfigState{Indent: "\t"}

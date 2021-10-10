@@ -32,7 +32,7 @@ func (v VariableDeclaration) LeftOperand() AbstractSyntaxTree {
 func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
 	return v.TypeNode
 }
-func (v VariableDeclaration) Visit(s symbols.SymbolsTable) {
+func (v VariableDeclaration) Visit(s *symbols.SymbolsTable) {
 	typeName := v.TypeNode.Op().Value
 
 	typeSymbol, _ := s.LookupSymbol(typeName)
@@ -55,4 +55,4 @@ func (v VariableType) LeftOperand() AbstractSyntaxTree {
 func (v VariableType) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v VariableType) Visit(s symbols.SymbolsTable) {}
+func (v VariableType) Visit(s *symbols.SymbolsTable) {}

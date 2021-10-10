@@ -35,7 +35,11 @@ func (n IntegerNumber) LeftOperand() AbstractSyntaxTree {
 func (n IntegerNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (in IntegerNumber) Visit(_ symbols.SymbolsTable) {}
+func (in IntegerNumber) Visit(_ *symbols.SymbolsTable) {}
+
+func (in IntegerNumber) EvaluateNode() float32 {
+	return float32(in.Token.IntegerValue)
+}
 
 func (n FloatNumber) Op() types.Token {
 	return n.Token
@@ -46,7 +50,11 @@ func (n FloatNumber) LeftOperand() AbstractSyntaxTree {
 func (n FloatNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (fn FloatNumber) Visit(_ symbols.SymbolsTable) {}
+func (fn FloatNumber) Visit(_ *symbols.SymbolsTable) {}
+
+func (fn FloatNumber) EvaluateNode() float32 {
+	return fn.Token.FloatValue
+}
 
 func (b BinaryOperationNode) Op() types.Token {
 	return b.Operation
@@ -57,7 +65,7 @@ func (b BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (b BinaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return b.Right
 }
-func (b BinaryOperationNode) Visit(s symbols.SymbolsTable) {
+func (b BinaryOperationNode) Visit(s *symbols.SymbolsTable) {
 	b.Left.Visit(s)
 	b.Right.Visit(s)
 }
@@ -71,6 +79,15 @@ func (u UnaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (u UnaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return u.Operand
 }
-func (u UnaryOperationNode) Visit(s symbols.SymbolsTable) {
+func (u UnaryOperationNode) Visit(s *symbols.SymbolsTable) {
 	u.Operand.Visit(s)
 }
+
+// func (u *UnaryOperationNode) EvaluateNode() float32 {
+// 	if u.Operation.Type == constants.PLUS {
+// 		return +u.EvaluateNode()
+
+// 	} else if u.Operation.Type == constants.MINUS {
+// 		return -u.EvaluateNode()
+// 	}
+// }

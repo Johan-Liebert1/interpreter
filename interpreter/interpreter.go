@@ -6,22 +6,26 @@ import (
 
 	"programminglang/constants"
 	"programminglang/interpreter/ast"
-
-	"github.com/davecgh/go-spew/spew"
+	"programminglang/interpreter/symbols"
 )
 
 type Interpreter struct {
-	TextParser  Parser
-	GlobalScope map[string]float32
-	spewPrinter spew.ConfigState
+	TextParser   Parser
+	GlobalScope  map[string]float32
+	SymbolsTable *symbols.SymbolsTable
 }
 
 func (i *Interpreter) Init(text string) {
 	i.TextParser = Parser{}
 
 	i.GlobalScope = map[string]float32{}
-	i.spewPrinter = spew.ConfigState{Indent: "\t"}
 	i.TextParser.Init(text)
+
+}
+
+func (i *Interpreter) InitConcrete() {
+	i.SymbolsTable = &symbols.SymbolsTable{}
+	i.SymbolsTable.Init()
 }
 
 func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
@@ -51,7 +55,6 @@ func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
 
 		} else if node.Op().Type == constants.MINUS {
 			result = -i.Visit(node.LeftOperand(), depth+1)
-
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(ast.Program{}) {
@@ -142,6 +145,10 @@ func (i *Interpreter) Interpret() float32 {
 	// fmt.Printf(" type = %t", tree)
 
 	// i.spewPrinter.Dump(tree)
+
+	tree.Visit(i.SymbolsTable)
+
+	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
 
 	return i.Visit(tree, 1)
 	// return 12.34

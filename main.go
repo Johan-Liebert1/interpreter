@@ -9,7 +9,7 @@ import (
 	"programminglang/types"
 )
 
-func getUserInput(reader *bufio.Reader) {
+func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter) {
 	for {
 		fmt.Printf(">>> ")
 
@@ -25,7 +25,6 @@ func getUserInput(reader *bufio.Reader) {
 			continue
 		}
 
-		langInterpreter := interpreter.Interpreter{}
 		langInterpreter.Init(userInput)
 		result := langInterpreter.Interpret()
 
@@ -36,6 +35,8 @@ func getUserInput(reader *bufio.Reader) {
 
 func main() {
 	reader := bufio.NewReader(os.Stdin)
+	langInterpreter := interpreter.Interpreter{}
+	langInterpreter.InitConcrete()
 
-	getUserInput(reader)
+	getUserInput(reader, langInterpreter)
 }
