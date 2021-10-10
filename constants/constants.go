@@ -48,6 +48,12 @@ const (
 	FLOAT_TYPE   = "float"
 )
 
+// symbol types
+const (
+	BUILT_IN_TYPE = "BUILT_IN_TYPE"
+	VARIABLE_TYPE = "VARIABLE_TYPE"
+)
+
 /*
 	Maps "PLUS" to "+", "MINUS" to "-", "MUL" to "*" and "DIV" to "/"
 */

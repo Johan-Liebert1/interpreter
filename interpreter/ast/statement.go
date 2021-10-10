@@ -1,6 +1,10 @@
 package ast
 
-import "programminglang/types"
+import (
+	"log"
+	"programminglang/interpreter/symbols"
+	"programminglang/types"
+)
 
 type Program struct {
 	Declarations      []AbstractSyntaxTree
@@ -36,6 +40,13 @@ func (p Program) LeftOperand() AbstractSyntaxTree {
 func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
+func (p Program) Visit(s symbols.SymbolsTable) {
+	for _, decl := range p.Declarations {
+		decl.Visit(s)
+	}
+
+	p.CompoundStatement.Visit(s)
+}
 
 func (cs CompoundStatement) Op() types.Token {
 	return cs.Token
@@ -49,6 +60,11 @@ func (cs CompoundStatement) RightOperand() AbstractSyntaxTree {
 func (cs CompoundStatement) GetChildren() []AbstractSyntaxTree {
 	return cs.Children
 }
+func (cs CompoundStatement) Visit(s symbols.SymbolsTable) {
+	for _, child := range cs.Children {
+		child.Visit(s)
+	}
+}
 
 func (v AssignmentStatement) Op() types.Token {
 	return v.Token
@@ -58,6 +74,16 @@ func (v AssignmentStatement) LeftOperand() AbstractSyntaxTree {
 }
 func (v AssignmentStatement) RightOperand() AbstractSyntaxTree {
 	return v.Right
+}
+func (as AssignmentStatement) Visit(s symbols.SymbolsTable) {
+	variableName := as.Left.Op().Value
+	_, exists := s.LookupSymbol(variableName)
+
+	if !exists {
+		log.Fatal(variableName, " is not defined")
+	}
+
+	as.Right.Visit(s)
 }
 
 func (v Variable) Op() types.Token {
@@ -69,6 +95,15 @@ func (v Variable) LeftOperand() AbstractSyntaxTree {
 func (v Variable) RightOperand() AbstractSyntaxTree {
 	return v
 }
+func (v Variable) Visit(s symbols.SymbolsTable) {
+	varName := v.Value
+	_, exists := s.LookupSymbol(varName)
+
+	if !exists {
+		log.Fatal(varName, " is not defined")
+	}
+
+}
 
 func (bs BlankStatement) Op() types.Token {
 	return bs.Token
@@ -79,3 +114,4 @@ func (bs BlankStatement) LeftOperand() AbstractSyntaxTree {
 func (bs BlankStatement) RightOperand() AbstractSyntaxTree {
 	return bs
 }
+func (bs BlankStatement) Visit(_ symbols.SymbolsTable) {}
