@@ -10,9 +10,9 @@ import (
 )
 
 type Interpreter struct {
-	TextParser   Parser
-	GlobalScope  map[string]float32
-	SymbolsTable *symbols.SymbolsTable
+	TextParser         Parser
+	GlobalScope        map[string]float32
+	ScopedSymbolsTable *symbols.ScopedSymbolsTable
 }
 
 func (i *Interpreter) Init(text string) {
@@ -24,8 +24,8 @@ func (i *Interpreter) Init(text string) {
 }
 
 func (i *Interpreter) InitConcrete() {
-	i.SymbolsTable = &symbols.SymbolsTable{}
-	i.SymbolsTable.Init()
+	i.ScopedSymbolsTable = &symbols.ScopedSymbolsTable{}
+	i.ScopedSymbolsTable.Init()
 }
 
 func (i *Interpreter) Visit(node ast.AbstractSyntaxTree, depth int) float32 {
@@ -146,7 +146,7 @@ func (i *Interpreter) Interpret() float32 {
 
 	// i.spewPrinter.Dump(tree)
 
-	tree.Visit(i.SymbolsTable)
+	tree.Visit(i.ScopedSymbolsTable)
 
 	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
 

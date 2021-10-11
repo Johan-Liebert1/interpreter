@@ -3,7 +3,9 @@ non_terminals - lowercase
 
 PROGRAM --> block
 block --> declarations statement_list
-function --> DEFINE ID LPAREN params RPAREN LCURLY block RCURLY
+function --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
+formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
+formal_parameters --> ID (COMMA ID)* COLON type_spec
 declarations --> LET (variable_declaration SEMI)+ | function* | blank
 variable_declaration --> ID (COMMA ID)* COLON var_type
 var_type --> INTEGER | FLOAT

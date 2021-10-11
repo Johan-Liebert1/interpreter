@@ -13,11 +13,11 @@ type Symbol struct {
 	Type     string // integer, float, string, etc
 }
 
-type SymbolsTable struct {
+type ScopedSymbolsTable struct {
 	SymbolTable map[string]Symbol
 }
 
-func (s *SymbolsTable) Init() {
+func (s *ScopedSymbolsTable) Init() {
 	s.SymbolTable = map[string]Symbol{}
 
 	// initialize some built in types
@@ -35,11 +35,11 @@ func (s *SymbolsTable) Init() {
 /*
 	Receive a symbol struct and add to hash map with key as the symbol's name and value as the symbol
 */
-func (s *SymbolsTable) DefineSymbol(symbol Symbol) {
+func (s *ScopedSymbolsTable) DefineSymbol(symbol Symbol) {
 	s.SymbolTable[symbol.Name] = symbol
 }
 
-func (s *SymbolsTable) LookupSymbol(symbolName string) (Symbol, bool) {
+func (s *ScopedSymbolsTable) LookupSymbol(symbolName string) (Symbol, bool) {
 	value, ok := s.SymbolTable[symbolName]
 
 	return value, ok

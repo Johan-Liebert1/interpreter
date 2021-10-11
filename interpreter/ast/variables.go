@@ -15,14 +15,10 @@ type VariableType struct {
 	Token types.Token
 }
 
-/*
-   def visit_VarDecl(self, node):
-       type_name = node.type_node.value
-       type_symbol = self.symtab.lookup(type_name)
-       var_name = node.var_node.value
-       var_symbol = VarSymbol(var_name, type_symbol)
-       self.symtab.define(var_symbol)
-*/
+type Variable struct {
+	Token types.Token
+	Value string
+}
 
 func (v VariableDeclaration) Op() types.Token {
 	return types.Token{}
@@ -33,7 +29,7 @@ func (v VariableDeclaration) LeftOperand() AbstractSyntaxTree {
 func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
 	return v.TypeNode
 }
-func (v VariableDeclaration) Visit(s *symbols.SymbolsTable) {
+func (v VariableDeclaration) Visit(s *symbols.ScopedSymbolsTable) {
 	typeName := v.TypeNode.Op().Value
 
 	typeSymbol, _ := s.LookupSymbol(typeName)
@@ -44,7 +40,6 @@ func (v VariableDeclaration) Visit(s *symbols.SymbolsTable) {
 
 	if exists {
 		// variable alreadyDeclaredVarName has already been declared
-
 		log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
 	}
 
@@ -64,4 +59,23 @@ func (v VariableType) LeftOperand() AbstractSyntaxTree {
 func (v VariableType) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v VariableType) Visit(s *symbols.SymbolsTable) {}
+func (v VariableType) Visit(s *symbols.ScopedSymbolsTable) {}
+
+func (v Variable) Op() types.Token {
+	return v.Token
+}
+func (v Variable) LeftOperand() AbstractSyntaxTree {
+	return v
+}
+func (v Variable) RightOperand() AbstractSyntaxTree {
+	return v
+}
+func (v Variable) Visit(s *symbols.ScopedSymbolsTable) {
+	varName := v.Value
+	_, exists := s.LookupSymbol(varName)
+
+	if !exists {
+		log.Fatal("Variable, ", varName, " is not defined")
+	}
+
+}

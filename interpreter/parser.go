@@ -204,6 +204,30 @@ func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
 
 	}
 
+	for p.CurrentToken.Type == constants.DEFINE {
+		p.ValidateToken(constants.DEFINE)
+		// proc_name = self.current_token.value
+		// self.eat(ID)
+		// self.eat(SEMI)
+		// block_node = self.block()
+		// proc_decl = ProcedureDecl(proc_name, block_node)
+		// declarations.append(proc_decl)
+		// self.eat(SEMI)
+
+		functionName := p.CurrentToken.Value
+
+		p.ValidateToken(constants.IDENTIFIER)
+
+		functionBlock := p.Program()
+
+		function := ast.FunctionDeclaration{
+			FunctionName:  functionName,
+			FunctionBlock: functionBlock,
+		}
+
+		declarations = append(declarations, function)
+	}
+
 	return declarations
 }
 
@@ -242,6 +266,12 @@ func (p *Parser) VariableDeclaration() []ast.AbstractSyntaxTree {
 
 	return variableDeclarations
 }
+
+// formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
+// func (p *Parser) FormalParametersList() ast.AbstractSyntaxTree {}
+
+// formal_parameters --> ID (COMMA ID)* COLON type_spec
+// func (p *Parser) FormalParameters() ast.AbstractSyntaxTree {}
 
 // var_type --> INTEGER_TYPE | FLOAT_TYPE
 func (p *Parser) VarType() ast.AbstractSyntaxTree {

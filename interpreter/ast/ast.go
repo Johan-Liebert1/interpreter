@@ -9,7 +9,7 @@ type AbstractSyntaxTree interface {
 	Op() types.Token
 	LeftOperand() AbstractSyntaxTree
 	RightOperand() AbstractSyntaxTree
-	Visit(s *symbols.SymbolsTable)
+	Visit(s *symbols.ScopedSymbolsTable)
 	// EvaluateNode() float32
 }
 
