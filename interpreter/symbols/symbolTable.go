@@ -8,9 +8,10 @@ type SymbolType struct {
 }
 
 type Symbol struct {
-	Name     string // name of the identifier / symbol
-	Category string // whether the symbol is a built in type, or a variable, or a function name
-	Type     string // integer, float, string, etc
+	Name         string   // name of the identifier / symbol
+	Category     string   // whether the symbol is a built in type, or a variable, or a function name
+	Type         string   // integer, float, string, etc
+	ParamSymbols []Symbol // all the parameter symbols for functions
 }
 
 type SymbolsTable struct {
@@ -18,12 +19,15 @@ type SymbolsTable struct {
 }
 
 type ScopedSymbolsTable struct {
-	CurrentScope      string
+	CurrentScopeName  string
 	CurrentScopeLevel int
-	EnclosingScope    string
+	EnclosingScope    *ScopedSymbolsTable
 	SymbolTable       map[string]Symbol
 }
 
+/*
+	Allocate memory for a SymbolTable and add some predefined symbols
+*/
 func (s *ScopedSymbolsTable) Init() {
 	s.SymbolTable = map[string]Symbol{}
 
@@ -48,6 +52,12 @@ func (s *ScopedSymbolsTable) DefineSymbol(symbol Symbol) {
 
 func (s *ScopedSymbolsTable) LookupSymbol(symbolName string) (Symbol, bool) {
 	value, ok := s.SymbolTable[symbolName]
+
+	if !ok && s.EnclosingScope != s {
+		// variable not found in current scope, check in the parent scope
+		// only check if the parent scope is not itself (case for global scope)
+		return s.EnclosingScope.LookupSymbol(symbolName)
+	}
 
 	return value, ok
 }

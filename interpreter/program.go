@@ -1,6 +1,8 @@
 package interpreter
 
 import (
+	"fmt"
+	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -19,9 +21,27 @@ func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
 func (p Program) Visit(i *Interpreter) {
+	fmt.Println("Entering global scope")
+
+	globalScope := &symbols.ScopedSymbolsTable{
+		CurrentScopeName:  "global",
+		CurrentScopeLevel: 1,
+	}
+
+	globalScope.Init()
+	globalScope.EnclosingScope = globalScope // no EnclosingScope so just points to itself
+
+	// release the scope before getting out of the current scope
+	defer i.ReleaseScope()
+
+	i.CurrentScope = globalScope
+
 	for _, decl := range p.Declarations {
 		decl.Visit(i)
 	}
 
 	p.CompoundStatement.Visit(i)
+
+	fmt.Println("Exiting global scope")
+
 }

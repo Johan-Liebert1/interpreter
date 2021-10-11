@@ -10,6 +10,10 @@ import (
 )
 
 func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter) {
+	// text := `
+	// progra
+	// `
+
 	for {
 		fmt.Printf(">>> ")
 

@@ -7,8 +7,8 @@ import (
 )
 
 type VariableDeclaration struct {
-	VariableNode AbstractSyntaxTree
-	TypeNode     AbstractSyntaxTree
+	VariableNode AbstractSyntaxTree // a Variable struct
+	TypeNode     AbstractSyntaxTree // a VariableType struct
 }
 
 type VariableType struct {

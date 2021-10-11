@@ -141,6 +141,11 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 	return result
 }
 
+// changes the interpreter's current enclosing scope to its parent's EnclosingScope
+func (i *Interpreter) ReleaseScope() {
+	i.CurrentScope = i.CurrentScope.EnclosingScope
+}
+
 func (i *Interpreter) Interpret() float32 {
 	tree := i.TextParser.Parse()
 
