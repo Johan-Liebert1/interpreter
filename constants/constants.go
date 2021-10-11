@@ -50,6 +50,7 @@ const (
 	LET          = "let"
 	INTEGER_TYPE = "int"
 	FLOAT_TYPE   = "float"
+	DEFINE       = "define"
 )
 
 // symbol types

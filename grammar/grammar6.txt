@@ -3,7 +3,8 @@ non_terminals - lowercase
 
 PROGRAM --> block
 block --> declarations statement_list
-declarations --> LET (variable_declaration SEMI)+ | blank
+function --> DEFINE ID LPAREN params RPAREN LCURLY block RCURLY
+declarations --> LET (variable_declaration SEMI)+ | function* | blank
 variable_declaration --> ID (COMMA ID)* COLON var_type
 var_type --> INTEGER | FLOAT
 statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
@@ -16,3 +17,5 @@ term --> factor ((MUL | DIV) factor)*
 factor --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | LPAREN expression RPAREN | variable
 LPAREN --> (
 RPAREN --> )
+LCURLY --> {
+RCURLY --> }
