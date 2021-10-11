@@ -1,4 +1,4 @@
-package ast
+package interpreter
 
 import (
 	"log"
@@ -29,21 +29,21 @@ func (v VariableDeclaration) LeftOperand() AbstractSyntaxTree {
 func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
 	return v.TypeNode
 }
-func (v VariableDeclaration) Visit(s *symbols.ScopedSymbolsTable) {
+func (v VariableDeclaration) Visit(i *Interpreter) {
 	typeName := v.TypeNode.Op().Value
 
-	typeSymbol, _ := s.LookupSymbol(typeName)
+	typeSymbol, _ := i.CurrentScope.LookupSymbol(typeName)
 
 	variableName := v.VariableNode.Op().Value
 
-	alreadyDeclaredVarName, exists := s.LookupSymbol(variableName)
+	alreadyDeclaredVarName, exists := i.CurrentScope.LookupSymbol(variableName)
 
 	if exists {
 		// variable alreadyDeclaredVarName has already been declared
 		log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
 	}
 
-	s.DefineSymbol(symbols.Symbol{
+	i.CurrentScope.DefineSymbol(symbols.Symbol{
 		Name: variableName,
 		Type: typeSymbol.Name,
 	})
@@ -59,7 +59,7 @@ func (v VariableType) LeftOperand() AbstractSyntaxTree {
 func (v VariableType) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v VariableType) Visit(s *symbols.ScopedSymbolsTable) {}
+func (v VariableType) Visit(s *Interpreter) {}
 
 func (v Variable) Op() types.Token {
 	return v.Token
@@ -70,9 +70,9 @@ func (v Variable) LeftOperand() AbstractSyntaxTree {
 func (v Variable) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v Variable) Visit(s *symbols.ScopedSymbolsTable) {
+func (v Variable) Visit(i *Interpreter) {
 	varName := v.Value
-	_, exists := s.LookupSymbol(varName)
+	_, exists := i.CurrentScope.LookupSymbol(varName)
 
 	if !exists {
 		log.Fatal("Variable, ", varName, " is not defined")

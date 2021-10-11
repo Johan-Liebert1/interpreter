@@ -1,7 +1,6 @@
-package ast
+package interpreter
 
 import (
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -19,10 +18,10 @@ func (p Program) LeftOperand() AbstractSyntaxTree {
 func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
-func (p Program) Visit(s *symbols.ScopedSymbolsTable) {
+func (p Program) Visit(i *Interpreter) {
 	for _, decl := range p.Declarations {
-		decl.Visit(s)
+		decl.Visit(i)
 	}
 
-	p.CompoundStatement.Visit(s)
+	p.CompoundStatement.Visit(i)
 }

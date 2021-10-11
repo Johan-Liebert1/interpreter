@@ -1,7 +1,6 @@
-package ast
+package interpreter
 
 import (
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -35,7 +34,7 @@ func (n IntegerNumber) LeftOperand() AbstractSyntaxTree {
 func (n IntegerNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (in IntegerNumber) Visit(_ *symbols.ScopedSymbolsTable) {}
+func (in IntegerNumber) Visit(_ *Interpreter) {}
 
 func (in IntegerNumber) EvaluateNode() float32 {
 	return float32(in.Token.IntegerValue)
@@ -50,7 +49,7 @@ func (n FloatNumber) LeftOperand() AbstractSyntaxTree {
 func (n FloatNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (fn FloatNumber) Visit(_ *symbols.ScopedSymbolsTable) {}
+func (fn FloatNumber) Visit(_ *Interpreter) {}
 
 func (fn FloatNumber) EvaluateNode() float32 {
 	return fn.Token.FloatValue
@@ -65,7 +64,7 @@ func (b BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (b BinaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return b.Right
 }
-func (b BinaryOperationNode) Visit(s *symbols.ScopedSymbolsTable) {
+func (b BinaryOperationNode) Visit(s *Interpreter) {
 	b.Left.Visit(s)
 	b.Right.Visit(s)
 }
@@ -79,7 +78,7 @@ func (u UnaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (u UnaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return u.Operand
 }
-func (u UnaryOperationNode) Visit(s *symbols.ScopedSymbolsTable) {
+func (u UnaryOperationNode) Visit(s *Interpreter) {
 	u.Operand.Visit(s)
 }
 

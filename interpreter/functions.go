@@ -1,7 +1,6 @@
-package ast
+package interpreter
 
 import (
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -28,4 +27,4 @@ func (fn FunctionDeclaration) RightOperand() AbstractSyntaxTree {
 	return fn.FunctionBlock
 }
 
-func (fn FunctionDeclaration) Visit(s *symbols.ScopedSymbolsTable) {}
+func (fn FunctionDeclaration) Visit(i *Interpreter) {}

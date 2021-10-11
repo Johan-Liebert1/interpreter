@@ -5,7 +5,6 @@ import (
 
 	"programminglang/constants"
 	"programminglang/helpers"
-	"programminglang/interpreter/ast"
 	"programminglang/types"
 )
 
@@ -60,7 +59,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	TERM --> FACTOR ((MUL | DIV) FACTOR)*
 */
-func (p *Parser) Term() ast.AbstractSyntaxTree {
+func (p *Parser) Term() AbstractSyntaxTree {
 	returningValue := p.Factor()
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.MUL_DIV_SLICE) {
@@ -79,7 +78,7 @@ func (p *Parser) Term() ast.AbstractSyntaxTree {
 			p.ValidateToken(constants.MUL)
 		}
 
-		returningValue = ast.BinaryOperationNode{
+		returningValue = BinaryOperationNode{
 			Left:      returningValue,
 			Operation: currentToken,
 			Right:     p.Factor(),
@@ -94,36 +93,36 @@ func (p *Parser) Term() ast.AbstractSyntaxTree {
 /*
 	FACTOR --> ((PLUS | MINUS) FACTOR) | INTEGER | LPAREN EXPRESSION RPAREN
 */
-func (p *Parser) Factor() ast.AbstractSyntaxTree {
+func (p *Parser) Factor() AbstractSyntaxTree {
 	token := p.CurrentToken
 
-	var returningValue ast.AbstractSyntaxTree
+	var returningValue AbstractSyntaxTree
 
 	switch token.Type {
 	case constants.PLUS:
 		p.ValidateToken(constants.PLUS)
-		returningValue = ast.UnaryOperationNode{
+		returningValue = UnaryOperationNode{
 			Operation: token,
 			Operand:   p.Factor(),
 		}
 
 	case constants.MINUS:
 		p.ValidateToken(constants.MINUS)
-		returningValue = ast.UnaryOperationNode{
+		returningValue = UnaryOperationNode{
 			Operation: token,
 			Operand:   p.Factor(),
 		}
 
 	case constants.INTEGER:
 		p.ValidateToken(constants.INTEGER)
-		returningValue = ast.IntegerNumber{
+		returningValue = IntegerNumber{
 			Token: token,
 			Value: token.IntegerValue,
 		}
 
 	case constants.FLOAT:
 		p.ValidateToken(constants.FLOAT)
-		returningValue = ast.FloatNumber{
+		returningValue = FloatNumber{
 			Token: token,
 			Value: token.FloatValue,
 		}
@@ -147,7 +146,7 @@ func (p *Parser) Factor() ast.AbstractSyntaxTree {
 
 	EXPRESSION --> TERM ((PLUS | MINUS) TERM)*
 */
-func (p *Parser) Expression() ast.AbstractSyntaxTree {
+func (p *Parser) Expression() AbstractSyntaxTree {
 	result := p.Term()
 
 	// fmt.Println("\nin Expression p.Term = ", result)
@@ -165,7 +164,7 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 			p.ValidateToken(constants.MINUS)
 		}
 
-		result = ast.BinaryOperationNode{
+		result = BinaryOperationNode{
 			Left:      result,
 			Operation: currentToken,
 			Right:     p.Term(),
@@ -175,11 +174,11 @@ func (p *Parser) Expression() ast.AbstractSyntaxTree {
 	return result
 }
 
-func (p *Parser) Program() ast.AbstractSyntaxTree {
+func (p *Parser) Program() AbstractSyntaxTree {
 	declarationNodes := p.Declarations()
 	compoundStatementNodes := p.CompoundStatement()
 
-	node := ast.Program{
+	node := Program{
 		Declarations:      declarationNodes,
 		CompoundStatement: compoundStatementNodes,
 	}
@@ -188,8 +187,8 @@ func (p *Parser) Program() ast.AbstractSyntaxTree {
 }
 
 // declarations --> LET (variable_declaration SEMI)+ | blank
-func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
-	var declarations []ast.AbstractSyntaxTree
+func (p *Parser) Declarations() []AbstractSyntaxTree {
+	var declarations []AbstractSyntaxTree
 
 	// variables are defined as, let varialble_name(s) : variable_type;
 	if p.CurrentToken.Type == constants.LET {
@@ -220,7 +219,7 @@ func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
 
 		functionBlock := p.Program()
 
-		function := ast.FunctionDeclaration{
+		function := FunctionDeclaration{
 			FunctionName:  functionName,
 			FunctionBlock: functionBlock,
 		}
@@ -232,16 +231,16 @@ func (p *Parser) Declarations() []ast.AbstractSyntaxTree {
 }
 
 // variable_declaration --> ID (COMMA ID)* COLON var_type
-func (p *Parser) VariableDeclaration() []ast.AbstractSyntaxTree {
+func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	// current node is a variable node
-	variableNodes := []ast.AbstractSyntaxTree{ast.Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value}}
+	variableNodes := []AbstractSyntaxTree{Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value}}
 	p.ValidateToken(constants.IDENTIFIER)
 
 	// variables can be separated by comma so keep iterating while there's a comma
 	for p.CurrentToken.Type == constants.COMMA {
 		p.ValidateToken(constants.COMMA)
 
-		variableNodes = append(variableNodes, ast.Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value})
+		variableNodes = append(variableNodes, Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value})
 
 		p.ValidateToken(constants.IDENTIFIER)
 	}
@@ -253,10 +252,10 @@ func (p *Parser) VariableDeclaration() []ast.AbstractSyntaxTree {
 	variableType := p.VarType()
 
 	// make a new slice to store all the variable declarations
-	var variableDeclarations []ast.AbstractSyntaxTree
+	var variableDeclarations []AbstractSyntaxTree
 
 	for _, node := range variableNodes {
-		newVarDeclr := ast.VariableDeclaration{
+		newVarDeclr := VariableDeclaration{
 			VariableNode: node,
 			TypeNode:     variableType,
 		}
@@ -268,13 +267,13 @@ func (p *Parser) VariableDeclaration() []ast.AbstractSyntaxTree {
 }
 
 // formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
-// func (p *Parser) FormalParametersList() ast.AbstractSyntaxTree {}
+// func (p *Parser) FormalParametersList() AbstractSyntaxTree {}
 
 // formal_parameters --> ID (COMMA ID)* COLON type_spec
-// func (p *Parser) FormalParameters() ast.AbstractSyntaxTree {}
+// func (p *Parser) FormalParameters() AbstractSyntaxTree {}
 
 // var_type --> INTEGER_TYPE | FLOAT_TYPE
-func (p *Parser) VarType() ast.AbstractSyntaxTree {
+func (p *Parser) VarType() AbstractSyntaxTree {
 	token := p.CurrentToken
 
 	if token.Type == constants.INTEGER_TYPE {
@@ -283,16 +282,16 @@ func (p *Parser) VarType() ast.AbstractSyntaxTree {
 		p.ValidateToken(constants.FLOAT_TYPE)
 	}
 
-	return ast.VariableType{
+	return VariableType{
 		Token: token,
 	}
 
 }
 
-func (p *Parser) CompoundStatement() ast.AbstractSyntaxTree {
+func (p *Parser) CompoundStatement() AbstractSyntaxTree {
 	nodes := p.StatementList()
 
-	root := ast.CompoundStatement{}
+	root := CompoundStatement{}
 
 	root.Children = append(root.Children, nodes...)
 
@@ -300,10 +299,10 @@ func (p *Parser) CompoundStatement() ast.AbstractSyntaxTree {
 }
 
 // statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
-func (p *Parser) StatementList() []ast.AbstractSyntaxTree {
+func (p *Parser) StatementList() []AbstractSyntaxTree {
 	node := p.Statement()
 
-	results := []ast.AbstractSyntaxTree{node}
+	results := []AbstractSyntaxTree{node}
 
 	for p.CurrentToken.Type == constants.SEMI_COLON {
 		p.ValidateToken(constants.SEMI_COLON)
@@ -320,15 +319,15 @@ func (p *Parser) StatementList() []ast.AbstractSyntaxTree {
 /*
 	statement --> assignment_statement | blank
 */
-func (p *Parser) Statement() ast.AbstractSyntaxTree {
-	var node ast.AbstractSyntaxTree
+func (p *Parser) Statement() AbstractSyntaxTree {
+	var node AbstractSyntaxTree
 
 	if p.CurrentToken.Type == constants.IDENTIFIER {
 		node = p.AssignmentStatement()
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
 		node = p.Expression()
 	} else {
-		node = ast.BlankStatement{
+		node = BlankStatement{
 			Token: types.Token{
 				Type:  constants.BLANK,
 				Value: "",
@@ -343,7 +342,7 @@ func (p *Parser) Statement() ast.AbstractSyntaxTree {
 /*
 	assignment_statement --> variable ASSIGN expression
 */
-func (p *Parser) AssignmentStatement() ast.AbstractSyntaxTree {
+func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 	left := p.Variable()
 
 	token := p.CurrentToken
@@ -351,7 +350,7 @@ func (p *Parser) AssignmentStatement() ast.AbstractSyntaxTree {
 
 	right := p.Expression()
 
-	return ast.AssignmentStatement{
+	return AssignmentStatement{
 		Left:  left,
 		Token: token,
 		Right: right,
@@ -361,8 +360,8 @@ func (p *Parser) AssignmentStatement() ast.AbstractSyntaxTree {
 /*
 	variable --> ID
 */
-func (p *Parser) Variable() ast.AbstractSyntaxTree {
-	variable := ast.Variable{
+func (p *Parser) Variable() AbstractSyntaxTree {
+	variable := Variable{
 		Token: p.CurrentToken,
 		Value: p.CurrentToken.Value,
 	}
@@ -372,7 +371,7 @@ func (p *Parser) Variable() ast.AbstractSyntaxTree {
 	return variable
 }
 
-func (p *Parser) Parse() ast.AbstractSyntaxTree {
+func (p *Parser) Parse() AbstractSyntaxTree {
 	return p.Program()
 	// return p.Expression()
 }

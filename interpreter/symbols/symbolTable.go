@@ -13,8 +13,15 @@ type Symbol struct {
 	Type     string // integer, float, string, etc
 }
 
-type ScopedSymbolsTable struct {
+type SymbolsTable struct {
 	SymbolTable map[string]Symbol
+}
+
+type ScopedSymbolsTable struct {
+	CurrentScope      string
+	CurrentScopeLevel int
+	EnclosingScope    string
+	SymbolTable       map[string]Symbol
 }
 
 func (s *ScopedSymbolsTable) Init() {

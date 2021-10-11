@@ -1,8 +1,7 @@
-package ast
+package interpreter
 
 import (
 	"log"
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -33,9 +32,9 @@ func (cs CompoundStatement) RightOperand() AbstractSyntaxTree {
 func (cs CompoundStatement) GetChildren() []AbstractSyntaxTree {
 	return cs.Children
 }
-func (cs CompoundStatement) Visit(s *symbols.ScopedSymbolsTable) {
+func (cs CompoundStatement) Visit(i *Interpreter) {
 	for _, child := range cs.Children {
-		child.Visit(s)
+		child.Visit(i)
 	}
 }
 
@@ -48,15 +47,15 @@ func (v AssignmentStatement) LeftOperand() AbstractSyntaxTree {
 func (v AssignmentStatement) RightOperand() AbstractSyntaxTree {
 	return v.Right
 }
-func (as AssignmentStatement) Visit(s *symbols.ScopedSymbolsTable) {
+func (as AssignmentStatement) Visit(i *Interpreter) {
 	variableName := as.Left.Op().Value
-	_, exists := s.LookupSymbol(variableName)
+	_, exists := i.CurrentScope.LookupSymbol(variableName)
 
 	if !exists {
 		log.Fatal("AssignmentStatement, ", variableName, " is not defined")
 	}
 
-	as.Right.Visit(s)
+	as.Right.Visit(i)
 }
 
 func (bs BlankStatement) Op() types.Token {
@@ -68,4 +67,4 @@ func (bs BlankStatement) LeftOperand() AbstractSyntaxTree {
 func (bs BlankStatement) RightOperand() AbstractSyntaxTree {
 	return bs
 }
-func (bs BlankStatement) Visit(_ *symbols.ScopedSymbolsTable) {}
+func (bs BlankStatement) Visit(_ *Interpreter) {}
