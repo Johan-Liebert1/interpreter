@@ -49,7 +49,7 @@ func (v AssignmentStatement) RightOperand() AbstractSyntaxTree {
 }
 func (as AssignmentStatement) Visit(i *Interpreter) {
 	variableName := as.Left.Op().Value
-	_, exists := i.CurrentScope.LookupSymbol(variableName)
+	_, exists := i.CurrentScope.LookupSymbol(variableName, false)
 
 	if !exists {
 		log.Fatal("AssignmentStatement, ", variableName, " is not defined")

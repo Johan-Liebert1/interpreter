@@ -50,14 +50,17 @@ func (s *ScopedSymbolsTable) DefineSymbol(symbol Symbol) {
 	s.SymbolTable[symbol.Name] = symbol
 }
 
-func (s *ScopedSymbolsTable) LookupSymbol(symbolName string) (Symbol, bool) {
+func (s *ScopedSymbolsTable) LookupSymbol(symbolName string, currentScopeOnly bool) (Symbol, bool) {
 	value, ok := s.SymbolTable[symbolName]
 
-	if !ok && s.EnclosingScope != s {
+	if !ok && s.EnclosingScope != s && !currentScopeOnly {
 		// variable not found in current scope, check in the parent scope
 		// only check if the parent scope is not itself (case for global scope)
-		return s.EnclosingScope.LookupSymbol(symbolName)
+		return s.EnclosingScope.LookupSymbol(symbolName, currentScopeOnly)
 	}
 
+	// if only checking in current scope then just return
+	// need this check to prevent duplicate declaration in the current scope, but duplicate
+	// delclarations in the outer scopes are perfectly fine
 	return value, ok
 }

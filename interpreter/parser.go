@@ -1,10 +1,11 @@
 package interpreter
 
 import (
-	"log"
+	"fmt"
 
 	"programminglang/constants"
 	"programminglang/helpers"
+	"programminglang/interpreter/errors"
 	"programminglang/types"
 )
 
@@ -23,12 +24,20 @@ func (p *Parser) Init(text string) {
 	p.CurrentToken = p.Lexer.GetNextToken()
 }
 
-func (p *Parser) Error(tokenType string) {
-	log.Fatal(
-		"Bad Token",
-		"\nCurrent Token: ", p.CurrentToken.Print(),
-		"\nToken Type to check with ", tokenType,
-	)
+func (p *Parser) Error(errorCode string, token types.Token) {
+	// log.Fatal(
+	// 	"Bad Token",
+	// 	"\nCurrent Token: ", p.CurrentToken.Print(),
+	// 	"\nToken Type to check with ", tokenType,
+	// )
+
+	parseError := errors.ParseError{
+		ErrorCode: errorCode,
+		Token:     token,
+		Message:   fmt.Sprintf("%s -> %s", errorCode, token.Print()),
+	}
+
+	parseError.Print()
 }
 
 /*
@@ -46,7 +55,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 		p.CurrentToken = p.Lexer.GetNextToken()
 		// fmt.Println("\n\n", p.CurrentToken, "\n\n")
 	} else {
-		p.Error(tokenType)
+		p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken)
 	}
 }
 
@@ -205,13 +214,6 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 
 	for p.CurrentToken.Type == constants.DEFINE {
 		p.ValidateToken(constants.DEFINE)
-		// proc_name = self.current_token.value
-		// self.eat(ID)
-		// self.eat(SEMI)
-		// block_node = self.block()
-		// proc_decl = ProcedureDecl(proc_name, block_node)
-		// declarations.append(proc_decl)
-		// self.eat(SEMI)
 
 		functionName := p.CurrentToken.Value
 

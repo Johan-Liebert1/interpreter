@@ -7,6 +7,8 @@ type Token struct {
 	Value        string
 	IntegerValue int
 	FloatValue   float32
+	LineNumber   int
+	Column       int
 }
 
 func (token Token) Print() string {

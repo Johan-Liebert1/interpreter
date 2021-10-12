@@ -32,13 +32,11 @@ func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
 func (v VariableDeclaration) Visit(i *Interpreter) {
 	typeName := v.TypeNode.Op().Value
 
-	typeSymbol, _ := i.CurrentScope.LookupSymbol(typeName)
+	typeSymbol, _ := i.CurrentScope.LookupSymbol(typeName, false)
 
 	variableName := v.VariableNode.Op().Value
 
-	alreadyDeclaredVarName, exists := i.CurrentScope.LookupSymbol(variableName)
-
-	if exists {
+	if alreadyDeclaredVarName, exists := i.CurrentScope.LookupSymbol(variableName, true); exists {
 		// variable alreadyDeclaredVarName has already been declared
 		log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
 	}
@@ -72,7 +70,7 @@ func (v Variable) RightOperand() AbstractSyntaxTree {
 }
 func (v Variable) Visit(i *Interpreter) {
 	varName := v.Value
-	_, exists := i.CurrentScope.LookupSymbol(varName)
+	_, exists := i.CurrentScope.LookupSymbol(varName, false)
 
 	if !exists {
 		log.Fatal("Variable, ", varName, " is not defined")

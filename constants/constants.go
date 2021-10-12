@@ -60,6 +60,13 @@ const (
 	FUNCTION_TYPE = "FUNCTION_TYPE"
 )
 
+// error codes
+const (
+	ERROR_UNEXPECTED_TOKEN = "Unexpected Token"
+	ERROR_ID_NOT_FOUND     = "Identifier not found"
+	ERROR_DUPLICATE_ID     = "Dupliate identifier found"
+)
+
 /*
 	Maps "PLUS" to "+", "MINUS" to "-", "MUL" to "*" and "DIV" to "/"
 */
@@ -84,6 +91,11 @@ var RESERVED = map[string]types.Token{
 	FLOAT_TYPE: {
 		Type:  FLOAT_TYPE,
 		Value: FLOAT_TYPE,
+	},
+
+	DEFINE: {
+		Type:  DEFINE,
+		Value: DEFINE,
 	},
 }
 
