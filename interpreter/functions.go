@@ -73,3 +73,17 @@ func (fn FunctionDeclaration) Visit(i *Interpreter) {
 	fmt.Println("Exit Scope, ", funcName)
 
 }
+
+func (fn FunctionParameters) Op() types.Token {
+	return types.Token{}
+}
+
+func (fn FunctionParameters) LeftOperand() AbstractSyntaxTree {
+	return fn.VariableNode
+}
+
+func (fn FunctionParameters) RightOperand() AbstractSyntaxTree {
+	return fn.TypeNode
+}
+
+func (fn FunctionParameters) Visit(i *Interpreter) {}

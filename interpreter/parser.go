@@ -269,10 +269,54 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 }
 
 // formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
-// func (p *Parser) FormalParametersList() AbstractSyntaxTree {}
+func (p *Parser) FormalParametersList() []AbstractSyntaxTree {
+	var paramNodes []AbstractSyntaxTree
+
+	if p.CurrentToken.Type != constants.IDENTIFIER {
+		return paramNodes
+	}
+
+	paramNodes = p.FormalParameters()
+
+	for p.CurrentToken.Type == constants.SEMI_COLON {
+		p.ValidateToken(constants.SEMI_COLON)
+		paramNodes = append(paramNodes, p.FormalParameters()...)
+	}
+
+	return paramNodes
+}
 
 // formal_parameters --> ID (COMMA ID)* COLON type_spec
-// func (p *Parser) FormalParameters() AbstractSyntaxTree {}
+func (p *Parser) FormalParameters() []AbstractSyntaxTree {
+	var paramNodes []AbstractSyntaxTree
+
+	paramTokens := []types.Token{p.CurrentToken}
+
+	p.ValidateToken(constants.IDENTIFIER)
+
+	for p.CurrentToken.Type == constants.COMMA {
+		p.ValidateToken(constants.COMMA)
+		paramTokens = append(paramTokens, p.CurrentToken)
+		p.ValidateToken(constants.IDENTIFIER)
+	}
+
+	p.ValidateToken(constants.COLON)
+
+	typeNode := p.VarType()
+
+	for _, parameterToken := range paramTokens {
+		paramNodes = append(paramNodes, FunctionParameters{
+			VariableNode: Variable{
+				Token: parameterToken,
+				Value: parameterToken.Value,
+			},
+			TypeNode: typeNode,
+		})
+	}
+
+	return paramNodes
+
+}
 
 // var_type --> INTEGER_TYPE | FLOAT_TYPE
 func (p *Parser) VarType() AbstractSyntaxTree {
