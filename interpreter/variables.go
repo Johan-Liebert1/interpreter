@@ -1,7 +1,7 @@
 package interpreter
 
 import (
-	"log"
+	"programminglang/constants"
 	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
@@ -36,9 +36,13 @@ func (v VariableDeclaration) Visit(i *Interpreter) {
 
 	variableName := v.VariableNode.Op().Value
 
-	if alreadyDeclaredVarName, exists := i.CurrentScope.LookupSymbol(variableName, true); exists {
+	if _, exists := i.CurrentScope.LookupSymbol(variableName, true); exists {
 		// variable alreadyDeclaredVarName has already been declared
-		log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
+		// log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
+		i.CurrentScope.Error(
+			constants.ERROR_DUPLICATE_ID,
+			v.VariableNode.Op(),
+		)
 	}
 
 	i.CurrentScope.DefineSymbol(symbols.Symbol{
@@ -73,7 +77,10 @@ func (v Variable) Visit(i *Interpreter) {
 	_, exists := i.CurrentScope.LookupSymbol(varName, false)
 
 	if !exists {
-		log.Fatal("Variable, ", varName, " is not defined")
+		i.CurrentScope.Error(
+			constants.ERROR_ID_NOT_FOUND,
+			v.Op(),
+		)
 	}
 
 }

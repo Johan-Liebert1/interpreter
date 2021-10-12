@@ -354,6 +354,30 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
+		if charToString == constants.LCURLY_SYMBOL {
+
+			token := types.Token{
+				Type:       constants.LCURLY,
+				Value:      constants.LCURLY_SYMBOL,
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+			lex.Advance()
+			return token
+		}
+
+		if charToString == constants.RCURLY_SYMBOL {
+
+			token := types.Token{
+				Type:       constants.RCURLY,
+				Value:      constants.RCURLY_SYMBOL,
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+			lex.Advance()
+			return token
+		}
+
 		if charToString == constants.COMMA_SYMBOL {
 
 			token := types.Token{

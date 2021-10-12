@@ -1,21 +1,17 @@
 package symbols
 
 import (
+	"fmt"
 	"programminglang/constants"
+	"programminglang/interpreter/errors"
+	"programminglang/types"
 )
-
-type SymbolType struct {
-}
 
 type Symbol struct {
 	Name         string   // name of the identifier / symbol
 	Category     string   // whether the symbol is a built in type, or a variable, or a function name
 	Type         string   // integer, float, string, etc
 	ParamSymbols []Symbol // all the parameter symbols for functions
-}
-
-type SymbolsTable struct {
-	SymbolTable map[string]Symbol
 }
 
 type ScopedSymbolsTable struct {
@@ -63,4 +59,14 @@ func (s *ScopedSymbolsTable) LookupSymbol(symbolName string, currentScopeOnly bo
 	// need this check to prevent duplicate declaration in the current scope, but duplicate
 	// delclarations in the outer scopes are perfectly fine
 	return value, ok
+}
+
+func (s *ScopedSymbolsTable) Error(errorCode string, token types.Token) {
+	semanticError := errors.SemanticError{
+		ErrorCode: errorCode,
+		Token:     token,
+		Message:   fmt.Sprintf("%s -> %s", errorCode, token.Print()),
+	}
+
+	semanticError.Print()
 }

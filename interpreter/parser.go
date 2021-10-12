@@ -195,7 +195,7 @@ func (p *Parser) Program() AbstractSyntaxTree {
 	return node
 }
 
-// declarations --> LET (variable_declaration SEMI)+ | blank
+// declarations --> LET (variable_declaration SEMI)+ (function)* | blank
 func (p *Parser) Declarations() []AbstractSyntaxTree {
 	var declarations []AbstractSyntaxTree
 
@@ -212,21 +212,10 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 
 	}
 
+	// for functions
 	for p.CurrentToken.Type == constants.DEFINE {
-		p.ValidateToken(constants.DEFINE)
-
-		functionName := p.CurrentToken.Value
-
-		p.ValidateToken(constants.IDENTIFIER)
-
-		functionBlock := p.Program()
-
-		function := FunctionDeclaration{
-			FunctionName:  functionName,
-			FunctionBlock: functionBlock,
-		}
-
-		declarations = append(declarations, function)
+		functionDeclaration := p.FunctionDeclaration()
+		declarations = append(declarations, functionDeclaration)
 	}
 
 	return declarations
@@ -268,9 +257,38 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	return variableDeclarations
 }
 
+// function --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
+func (p *Parser) FunctionDeclaration() AbstractSyntaxTree {
+	p.ValidateToken(constants.DEFINE)
+
+	functionName := p.CurrentToken.Value
+
+	p.ValidateToken(constants.IDENTIFIER)
+
+	var parametersList []FunctionParameters
+
+	if p.CurrentToken.Type == constants.LPAREN {
+		p.ValidateToken(constants.LPAREN)
+		parametersList = p.FormalParametersList()
+		p.ValidateToken(constants.RPAREN)
+	}
+
+	p.ValidateToken(constants.LCURLY)
+	functionBlock := p.Program()
+	p.ValidateToken(constants.RCURLY)
+
+	function := FunctionDeclaration{
+		FunctionName:     functionName,
+		FunctionBlock:    functionBlock,
+		FormalParameters: parametersList,
+	}
+
+	return function
+}
+
 // formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
-func (p *Parser) FormalParametersList() []AbstractSyntaxTree {
-	var paramNodes []AbstractSyntaxTree
+func (p *Parser) FormalParametersList() []FunctionParameters {
+	var paramNodes []FunctionParameters
 
 	if p.CurrentToken.Type != constants.IDENTIFIER {
 		return paramNodes
@@ -287,8 +305,8 @@ func (p *Parser) FormalParametersList() []AbstractSyntaxTree {
 }
 
 // formal_parameters --> ID (COMMA ID)* COLON type_spec
-func (p *Parser) FormalParameters() []AbstractSyntaxTree {
-	var paramNodes []AbstractSyntaxTree
+func (p *Parser) FormalParameters() []FunctionParameters {
+	var paramNodes []FunctionParameters
 
 	paramTokens := []types.Token{p.CurrentToken}
 
