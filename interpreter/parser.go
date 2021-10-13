@@ -257,6 +257,43 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	return variableDeclarations
 }
 
+// function_call --> ID LPAREN (expression (COMMA expression)*)? RPAREN
+func (p *Parser) FunctionCallStatement() AbstractSyntaxTree {
+
+	token := p.CurrentToken
+
+	funcName := p.CurrentToken.Value
+
+	p.ValidateToken(constants.IDENTIFIER)
+	p.ValidateToken(constants.LPAREN)
+
+	var actualParameters []AbstractSyntaxTree
+
+	if p.CurrentToken.Type != constants.RPAREN {
+		// has actual arguments and isn't just function()
+		node := p.Expression()
+		actualParameters = append(actualParameters, node)
+	}
+
+	// could be any number of parameters delimited by a comma
+	for p.CurrentToken.Type == constants.COMMA {
+		p.ValidateToken(constants.COMMA)
+		node := p.Expression()
+		actualParameters = append(actualParameters, node)
+	}
+
+	// all arguments are parsed, now check for a right parenthesis
+	p.ValidateToken(constants.RPAREN)
+
+	functionCallNode := FunctionCall{
+		FunctionName:     funcName,
+		ActualParameters: actualParameters,
+		Token:            token,
+	}
+
+	return functionCallNode
+}
+
 // function --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
 func (p *Parser) FunctionDeclaration() AbstractSyntaxTree {
 	p.ValidateToken(constants.DEFINE)
@@ -386,8 +423,19 @@ func (p *Parser) StatementList() []AbstractSyntaxTree {
 func (p *Parser) Statement() AbstractSyntaxTree {
 	var node AbstractSyntaxTree
 
+	// a variable foo := 3 and a function call foo() start with the same token, IDENTIFIER
+	// add some conditionals to distinguish between them
+
 	if p.CurrentToken.Type == constants.IDENTIFIER {
-		node = p.AssignmentStatement()
+
+		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
+			// a function call
+			node = p.FunctionCallStatement()
+		} else {
+			// variable definition
+			node = p.AssignmentStatement()
+		}
+
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
 		node = p.Expression()
 	} else {

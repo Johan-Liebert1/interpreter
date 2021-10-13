@@ -18,6 +18,14 @@ type FunctionDeclaration struct {
 	FormalParameters []FunctionParameters
 }
 
+type FunctionCall struct {
+	FunctionName     string
+	ActualParameters []AbstractSyntaxTree
+	Token            types.Token
+}
+
+// function declaration
+
 func (fn FunctionDeclaration) Op() types.Token {
 	return types.Token{}
 }
@@ -74,6 +82,8 @@ func (fn FunctionDeclaration) Visit(i *Interpreter) {
 
 }
 
+// function parameters
+
 func (fn FunctionParameters) Op() types.Token {
 	return types.Token{}
 }
@@ -87,3 +97,23 @@ func (fn FunctionParameters) RightOperand() AbstractSyntaxTree {
 }
 
 func (fn FunctionParameters) Visit(i *Interpreter) {}
+
+// function call
+
+func (fn FunctionCall) Op() types.Token {
+	return types.Token{}
+}
+
+func (fn FunctionCall) LeftOperand() AbstractSyntaxTree {
+	return fn.ActualParameters[0]
+}
+
+func (fn FunctionCall) RightOperand() AbstractSyntaxTree {
+	return fn.ActualParameters[0]
+}
+
+func (fn FunctionCall) Visit(i *Interpreter) {
+	for _, paramNode := range fn.ActualParameters {
+		paramNode.Visit(i)
+	}
+}
