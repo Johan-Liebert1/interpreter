@@ -71,6 +71,12 @@ const (
 	ERROR_DUPLICATE_ID     = "Dupliate identifier found"
 )
 
+// activation record keys
+const (
+	AR_PROGRAM  = "AR_PROGRAM"
+	AR_FUNCTION = "AR_FUNCTION"
+)
+
 /*
 	Maps "PLUS" to "+", "MINUS" to "-", "MUL" to "*" and "DIV" to "/"
 */
