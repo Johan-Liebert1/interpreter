@@ -29,7 +29,7 @@ func (v VariableDeclaration) LeftOperand() AbstractSyntaxTree {
 func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
 	return v.TypeNode
 }
-func (v VariableDeclaration) Visit(i *Interpreter) {
+func (v VariableDeclaration) Scope(i *Interpreter) {
 	typeName := v.TypeNode.Op().Value
 
 	typeSymbol, _ := i.CurrentScope.LookupSymbol(typeName, false)
@@ -61,7 +61,7 @@ func (v VariableType) LeftOperand() AbstractSyntaxTree {
 func (v VariableType) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v VariableType) Visit(s *Interpreter) {}
+func (v VariableType) Scope(s *Interpreter) {}
 
 func (v Variable) Op() types.Token {
 	return v.Token
@@ -72,7 +72,7 @@ func (v Variable) LeftOperand() AbstractSyntaxTree {
 func (v Variable) RightOperand() AbstractSyntaxTree {
 	return v
 }
-func (v Variable) Visit(i *Interpreter) {
+func (v Variable) Scope(i *Interpreter) {
 	varName := v.Value
 	_, exists := i.CurrentScope.LookupSymbol(varName, false)
 

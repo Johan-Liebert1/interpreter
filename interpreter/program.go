@@ -20,7 +20,7 @@ func (p Program) LeftOperand() AbstractSyntaxTree {
 func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
-func (p Program) Visit(i *Interpreter) {
+func (p Program) Scope(i *Interpreter) {
 	fmt.Println("Entering global scope")
 
 	globalScope := &symbols.ScopedSymbolsTable{
@@ -37,10 +37,10 @@ func (p Program) Visit(i *Interpreter) {
 	i.CurrentScope = globalScope
 
 	for _, decl := range p.Declarations {
-		decl.Visit(i)
+		decl.Scope(i)
 	}
 
-	p.CompoundStatement.Visit(i)
+	p.CompoundStatement.Scope(i)
 
 	fmt.Println("Exiting global scope")
 

@@ -39,7 +39,7 @@ func (fn FunctionDeclaration) RightOperand() AbstractSyntaxTree {
 	return fn.FunctionBlock
 }
 
-func (fn FunctionDeclaration) Visit(i *Interpreter) {
+func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	funcName := fn.FunctionName
 
 	funcSymbol := symbols.Symbol{
@@ -77,7 +77,7 @@ func (fn FunctionDeclaration) Visit(i *Interpreter) {
 		funcSymbol.ParamSymbols = append(funcSymbol.ParamSymbols, paramSymbol)
 	}
 
-	fn.FunctionBlock.Visit(i)
+	fn.FunctionBlock.Scope(i)
 
 	fmt.Println("Exit Scope, ", funcName)
 
@@ -97,7 +97,7 @@ func (fn FunctionParameters) RightOperand() AbstractSyntaxTree {
 	return fn.TypeNode
 }
 
-func (fn FunctionParameters) Visit(i *Interpreter) {}
+func (fn FunctionParameters) Scope(i *Interpreter) {}
 
 // function call
 
@@ -113,9 +113,9 @@ func (fn FunctionCall) RightOperand() AbstractSyntaxTree {
 	return fn.ActualParameters[0]
 }
 
-func (fn FunctionCall) Visit(i *Interpreter) {
+func (fn FunctionCall) Scope(i *Interpreter) {
 	for _, paramNode := range fn.ActualParameters {
-		paramNode.Visit(i)
+		paramNode.Scope(i)
 	}
 
 	// funcSymbol, _ := i.CurrentScope.LookupSymbol(fn.FunctionName, false)

@@ -212,9 +212,9 @@ func (i *Interpreter) Interpret() float32 {
 	// fmt.Print(tree)
 	// fmt.Printf(" type = %t", tree)
 
-	// i.spewPrinter.Dump(tree)
+	constants.SpewPrinter.Dump(tree)
 
-	tree.Visit(i)
+	tree.Scope(i)
 
 	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
 
