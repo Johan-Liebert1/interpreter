@@ -21,7 +21,8 @@ type FunctionDeclaration struct {
 type FunctionCall struct {
 	FunctionName     string
 	ActualParameters []AbstractSyntaxTree
-	Token            types.Token
+	Token            types.Token // IDENTIFIER token for the function name
+	FunctionSymbol   symbols.Symbol
 }
 
 // function declaration
@@ -116,4 +117,9 @@ func (fn FunctionCall) Visit(i *Interpreter) {
 	for _, paramNode := range fn.ActualParameters {
 		paramNode.Visit(i)
 	}
+
+	// funcSymbol, _ := i.CurrentScope.LookupSymbol(fn.FunctionName, false)
+
+	// accessed by the interpreter when executing procedure call
+	// fn.FunctionSymbol = funcSymbol
 }

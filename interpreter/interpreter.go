@@ -1,26 +1,28 @@
 package interpreter
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 
 	"programminglang/constants"
+	"programminglang/helpers"
+	"programminglang/interpreter/callstack"
 	"programminglang/interpreter/symbols"
 )
 
 type Interpreter struct {
 	TextParser         Parser
-	GlobalScope        map[string]float32
+	CallStack          callstack.CallStack
 	ScopedSymbolsTable *symbols.ScopedSymbolsTable
 	CurrentScope       *symbols.ScopedSymbolsTable
 }
 
 func (i *Interpreter) Init(text string) {
 	i.TextParser = Parser{}
-
-	// i.GlobalScope = map[string]float32{}
 	i.TextParser.Init(text)
 
+	i.CallStack = callstack.CallStack{}
 }
 
 func (i *Interpreter) InitConcrete() {
@@ -64,12 +66,60 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// fmt.Println("found program")
 		// i.spewPrinter.Dump(node)
 
+		fmt.Println("Enter program")
+
+		ar := callstack.ActivationRecord{
+			Name:         constants.AR_PROGRAM,
+			Type:         constants.AR_PROGRAM,
+			NestingLevel: 1,
+		}
+
+		i.CallStack.Push(ar)
+
 		if c, ok := node.(Program); ok {
 			for _, child := range c.Declarations {
 				i.Visit(child, depth+1)
 			}
 
 			result = i.Visit(c.CompoundStatement, depth+1)
+		}
+
+		fmt.Println("Leave program")
+
+		i.CallStack.Pop()
+
+	} else if reflect.TypeOf(node) == reflect.TypeOf(FunctionCall{}) {
+
+		if f, ok := node.(FunctionCall); ok {
+
+			functionName := f.FunctionName
+
+			topAr := i.CallStack.Peek()
+
+			ar := callstack.ActivationRecord{
+				Name:         functionName,
+				Type:         constants.AR_FUNCTION,
+				NestingLevel: topAr.NestingLevel + 1,
+			}
+
+			/*
+				1. Get a list of the function's formal parameters
+				2. Get a list of the function's actual parameters (arguments)
+				3. For each formal parameter, get the corresponding actual parameter and save the pair in the function's activation record by using the formal parameter’s name as a key and the actual parameter (argument), after having evaluated it, as the value
+			*/
+
+			funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
+
+			formalParams := funcSymbol.ParamSymbols
+			actualParams := f.ActualParameters
+
+			for index := range formalParams {
+				fp := formalParams[index]
+				ap := actualParams[index]
+
+				ar.SetItem(fp.Name, i.Visit(ap, depth+1))
+			}
+
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(CompoundStatement{}) {
@@ -98,17 +148,27 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// 	"node.RightOperand = ", node.RightOperand(),
 		// )
 
-		i.GlobalScope[variableName] = i.Visit(node.RightOperand(), depth+1)
+		variableValue := i.Visit(node.RightOperand(), depth+1)
+
+		activationRecord := i.CallStack.Peek()
+
+		activationRecord.SetItem(variableName, variableValue)
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(Variable{}) {
 
 		// if we encounter a variable, look for it in the GlobalScope and respond accordingly
 		variableName := node.Op().Value
 
-		if value, ok := i.GlobalScope[variableName]; ok {
-			result = value
+		activationRecord := i.CallStack.Peek()
+
+		varValue, exists := activationRecord.GetItem(variableName)
+
+		floatValue, isFloat := helpers.GetFloat(varValue)
+
+		if exists && isFloat {
+			result = floatValue
 		} else {
-			log.Fatal("Variable ", value, " not defined.")
+			log.Fatal("Variable ", varValue, " not defined.")
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(BinaryOperationNode{}) {
