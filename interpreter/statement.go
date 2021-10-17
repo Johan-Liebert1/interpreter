@@ -1,8 +1,9 @@
 package interpreter
 
 import (
+	"fmt"
 	"programminglang/constants"
-	"programminglang/helpers"
+	"programminglang/interpreter/errors"
 	"programminglang/types"
 )
 
@@ -53,8 +54,15 @@ func (as AssignmentStatement) Scope(i *Interpreter) {
 	_, exists := i.CurrentScope.LookupSymbol(variableName, false)
 
 	if !exists {
-		helpers.ColorPrint(constants.Red, 1, "AssignmentStatement, ", variableName, " is not defined")
-		helpers.ColorPrint(constants.Blue, 1, "current scope = ", i.CurrentScope)
+		errorMessage := fmt.Sprintf("AssignmentStatement, %s is not defined", variableName)
+
+		semanticError := errors.SemanticError{
+			ErrorCode: constants.ERROR_VARAIBLE_NOT_DEFINED,
+			Token:     as.Left.Op(),
+			Message:   errorMessage,
+		}
+
+		semanticError.Print()
 	}
 
 	as.Right.Scope(i)

@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"programminglang/constants"
-	"programminglang/helpers"
 	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
@@ -59,7 +58,11 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	funcScope.Init()
 	i.CurrentScope = &funcScope
 
-	helpers.ColorPrint(constants.Blue, 2, "current function scope ", funcScope, "\nglobal scope ", funcScope.EnclosingScope)
+	// helpers.ColorPrint(
+	// 	constants.Blue, 2,
+	// 	"current function scope ", funcScope,
+	// 	"\nglobal scope ", funcScope.EnclosingScope
+	// )
 
 	defer i.ReleaseScope()
 

@@ -66,9 +66,10 @@ const (
 
 // error codes
 const (
-	ERROR_UNEXPECTED_TOKEN = "Unexpected Token"
-	ERROR_ID_NOT_FOUND     = "Identifier not found"
-	ERROR_DUPLICATE_ID     = "Duplicate identifier found"
+	ERROR_UNEXPECTED_TOKEN     = "Unexpected Token"
+	ERROR_ID_NOT_FOUND         = "Identifier not found"
+	ERROR_DUPLICATE_ID         = "Duplicate identifier found"
+	ERROR_VARAIBLE_NOT_DEFINED = "Variable not defined"
 )
 
 // activation record keys

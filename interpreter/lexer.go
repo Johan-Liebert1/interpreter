@@ -26,10 +26,10 @@ func (lex *LexicalAnalyzer) Init() {
 	lex.Position = 0
 	lex.CurrentChar = lex.Text[0]
 	lex.EndOfInput = false
-	lex.LineNumber = 0
-	lex.Column = 0
+	lex.LineNumber = 1
+	lex.Column = 1
 
-	helpers.ColorPrint(constants.Green, 2, "lexer initialized")
+	// helpers.ColorPrint(constants.Green, 2, "lexer initialized")
 }
 
 func (lex *LexicalAnalyzer) Error() {

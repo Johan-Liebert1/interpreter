@@ -105,6 +105,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 				NestingLevel: topAr.NestingLevel + 1,
 			}
 			ar.Init()
+
 			/*
 				1. Get a list of the function's formal parameters
 				2. Get a list of the function's actual parameters (arguments)
@@ -206,11 +207,11 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 // changes the interpreter's current enclosing scope to its parent's EnclosingScope
 func (i *Interpreter) ReleaseScope() {
-	helpers.ColorPrint(
-		constants.Green, 1,
-		"\n Releasing Scope ", i.CurrentScope,
-		"\n New Scope ", i.CurrentScope.EnclosingScope,
-	)
+	// helpers.ColorPrint(
+	// 	constants.Green, 1,
+	// 	"\n Releasing Scope ", i.CurrentScope,
+	// 	"\n New Scope ", i.CurrentScope.EnclosingScope,
+	// )
 	i.CurrentScope = i.CurrentScope.EnclosingScope
 }
 

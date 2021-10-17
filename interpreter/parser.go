@@ -425,15 +425,15 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 	// a variable foo := 3 and a function call foo() start with the same token, IDENTIFIER
 	// add some conditionals to distinguish between them
 
-	helpers.ColorPrint(constants.Yellow, 1, "calling statement", p.CurrentToken)
+	// helpers.ColorPrint(constants.Yellow, 1, "calling statement", p.CurrentToken)
 
 	if p.CurrentToken.Type == constants.IDENTIFIER {
-		helpers.ColorPrint(constants.Yellow, 1, "gonna call assignment_statement")
+		// helpers.ColorPrint(constants.Yellow, 1, "gonna call assignment_statement")
 		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
 			// a function call
 			node = p.FunctionCallStatement()
 		} else {
-			helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
+			// helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
 
 			// variable definition
 			node = p.AssignmentStatement()
@@ -465,7 +465,7 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 
 	right := p.Expression()
 
-	helpers.ColorPrint(constants.Yellow, 1, "\n\n Variable AssignmentStatement \n\n", left, token, right)
+	// helpers.ColorPrint(constants.Yellow, 1, "\n\n Variable AssignmentStatement \n\n", left, token, right)
 
 	return AssignmentStatement{
 		Left:  left,
