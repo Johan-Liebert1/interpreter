@@ -74,10 +74,12 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		/* function block is also a "Program", but it's activation record will be created
 		when scoping out the functional declaration so no need to do it twice */
 		if !exists {
+			nl := 1
+
 			ar := callstack.ActivationRecord{
 				Name:         constants.AR_PROGRAM,
 				Type:         constants.AR_PROGRAM,
-				NestingLevel: 1,
+				NestingLevel: nl,
 			}
 			ar.Init()
 
@@ -122,8 +124,14 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			formalParams := funcSymbol.ParamSymbols
 			actualParams := f.ActualParameters
 
+			// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
 			// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
 			// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
+			helpers.ColorPrint(
+				constants.White, 1,
+				"current scope = ", i.CurrentScope.CurrentScopeName, "  ",
+				constants.SpewPrinter.Sdump(i.CurrentScope),
+			)
 
 			for index := range formalParams {
 				fp := formalParams[index]
@@ -247,7 +255,7 @@ func (i *Interpreter) Interpret() float32 {
 
 	tree.Scope(i)
 
-	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
+	// constants.SpewPrinter.Dump(i.CurrentScope)
 
 	return i.Visit(tree, 1)
 }

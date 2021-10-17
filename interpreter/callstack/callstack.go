@@ -9,6 +9,8 @@ func (cs *CallStack) Push(item ActivationRecord) {
 }
 
 func (cs *CallStack) Pop() ActivationRecord {
+	// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(cs))
+
 	var poppedItem ActivationRecord
 
 	if len(cs.Records) == 0 {

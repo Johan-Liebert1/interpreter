@@ -49,6 +49,16 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	// used by the interpreter when executing the function
 	funcSymbol.FunctionBlock = fn.FunctionBlock
 
+	funcScope := ScopedSymbolsTable{
+		CurrentScopeName:  funcName,
+		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
+		EnclosingScope:    i.CurrentScope,
+	}
+
+	funcScope.Init()
+	i.CurrentScope = &funcScope
+	defer i.ReleaseScope()
+
 	fmt.Println("Entering Scope, ", funcName)
 
 	// helpers.ColorPrint(
@@ -74,17 +84,8 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 		funcSymbol.ParamSymbols = append(funcSymbol.ParamSymbols, paramSymbol)
 	}
 
-	i.CurrentScope.DefineSymbol(funcSymbol)
-
-	funcScope := ScopedSymbolsTable{
-		CurrentScopeName:  funcName,
-		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
-		EnclosingScope:    i.CurrentScope,
-	}
-
-	funcScope.Init()
-	i.CurrentScope = &funcScope
-	defer i.ReleaseScope()
+	// we've already created a new scope, so need to add the funcSymbol to the enclosing scope
+	i.CurrentScope.EnclosingScope.DefineSymbol(funcSymbol)
 
 	fn.FunctionBlock.Scope(i)
 
