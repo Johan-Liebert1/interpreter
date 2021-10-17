@@ -7,10 +7,7 @@ type ActivationRecord struct {
 	Members      map[string]interface{}
 }
 
-func (ar *ActivationRecord) Init(name string, _type string, nestingLevel int) {
-	ar.Name = name
-	ar.Type = _type
-	ar.NestingLevel = nestingLevel
+func (ar *ActivationRecord) Init() {
 	ar.Members = map[string]interface{}{}
 }
 

@@ -204,11 +204,11 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 		// this is messed up. there is no type called constants.LET
 		p.ValidateToken(constants.LET)
 
-		for p.CurrentToken.Type == constants.IDENTIFIER {
-			varDeclaration := p.VariableDeclaration()
-			declarations = append(declarations, varDeclaration...)
-			p.ValidateToken(constants.SEMI_COLON)
-		}
+		// for p.CurrentToken.Type == constants.IDENTIFIER {
+		varDeclaration := p.VariableDeclaration()
+		declarations = append(declarations, varDeclaration...)
+		p.ValidateToken(constants.SEMI_COLON)
+		// }
 
 	}
 
@@ -426,12 +426,16 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 	// a variable foo := 3 and a function call foo() start with the same token, IDENTIFIER
 	// add some conditionals to distinguish between them
 
-	if p.CurrentToken.Type == constants.IDENTIFIER {
+	helpers.ColorPrint(constants.Yellow, 1, "calling statement", p.CurrentToken)
 
+	if p.CurrentToken.Type == constants.IDENTIFIER {
+		helpers.ColorPrint(constants.Yellow, 1, "gonna call assignment_statement")
 		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
 			// a function call
 			node = p.FunctionCallStatement()
 		} else {
+			helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
+
 			// variable definition
 			node = p.AssignmentStatement()
 		}
@@ -462,7 +466,7 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 
 	right := p.Expression()
 
-	fmt.Print("\n\n Variable AssignmentStatement \n\n", left, token, right)
+	helpers.ColorPrint(constants.Yellow, 1, "\n\n Variable AssignmentStatement \n\n", left, token, right)
 
 	return AssignmentStatement{
 		Left:  left,

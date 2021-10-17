@@ -23,6 +23,8 @@ func (i *Interpreter) Init(text string) {
 	i.TextParser.Init(text)
 
 	i.CallStack = callstack.CallStack{}
+
+	i.InitConcrete()
 }
 
 func (i *Interpreter) InitConcrete() {
@@ -73,6 +75,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			Type:         constants.AR_PROGRAM,
 			NestingLevel: 1,
 		}
+		ar.Init()
 
 		i.CallStack.Push(ar)
 
@@ -101,7 +104,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 				Type:         constants.AR_FUNCTION,
 				NestingLevel: topAr.NestingLevel + 1,
 			}
-
+			ar.Init()
 			/*
 				1. Get a list of the function's formal parameters
 				2. Get a list of the function's actual parameters (arguments)

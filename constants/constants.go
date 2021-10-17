@@ -127,12 +127,14 @@ const (
 	Reset   = "\u001b[0m"
 )
 
-// const (Black= "\u001b[30m"
-// Red= "\u001b[31m"
-// Green= "\u001b[32m"
-// Yellow= "\u001b[33m"
-// Blue= "\u001b[34m"
-// Magenta= "\u001b[35m"
-// Cyan= "\u001b[36m"
-// White= "\u001b[37m"
-// Reset= "\u001b[0m")
+const (
+	LightBlack   = "\u001b[30m"
+	LightRed     = "\u001b[31m"
+	LightGreen   = "\u001b[32m"
+	LightYellow  = "\u001b[33m"
+	LightBlue    = "\u001b[34m"
+	LightMagenta = "\u001b[35m"
+	LightCyan    = "\u001b[36m"
+	LightWhite   = "\u001b[37m"
+	LightReset   = "\u001b[0m"
+)

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"programminglang/constants"
+	"programminglang/helpers"
 	"programminglang/interpreter"
 	"programminglang/types"
 )
@@ -54,7 +56,7 @@ func interpretFile(langInterpreter interpreter.Interpreter, fileName string) {
 
 	result := langInterpreter.Interpret()
 
-	fmt.Print(result)
+	helpers.ColorPrint(constants.LightYellow, 1, result)
 }
 
 func main() {
