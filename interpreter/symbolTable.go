@@ -1,4 +1,4 @@
-package symbols
+package interpreter
 
 import (
 	"fmt"
@@ -8,10 +8,11 @@ import (
 )
 
 type Symbol struct {
-	Name         string   // name of the identifier / symbol
-	Category     string   // whether the symbol is a built in type, or a variable, or a function name
-	Type         string   // integer, float, string, etc
-	ParamSymbols []Symbol // all the parameter symbols for functions
+	Name          string             // name of the identifier / symbol
+	Category      string             // whether the symbol is a built in type, or a variable, or a function name
+	Type          string             // integer, float, string, etc
+	ParamSymbols  []Symbol           // all the parameter symbols for functions
+	FunctionBlock AbstractSyntaxTree // the function's block (executable) code
 }
 
 type ScopedSymbolsTable struct {

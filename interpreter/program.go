@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"fmt"
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -21,14 +20,14 @@ func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
 func (p Program) Scope(i *Interpreter) {
-	var globalScope *symbols.ScopedSymbolsTable
+	var globalScope *ScopedSymbolsTable
 
 	// a function's innner declaration also calls this Scope function so we don't want
 	// another global scope being added when calling a function
 	if i.CurrentScope.CurrentScopeLevel == 0 {
 		fmt.Println("Entering Global Scope")
 
-		globalScope = &symbols.ScopedSymbolsTable{
+		globalScope = &ScopedSymbolsTable{
 			CurrentScopeName:  "global",
 			CurrentScopeLevel: 1,
 		}

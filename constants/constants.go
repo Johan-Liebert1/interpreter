@@ -137,5 +137,4 @@ const (
 	LightMagenta = "\u001b[35m"
 	LightCyan    = "\u001b[36m"
 	LightWhite   = "\u001b[37m"
-	LightReset   = "\u001b[0m"
 )

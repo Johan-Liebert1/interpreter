@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"programminglang/constants"
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -22,7 +21,7 @@ type FunctionCall struct {
 	FunctionName     string
 	ActualParameters []AbstractSyntaxTree
 	Token            types.Token // IDENTIFIER token for the function name
-	FunctionSymbol   symbols.Symbol
+	FunctionSymbol   Symbol
 }
 
 // function declaration
@@ -42,21 +41,15 @@ func (fn FunctionDeclaration) RightOperand() AbstractSyntaxTree {
 func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	funcName := fn.FunctionName
 
-	funcSymbol := symbols.Symbol{
+	funcSymbol := Symbol{
 		Name: funcName,
 		Type: constants.FUNCTION_TYPE,
 	}
 
+	// used by the interpreter when executing the function
+	funcSymbol.FunctionBlock = fn.FunctionBlock
+
 	fmt.Println("Entering Scope, ", funcName)
-
-	funcScope := symbols.ScopedSymbolsTable{
-		CurrentScopeName:  funcName,
-		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
-		EnclosingScope:    i.CurrentScope,
-	}
-
-	funcScope.Init()
-	i.CurrentScope = &funcScope
 
 	// helpers.ColorPrint(
 	// 	constants.Blue, 2,
@@ -64,15 +57,13 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	// 	"\nglobal scope ", funcScope.EnclosingScope
 	// )
 
-	defer i.ReleaseScope()
-
 	for _, param := range fn.FormalParameters {
 		paramName := param.VariableNode.Op().Value
 
 		// this is going to be a built in type so it will definitely exist
 		paramType := param.TypeNode.Op().Value
 
-		paramSymbol := symbols.Symbol{
+		paramSymbol := Symbol{
 			Name: paramName,
 			Type: paramType,
 		}
@@ -82,6 +73,18 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 		// add all the parameters symbols
 		funcSymbol.ParamSymbols = append(funcSymbol.ParamSymbols, paramSymbol)
 	}
+
+	i.CurrentScope.DefineSymbol(funcSymbol)
+
+	funcScope := ScopedSymbolsTable{
+		CurrentScopeName:  funcName,
+		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
+		EnclosingScope:    i.CurrentScope,
+	}
+
+	funcScope.Init()
+	i.CurrentScope = &funcScope
+	defer i.ReleaseScope()
 
 	fn.FunctionBlock.Scope(i)
 

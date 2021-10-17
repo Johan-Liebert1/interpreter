@@ -2,7 +2,6 @@ package interpreter
 
 import (
 	"programminglang/constants"
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -47,7 +46,7 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 		)
 	}
 
-	symbol := symbols.Symbol{
+	symbol := Symbol{
 		Name: variableName,
 		Type: typeSymbol.Name,
 	}
