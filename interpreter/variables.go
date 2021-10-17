@@ -48,10 +48,19 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 		)
 	}
 
-	i.CurrentScope.DefineSymbol(symbols.Symbol{
+	symbol := symbols.Symbol{
 		Name: variableName,
 		Type: typeSymbol.Name,
-	})
+	}
+
+	helpers.ColorPrint(
+		constants.Green, 1,
+		"defining symbol", symbol,
+		"\nin scope ", i.CurrentScope,
+		"\ncurrent scope address", &i.CurrentScope,
+	)
+
+	i.CurrentScope.DefineSymbol(symbol)
 
 }
 

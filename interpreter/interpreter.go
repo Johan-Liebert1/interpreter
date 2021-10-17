@@ -206,6 +206,11 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 // changes the interpreter's current enclosing scope to its parent's EnclosingScope
 func (i *Interpreter) ReleaseScope() {
+	helpers.ColorPrint(
+		constants.Green, 1,
+		"\n Releasing Scope ", i.CurrentScope,
+		"\n New Scope ", i.CurrentScope.EnclosingScope,
+	)
 	i.CurrentScope = i.CurrentScope.EnclosingScope
 }
 
@@ -215,12 +220,15 @@ func (i *Interpreter) Interpret() float32 {
 	// fmt.Print(tree)
 	// fmt.Printf(" type = %t", tree)
 
-	constants.SpewPrinter.Dump(tree)
+	printTree := false
+
+	if printTree {
+		constants.SpewPrinter.Dump(tree)
+	}
 
 	tree.Scope(i)
 
 	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
 
 	return i.Visit(tree, 1)
-	// return 12.34
 }

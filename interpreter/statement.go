@@ -1,7 +1,8 @@
 package interpreter
 
 import (
-	"log"
+	"programminglang/constants"
+	"programminglang/helpers"
 	"programminglang/types"
 )
 
@@ -52,7 +53,8 @@ func (as AssignmentStatement) Scope(i *Interpreter) {
 	_, exists := i.CurrentScope.LookupSymbol(variableName, false)
 
 	if !exists {
-		log.Fatal("AssignmentStatement, ", variableName, " is not defined")
+		helpers.ColorPrint(constants.Red, 1, "AssignmentStatement, ", variableName, " is not defined")
+		helpers.ColorPrint(constants.Blue, 1, "current scope = ", i.CurrentScope)
 	}
 
 	as.Right.Scope(i)

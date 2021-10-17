@@ -201,7 +201,6 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 
 	// variables are defined as, let varialble_name(s) : variable_type;
 	if p.CurrentToken.Type == constants.LET {
-		// this is messed up. there is no type called constants.LET
 		p.ValidateToken(constants.LET)
 
 		// for p.CurrentToken.Type == constants.IDENTIFIER {

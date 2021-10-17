@@ -21,20 +21,24 @@ func (p Program) RightOperand() AbstractSyntaxTree {
 	return p
 }
 func (p Program) Scope(i *Interpreter) {
-	fmt.Println("Entering global scope")
+	var globalScope *symbols.ScopedSymbolsTable
 
-	globalScope := &symbols.ScopedSymbolsTable{
-		CurrentScopeName:  "global",
-		CurrentScopeLevel: 1,
+	// a function's innner declaration also calls this Scope function so we don't want
+	// another global scope being added when calling a function
+	if i.CurrentScope.CurrentScopeLevel == 0 {
+		globalScope = &symbols.ScopedSymbolsTable{
+			CurrentScopeName:  "global",
+			CurrentScopeLevel: 1,
+		}
+
+		globalScope.Init()
+		globalScope.EnclosingScope = globalScope // no EnclosingScope so just points to itself
+
+		// release the scope before getting out of the current scope
+		defer i.ReleaseScope()
+
+		i.CurrentScope = globalScope
 	}
-
-	globalScope.Init()
-	globalScope.EnclosingScope = globalScope // no EnclosingScope so just points to itself
-
-	// release the scope before getting out of the current scope
-	defer i.ReleaseScope()
-
-	i.CurrentScope = globalScope
 
 	for _, decl := range p.Declarations {
 		decl.Scope(i)
@@ -43,5 +47,4 @@ func (p Program) Scope(i *Interpreter) {
 	p.CompoundStatement.Scope(i)
 
 	fmt.Println("Exiting global scope")
-
 }
