@@ -1,7 +1,8 @@
 package errors
 
 import (
-	"fmt"
+	"programminglang/constants"
+	"programminglang/helpers"
 	"programminglang/types"
 )
 
@@ -31,13 +32,13 @@ type SemanticError struct {
 }
 
 func (lxe *LexerError) Print() {
-	fmt.Println(lxe.Message)
+	helpers.ColorPrint(constants.Red, 1, "LexerError: ", lxe.Message)
 }
 
 func (pe *ParseError) Print() {
-	fmt.Println(pe.Message)
+	helpers.ColorPrint(constants.Red, 1, "ParseError: ", pe.Message)
 }
 
 func (se *SemanticError) Print() {
-	fmt.Println(se.Message)
+	helpers.ColorPrint(constants.Red, 1, "SemanticError: ", se.Message)
 }

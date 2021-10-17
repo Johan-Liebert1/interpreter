@@ -462,6 +462,8 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 
 	right := p.Expression()
 
+	fmt.Print("\n\n Variable AssignmentStatement \n\n", left, token, right)
+
 	return AssignmentStatement{
 		Left:  left,
 		Token: token,

@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"programminglang/constants"
+	"programminglang/helpers"
 	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
@@ -36,9 +37,11 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 
 	variableName := v.VariableNode.Op().Value
 
+	helpers.ColorPrint(constants.Green, 1, v.VariableNode)
+	helpers.ColorPrint(constants.Green, 1, typeSymbol)
+
 	if _, exists := i.CurrentScope.LookupSymbol(variableName, true); exists {
 		// variable alreadyDeclaredVarName has already been declared
-		// log.Fatal("Error: Variable, ", alreadyDeclaredVarName, " has already been declared")
 		i.CurrentScope.Error(
 			constants.ERROR_DUPLICATE_ID,
 			v.VariableNode.Op(),

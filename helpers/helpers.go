@@ -1,8 +1,11 @@
 package helpers
 
 import (
+	"fmt"
 	"reflect"
 	"unicode"
+
+	"programminglang/constants"
 )
 
 func ValueInSlice(value string, list []string) bool {
@@ -29,4 +32,16 @@ func GetFloat(value interface{}) (float32, bool) {
 	}
 
 	return 0.0, false
+}
+
+func ColorPrint(color string, newLines int, toPrint ...interface{}) {
+	var nl string = ""
+
+	for i := 0; i < newLines; i++ {
+		nl += "\n"
+	}
+
+	fmt.Print(nl, color)
+	fmt.Print(toPrint...)
+	fmt.Print(nl, constants.Reset)
 }
