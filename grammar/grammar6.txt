@@ -6,11 +6,12 @@ block --> declarations statement_list
 function --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
 formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
 formal_parameters --> ID (COMMA ID)* COLON type_spec
+function_call --> ID LPAREN (expression (COMMA expression)*)? RPAREN
 declarations --> LET (variable_declaration SEMI)+ | function* | blank
 variable_declaration --> ID (COMMA ID)* COLON var_type
 var_type --> INTEGER | FLOAT
 statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
-statement --> assignment_statement | blank
+statement --> assignment_statement | function_call | blank
 assignment_statement --> variable ASSIGN expression
 variable --> ID
 blank --> 

@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"programminglang/constants"
-	"programminglang/interpreter/symbols"
 	"programminglang/types"
 )
 
@@ -18,6 +17,15 @@ type FunctionDeclaration struct {
 	FormalParameters []FunctionParameters
 }
 
+type FunctionCall struct {
+	FunctionName     string
+	ActualParameters []AbstractSyntaxTree
+	Token            types.Token // IDENTIFIER token for the function name
+	FunctionSymbol   Symbol
+}
+
+// function declaration
+
 func (fn FunctionDeclaration) Op() types.Token {
 	return types.Token{}
 }
@@ -30,26 +38,24 @@ func (fn FunctionDeclaration) RightOperand() AbstractSyntaxTree {
 	return fn.FunctionBlock
 }
 
-func (fn FunctionDeclaration) Visit(i *Interpreter) {
+func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	funcName := fn.FunctionName
 
-	funcSymbol := symbols.Symbol{
+	funcSymbol := Symbol{
 		Name: funcName,
 		Type: constants.FUNCTION_TYPE,
 	}
 
+	// used by the interpreter when executing the function
+	funcSymbol.FunctionBlock = fn.FunctionBlock
+
 	fmt.Println("Entering Scope, ", funcName)
 
-	funcScope := symbols.ScopedSymbolsTable{
-		CurrentScopeName:  funcName,
-		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
-		EnclosingScope:    i.CurrentScope,
-	}
-
-	funcScope.Init()
-	i.CurrentScope = &funcScope
-
-	defer i.ReleaseScope()
+	// helpers.ColorPrint(
+	// 	constants.Blue, 2,
+	// 	"current function scope ", funcScope,
+	// 	"\nglobal scope ", funcScope.EnclosingScope
+	// )
 
 	for _, param := range fn.FormalParameters {
 		paramName := param.VariableNode.Op().Value
@@ -57,7 +63,7 @@ func (fn FunctionDeclaration) Visit(i *Interpreter) {
 		// this is going to be a built in type so it will definitely exist
 		paramType := param.TypeNode.Op().Value
 
-		paramSymbol := symbols.Symbol{
+		paramSymbol := Symbol{
 			Name: paramName,
 			Type: paramType,
 		}
@@ -68,11 +74,25 @@ func (fn FunctionDeclaration) Visit(i *Interpreter) {
 		funcSymbol.ParamSymbols = append(funcSymbol.ParamSymbols, paramSymbol)
 	}
 
-	fn.FunctionBlock.Visit(i)
+	i.CurrentScope.DefineSymbol(funcSymbol)
+
+	funcScope := ScopedSymbolsTable{
+		CurrentScopeName:  funcName,
+		CurrentScopeLevel: i.CurrentScope.CurrentScopeLevel + 1,
+		EnclosingScope:    i.CurrentScope,
+	}
+
+	funcScope.Init()
+	i.CurrentScope = &funcScope
+	defer i.ReleaseScope()
+
+	fn.FunctionBlock.Scope(i)
 
 	fmt.Println("Exit Scope, ", funcName)
 
 }
+
+// function parameters
 
 func (fn FunctionParameters) Op() types.Token {
 	return types.Token{}
@@ -86,4 +106,29 @@ func (fn FunctionParameters) RightOperand() AbstractSyntaxTree {
 	return fn.TypeNode
 }
 
-func (fn FunctionParameters) Visit(i *Interpreter) {}
+func (fn FunctionParameters) Scope(i *Interpreter) {}
+
+// function call
+
+func (fn FunctionCall) Op() types.Token {
+	return types.Token{}
+}
+
+func (fn FunctionCall) LeftOperand() AbstractSyntaxTree {
+	return fn.ActualParameters[0]
+}
+
+func (fn FunctionCall) RightOperand() AbstractSyntaxTree {
+	return fn.ActualParameters[0]
+}
+
+func (fn FunctionCall) Scope(i *Interpreter) {
+	for _, paramNode := range fn.ActualParameters {
+		paramNode.Scope(i)
+	}
+
+	// funcSymbol, _ := i.CurrentScope.LookupSymbol(fn.FunctionName, false)
+
+	// accessed by the interpreter when executing procedure call
+	// fn.FunctionSymbol = funcSymbol
+}

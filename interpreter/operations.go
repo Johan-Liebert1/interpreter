@@ -34,7 +34,7 @@ func (n IntegerNumber) LeftOperand() AbstractSyntaxTree {
 func (n IntegerNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (in IntegerNumber) Visit(_ *Interpreter) {}
+func (in IntegerNumber) Scope(_ *Interpreter) {}
 
 func (in IntegerNumber) EvaluateNode() float32 {
 	return float32(in.Token.IntegerValue)
@@ -49,7 +49,7 @@ func (n FloatNumber) LeftOperand() AbstractSyntaxTree {
 func (n FloatNumber) RightOperand() AbstractSyntaxTree {
 	return n
 }
-func (fn FloatNumber) Visit(_ *Interpreter) {}
+func (fn FloatNumber) Scope(_ *Interpreter) {}
 
 func (fn FloatNumber) EvaluateNode() float32 {
 	return fn.Token.FloatValue
@@ -64,9 +64,9 @@ func (b BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (b BinaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return b.Right
 }
-func (b BinaryOperationNode) Visit(s *Interpreter) {
-	b.Left.Visit(s)
-	b.Right.Visit(s)
+func (b BinaryOperationNode) Scope(s *Interpreter) {
+	b.Left.Scope(s)
+	b.Right.Scope(s)
 }
 
 func (u UnaryOperationNode) Op() types.Token {
@@ -78,8 +78,8 @@ func (u UnaryOperationNode) LeftOperand() AbstractSyntaxTree {
 func (u UnaryOperationNode) RightOperand() AbstractSyntaxTree {
 	return u.Operand
 }
-func (u UnaryOperationNode) Visit(s *Interpreter) {
-	u.Operand.Visit(s)
+func (u UnaryOperationNode) Scope(s *Interpreter) {
+	u.Operand.Scope(s)
 }
 
 // func (u *UnaryOperationNode) EvaluateNode() float32 {

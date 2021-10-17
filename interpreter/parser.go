@@ -201,14 +201,13 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 
 	// variables are defined as, let varialble_name(s) : variable_type;
 	if p.CurrentToken.Type == constants.LET {
-		// this is messed up. there is no type called constants.LET
 		p.ValidateToken(constants.LET)
 
-		for p.CurrentToken.Type == constants.IDENTIFIER {
-			varDeclaration := p.VariableDeclaration()
-			declarations = append(declarations, varDeclaration...)
-			p.ValidateToken(constants.SEMI_COLON)
-		}
+		// for p.CurrentToken.Type == constants.IDENTIFIER {
+		varDeclaration := p.VariableDeclaration()
+		declarations = append(declarations, varDeclaration...)
+		p.ValidateToken(constants.SEMI_COLON)
+		// }
 
 	}
 
@@ -255,6 +254,43 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	}
 
 	return variableDeclarations
+}
+
+// function_call --> ID LPAREN (expression (COMMA expression)*)? RPAREN
+func (p *Parser) FunctionCallStatement() AbstractSyntaxTree {
+
+	token := p.CurrentToken
+
+	funcName := p.CurrentToken.Value
+
+	p.ValidateToken(constants.IDENTIFIER)
+	p.ValidateToken(constants.LPAREN)
+
+	var actualParameters []AbstractSyntaxTree
+
+	if p.CurrentToken.Type != constants.RPAREN {
+		// has actual arguments and isn't just function()
+		node := p.Expression()
+		actualParameters = append(actualParameters, node)
+	}
+
+	// could be any number of parameters delimited by a comma
+	for p.CurrentToken.Type == constants.COMMA {
+		p.ValidateToken(constants.COMMA)
+		node := p.Expression()
+		actualParameters = append(actualParameters, node)
+	}
+
+	// all arguments are parsed, now check for a right parenthesis
+	p.ValidateToken(constants.RPAREN)
+
+	functionCallNode := FunctionCall{
+		FunctionName:     funcName,
+		ActualParameters: actualParameters,
+		Token:            token,
+	}
+
+	return functionCallNode
 }
 
 // function --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
@@ -386,8 +422,23 @@ func (p *Parser) StatementList() []AbstractSyntaxTree {
 func (p *Parser) Statement() AbstractSyntaxTree {
 	var node AbstractSyntaxTree
 
+	// a variable foo := 3 and a function call foo() start with the same token, IDENTIFIER
+	// add some conditionals to distinguish between them
+
+	// helpers.ColorPrint(constants.Yellow, 1, "calling statement", p.CurrentToken)
+
 	if p.CurrentToken.Type == constants.IDENTIFIER {
-		node = p.AssignmentStatement()
+		// helpers.ColorPrint(constants.Yellow, 1, "gonna call assignment_statement")
+		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
+			// a function call
+			node = p.FunctionCallStatement()
+		} else {
+			// helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
+
+			// variable definition
+			node = p.AssignmentStatement()
+		}
+
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
 		node = p.Expression()
 	} else {
@@ -413,6 +464,8 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 	p.ValidateToken(constants.ASSIGN)
 
 	right := p.Expression()
+
+	// helpers.ColorPrint(constants.Yellow, 1, "\n\n Variable AssignmentStatement \n\n", left, token, right)
 
 	return AssignmentStatement{
 		Left:  left,

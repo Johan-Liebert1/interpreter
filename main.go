@@ -3,16 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 
+	"programminglang/constants"
+	"programminglang/helpers"
 	"programminglang/interpreter"
 	"programminglang/types"
 )
 
 func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter) {
-	// text := `
-	// progra
-	// `
 
 	for {
 		fmt.Printf(">>> ")
@@ -37,10 +37,38 @@ func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter)
 	}
 }
 
+func interpretFile(langInterpreter interpreter.Interpreter, fileName string) {
+	file, err := os.Open(fileName)
+
+	if err != nil {
+		fmt.Printf("File '%s' does not exist in the current directory\n", fileName)
+		os.Exit(1)
+	}
+
+	fileData, err := ioutil.ReadAll(file)
+
+	if err != nil {
+		fmt.Printf("Failed to read file '%s'\n", fileName)
+		os.Exit(1)
+	}
+
+	langInterpreter.Init(string(fileData))
+
+	result := langInterpreter.Interpret()
+
+	helpers.ColorPrint(constants.LightYellow, 1, result)
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	langInterpreter := interpreter.Interpreter{}
 	langInterpreter.InitConcrete()
 
-	getUserInput(reader, langInterpreter)
+	args := os.Args
+
+	if len(args) == 1 {
+		getUserInput(reader, langInterpreter)
+	} else {
+		interpretFile(langInterpreter, args[1])
+	}
 }

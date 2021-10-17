@@ -26,8 +26,10 @@ func (lex *LexicalAnalyzer) Init() {
 	lex.Position = 0
 	lex.CurrentChar = lex.Text[0]
 	lex.EndOfInput = false
-	lex.LineNumber = 0
-	lex.Column = 0
+	lex.LineNumber = 1
+	lex.Column = 1
+
+	// helpers.ColorPrint(constants.Green, 2, "lexer initialized")
 }
 
 func (lex *LexicalAnalyzer) Error() {
@@ -144,8 +146,10 @@ func (lex *LexicalAnalyzer) Identifier() types.Token {
 	}
 
 	return types.Token{
-		Type:  constants.IDENTIFIER,
-		Value: identifier,
+		Type:       constants.IDENTIFIER,
+		Value:      identifier,
+		LineNumber: lex.LineNumber,
+		Column:     lex.Column,
 	}
 }
 

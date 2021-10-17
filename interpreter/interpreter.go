@@ -1,33 +1,36 @@
 package interpreter
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 
 	"programminglang/constants"
-	"programminglang/interpreter/symbols"
+	"programminglang/helpers"
+	"programminglang/interpreter/callstack"
 )
 
 type Interpreter struct {
 	TextParser         Parser
-	GlobalScope        map[string]float32
-	ScopedSymbolsTable *symbols.ScopedSymbolsTable
-	CurrentScope       *symbols.ScopedSymbolsTable
+	CallStack          callstack.CallStack
+	ScopedSymbolsTable *ScopedSymbolsTable
+	CurrentScope       *ScopedSymbolsTable
 }
 
 func (i *Interpreter) Init(text string) {
 	i.TextParser = Parser{}
-
-	// i.GlobalScope = map[string]float32{}
 	i.TextParser.Init(text)
 
+	i.CallStack = callstack.CallStack{}
+
+	i.InitConcrete()
 }
 
 func (i *Interpreter) InitConcrete() {
-	i.ScopedSymbolsTable = &symbols.ScopedSymbolsTable{}
+	i.ScopedSymbolsTable = &ScopedSymbolsTable{}
 	i.ScopedSymbolsTable.Init()
 
-	i.CurrentScope = &symbols.ScopedSymbolsTable{}
+	i.CurrentScope = &ScopedSymbolsTable{}
 	i.CurrentScope.Init()
 }
 
@@ -64,12 +67,77 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// fmt.Println("found program")
 		// i.spewPrinter.Dump(node)
 
+		fmt.Println("Enter program")
+
+		_, exists := i.CallStack.Peek()
+
+		/* function block is also a "Program", but it's activation record will be created
+		when scoping out the functional declaration so no need to do it twice */
+		if !exists {
+			ar := callstack.ActivationRecord{
+				Name:         constants.AR_PROGRAM,
+				Type:         constants.AR_PROGRAM,
+				NestingLevel: 1,
+			}
+			ar.Init()
+
+			i.CallStack.Push(ar)
+		}
+
 		if c, ok := node.(Program); ok {
 			for _, child := range c.Declarations {
 				i.Visit(child, depth+1)
 			}
 
 			result = i.Visit(c.CompoundStatement, depth+1)
+		}
+
+		fmt.Println("Leave program")
+
+		i.CallStack.Pop()
+
+	} else if reflect.TypeOf(node) == reflect.TypeOf(FunctionCall{}) {
+
+		if f, ok := node.(FunctionCall); ok {
+
+			functionName := f.FunctionName
+
+			topAr, _ := i.CallStack.Peek()
+
+			ar := callstack.ActivationRecord{
+				Name:         functionName,
+				Type:         constants.AR_FUNCTION,
+				NestingLevel: topAr.NestingLevel + 1,
+			}
+			ar.Init()
+
+			/*
+				1. Get a list of the function's formal parameters
+				2. Get a list of the function's actual parameters (arguments)
+				3. For each formal parameter, get the corresponding actual parameter and save the pair in the function's activation record by using the formal parameter’s name as a key and the actual parameter (argument), after having evaluated it, as the value
+			*/
+
+			funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
+
+			formalParams := funcSymbol.ParamSymbols
+			actualParams := f.ActualParameters
+
+			// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
+			// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
+
+			for index := range formalParams {
+				fp := formalParams[index]
+				ap := actualParams[index]
+
+				ar.SetItem(fp.Name, i.Visit(ap, depth+1))
+			}
+
+			i.CallStack.Push(ar)
+
+			i.Visit(funcSymbol.FunctionBlock, depth+1)
+
+			// pop the ActivationRecord at the top of the call stack after function execution is done
+			i.CallStack.Pop()
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(CompoundStatement{}) {
@@ -98,17 +166,31 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// 	"node.RightOperand = ", node.RightOperand(),
 		// )
 
-		i.GlobalScope[variableName] = i.Visit(node.RightOperand(), depth+1)
+		variableValue := i.Visit(node.RightOperand(), depth+1)
+
+		activationRecord, _ := i.CallStack.Peek()
+
+		activationRecord.SetItem(variableName, variableValue)
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(Variable{}) {
 
 		// if we encounter a variable, look for it in the GlobalScope and respond accordingly
 		variableName := node.Op().Value
 
-		if value, ok := i.GlobalScope[variableName]; ok {
-			result = value
+		activationRecord, _ := i.CallStack.Peek()
+
+		varValue, exists := activationRecord.GetItem(variableName)
+
+		if varValue == nil {
+			helpers.ColorPrint(constants.Red, 1, varValue, " ", variableName, constants.SpewPrinter.Sdump(i.CallStack))
+		}
+
+		floatValue, isFloat := helpers.GetFloat(varValue)
+
+		if exists && isFloat {
+			result = floatValue
 		} else {
-			log.Fatal("Variable ", value, " not defined.")
+			log.Fatal("Variable ", varValue, " not defined.")
 		}
 
 	} else if reflect.TypeOf(node) == reflect.TypeOf(BinaryOperationNode{}) {
@@ -143,6 +225,11 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 // changes the interpreter's current enclosing scope to its parent's EnclosingScope
 func (i *Interpreter) ReleaseScope() {
+	// helpers.ColorPrint(
+	// 	constants.Green, 1,
+	// 	"\n Releasing Scope ", i.CurrentScope,
+	// 	"\n New Scope ", i.CurrentScope.EnclosingScope,
+	// )
 	i.CurrentScope = i.CurrentScope.EnclosingScope
 }
 
@@ -152,12 +239,15 @@ func (i *Interpreter) Interpret() float32 {
 	// fmt.Print(tree)
 	// fmt.Printf(" type = %t", tree)
 
-	// i.spewPrinter.Dump(tree)
+	printTree := false
 
-	tree.Visit(i)
+	if printTree {
+		helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(tree))
+	}
+
+	tree.Scope(i)
 
 	// constants.SpewPrinter.Dump(i.SymbolsTable, &i.SymbolsTable)
 
 	return i.Visit(tree, 1)
-	// return 12.34
 }

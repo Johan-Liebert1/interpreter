@@ -66,9 +66,16 @@ const (
 
 // error codes
 const (
-	ERROR_UNEXPECTED_TOKEN = "Unexpected Token"
-	ERROR_ID_NOT_FOUND     = "Identifier not found"
-	ERROR_DUPLICATE_ID     = "Dupliate identifier found"
+	ERROR_UNEXPECTED_TOKEN     = "Unexpected Token"
+	ERROR_ID_NOT_FOUND         = "Identifier not found"
+	ERROR_DUPLICATE_ID         = "Duplicate identifier found"
+	ERROR_VARAIBLE_NOT_DEFINED = "Variable not defined"
+)
+
+// activation record keys
+const (
+	AR_PROGRAM  = "AR_PROGRAM"
+	AR_FUNCTION = "AR_FUNCTION"
 )
 
 /*
@@ -106,6 +113,28 @@ var RESERVED = map[string]types.Token{
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
 
-var NUMBER_ASCII_RANGE = [2]int{48, 57}
-
 var SpewPrinter = spew.ConfigState{Indent: "\t"}
+
+// colors
+const (
+	Black   = "\u001b[30;1m"
+	Red     = "\u001b[31;1m"
+	Green   = "\u001b[32;1m"
+	Yellow  = "\u001b[33;1m"
+	Blue    = "\u001b[34;1m"
+	Magenta = "\u001b[35;1m"
+	Cyan    = "\u001b[36;1m"
+	White   = "\u001b[37;1m"
+	Reset   = "\u001b[0m"
+)
+
+const (
+	LightBlack   = "\u001b[30m"
+	LightRed     = "\u001b[31m"
+	LightGreen   = "\u001b[32m"
+	LightYellow  = "\u001b[33m"
+	LightBlue    = "\u001b[34m"
+	LightMagenta = "\u001b[35m"
+	LightCyan    = "\u001b[36m"
+	LightWhite   = "\u001b[37m"
+)

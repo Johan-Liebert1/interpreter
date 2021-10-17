@@ -1,7 +1,9 @@
 package interpreter
 
 import (
-	"log"
+	"fmt"
+	"programminglang/constants"
+	"programminglang/interpreter/errors"
 	"programminglang/types"
 )
 
@@ -32,9 +34,9 @@ func (cs CompoundStatement) RightOperand() AbstractSyntaxTree {
 func (cs CompoundStatement) GetChildren() []AbstractSyntaxTree {
 	return cs.Children
 }
-func (cs CompoundStatement) Visit(i *Interpreter) {
+func (cs CompoundStatement) Scope(i *Interpreter) {
 	for _, child := range cs.Children {
-		child.Visit(i)
+		child.Scope(i)
 	}
 }
 
@@ -47,15 +49,23 @@ func (v AssignmentStatement) LeftOperand() AbstractSyntaxTree {
 func (v AssignmentStatement) RightOperand() AbstractSyntaxTree {
 	return v.Right
 }
-func (as AssignmentStatement) Visit(i *Interpreter) {
+func (as AssignmentStatement) Scope(i *Interpreter) {
 	variableName := as.Left.Op().Value
 	_, exists := i.CurrentScope.LookupSymbol(variableName, false)
 
 	if !exists {
-		log.Fatal("AssignmentStatement, ", variableName, " is not defined")
+		errorMessage := fmt.Sprintf("AssignmentStatement, %s is not defined", variableName)
+
+		semanticError := errors.SemanticError{
+			ErrorCode: constants.ERROR_VARAIBLE_NOT_DEFINED,
+			Token:     as.Left.Op(),
+			Message:   errorMessage,
+		}
+
+		semanticError.Print()
 	}
 
-	as.Right.Visit(i)
+	as.Right.Scope(i)
 }
 
 func (bs BlankStatement) Op() types.Token {
@@ -67,4 +77,4 @@ func (bs BlankStatement) LeftOperand() AbstractSyntaxTree {
 func (bs BlankStatement) RightOperand() AbstractSyntaxTree {
 	return bs
 }
-func (bs BlankStatement) Visit(_ *Interpreter) {}
+func (bs BlankStatement) Scope(_ *Interpreter) {}
