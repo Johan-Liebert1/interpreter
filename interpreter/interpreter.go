@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"log"
-	"reflect"
 
 	"programminglang/constants"
 	"programminglang/helpers"
@@ -41,29 +40,29 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 	var result float32
 
-	if reflect.TypeOf(node) == reflect.TypeOf(IntegerNumber{}) {
+	if in, ok := node.(IntegerNumber); ok {
 		// node is a Number struct, which is the base case
 		// fmt.Println("found number", node.Op().IntegerValue)
 
 		// meed to return an integer here
-		result = float32(node.Op().IntegerValue)
+		result = float32(in.Token.IntegerValue)
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(FloatNumber{}) {
+	} else if f, ok := node.(FloatNumber); ok {
 		// node is a Number struct, which is the base case
 		// fmt.Println("found float")
-		result = node.Op().FloatValue
+		result = f.Token.FloatValue
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(UnaryOperationNode{}) {
+	} else if u, ok := node.(UnaryOperationNode); ok {
 		// fmt.Println("found UnaryOperationNode")
 
-		if node.Op().Type == constants.PLUS {
+		if u.Operation.Type == constants.PLUS {
 			result = +i.Visit(node.LeftOperand(), depth+1)
 
-		} else if node.Op().Type == constants.MINUS {
+		} else if u.Operation.Type == constants.MINUS {
 			result = -i.Visit(node.LeftOperand(), depth+1)
 		}
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(Program{}) {
+	} else if p, ok := node.(Program); ok {
 		// fmt.Println("found program")
 		// i.spewPrinter.Dump(node)
 
@@ -86,104 +85,98 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			i.CallStack.Push(ar)
 		}
 
-		if c, ok := node.(Program); ok {
-			for _, child := range c.Declarations {
-				i.Visit(child, depth+1)
-			}
-
-			result = i.Visit(c.CompoundStatement, depth+1)
+		for _, child := range p.Declarations {
+			i.Visit(child, depth+1)
 		}
+
+		result = i.Visit(p.CompoundStatement, depth+1)
 
 		fmt.Println("Leave program")
 
 		i.CallStack.Pop()
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(FunctionCall{}) {
+	} else if f, ok := node.(FunctionCall); ok {
 
-		if f, ok := node.(FunctionCall); ok {
+		functionName := f.FunctionName
 
-			functionName := f.FunctionName
+		topAr, _ := i.CallStack.Peek()
 
-			topAr, _ := i.CallStack.Peek()
+		ar := callstack.ActivationRecord{
+			Name:         functionName,
+			Type:         constants.AR_FUNCTION,
+			NestingLevel: topAr.NestingLevel + 1,
+		}
+		ar.Init()
 
-			ar := callstack.ActivationRecord{
-				Name:         functionName,
-				Type:         constants.AR_FUNCTION,
-				NestingLevel: topAr.NestingLevel + 1,
-			}
-			ar.Init()
+		/*
+			1. Get a list of the function's formal parameters
+			2. Get a list of the function's actual parameters (arguments)
+			3. For each formal parameter, get the corresponding actual parameter and save the pair in the function's activation record by using the formal parameter’s name as a key and the actual parameter (argument), after having evaluated it, as the value
+		*/
 
-			/*
-				1. Get a list of the function's formal parameters
-				2. Get a list of the function's actual parameters (arguments)
-				3. For each formal parameter, get the corresponding actual parameter and save the pair in the function's activation record by using the formal parameter’s name as a key and the actual parameter (argument), after having evaluated it, as the value
-			*/
+		funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
 
-			funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
+		formalParams := funcSymbol.ParamSymbols
+		actualParams := f.ActualParameters
 
-			formalParams := funcSymbol.ParamSymbols
-			actualParams := f.ActualParameters
+		// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
+		// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
+		// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
+		helpers.ColorPrint(
+			constants.White, 1,
+			"current scope = ", i.CurrentScope.CurrentScopeName, "  ",
+			constants.SpewPrinter.Sdump(i.CurrentScope),
+		)
 
-			// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
-			// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
-			// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
-			helpers.ColorPrint(
-				constants.White, 1,
-				"current scope = ", i.CurrentScope.CurrentScopeName, "  ",
-				constants.SpewPrinter.Sdump(i.CurrentScope),
-			)
+		for index := range formalParams {
+			fp := formalParams[index]
+			ap := actualParams[index]
 
-			for index := range formalParams {
-				fp := formalParams[index]
-				ap := actualParams[index]
-
-				ar.SetItem(fp.Name, i.Visit(ap, depth+1))
-			}
-
-			i.CallStack.Push(ar)
-
-			i.Visit(funcSymbol.FunctionBlock, depth+1)
-
-			// pop the ActivationRecord at the top of the call stack after function execution is done
-			i.CallStack.Pop()
+			ar.SetItem(fp.Name, i.Visit(ap, depth+1))
 		}
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(CompoundStatement{}) {
+		i.CallStack.Push(ar)
+
+		i.Visit(funcSymbol.FunctionBlock, depth+1)
+
+		// pop the ActivationRecord at the top of the call stack after function execution is done
+		i.CallStack.Pop()
+
+	} else if c, ok := node.(CompoundStatementNode); ok {
 
 		// fmt.Println("found CompoundStatement")
 		// i.spewPrinter.Dump(node)
 
-		if c, ok := node.(CompoundStatementNode); ok {
-			for _, child := range c.GetChildren() {
-				// fmt.Println("iterating over compoundStatement child")
+		for _, child := range c.GetChildren() {
+			// fmt.Println("iterating over compoundStatement child")
 
-				if child.Op().Type == constants.BLANK {
-					continue
-				}
-
-				result = i.Visit(child, depth+1)
+			// use Token() here
+			if child.Op().Type == constants.BLANK {
+				continue
 			}
+
+			result = i.Visit(child, depth+1)
 		}
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(AssignmentStatement{}) {
+	} else if as, ok := node.(AssignmentStatement); ok {
 
-		variableName := node.LeftOperand().Op().Value
+		variableName := as.Left.Op().Value
 
 		// fmt.Println(
 		// 	"Found an assignment_statement, variableName = ", variableName,
 		// 	"node.RightOperand = ", node.RightOperand(),
 		// )
 
-		variableValue := i.Visit(node.RightOperand(), depth+1)
+		variableValue := i.Visit(as.Right, depth+1)
 
 		activationRecord, _ := i.CallStack.Peek()
 
 		activationRecord.SetItem(variableName, variableValue)
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(Variable{}) {
+	} else if v, ok := node.(Variable); ok {
 
 		// if we encounter a variable, look for it in the GlobalScope and respond accordingly
-		variableName := node.Op().Value
+		variableName := v.Token.Value
 
 		activationRecord, _ := i.CallStack.Peek()
 
@@ -201,28 +194,28 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			log.Fatal("Variable ", varValue, " not defined.")
 		}
 
-	} else if reflect.TypeOf(node) == reflect.TypeOf(BinaryOperationNode{}) {
+	} else if b, ok := node.(BinaryOperationNode); ok {
 
 		// BinaryOperationNode
-		if node.Op().Type == constants.PLUS {
+		if b.Operation.Type == constants.PLUS {
 			// fmt.Print("adding \n")
-			result = i.Visit(node.LeftOperand(), depth+1) + i.Visit(node.RightOperand(), depth+1)
+			result = i.Visit(b.Left, depth+1) + i.Visit(b.Right, depth+1)
 			// fmt.Println("addition result = ", result)
 
-		} else if node.Op().Type == constants.MINUS {
+		} else if b.Operation.Type == constants.MINUS {
 
-			result = i.Visit(node.LeftOperand(), depth+1) - i.Visit(node.RightOperand(), depth+1)
+			result = i.Visit(b.Left, depth+1) - i.Visit(b.Right, depth+1)
 
-		} else if node.Op().Type == constants.MUL {
+		} else if b.Operation.Type == constants.MUL {
 
-			result = i.Visit(node.LeftOperand(), depth+1) * i.Visit(node.RightOperand(), depth+1)
+			result = i.Visit(b.Left, depth+1) * i.Visit(b.Right, depth+1)
 
-		} else if node.Op().Type == constants.FLOAT_DIV {
+		} else if b.Operation.Type == constants.FLOAT_DIV {
 
-			result = i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
+			result = i.Visit(b.Left, depth+1) / i.Visit(b.Right, depth+1)
 		} else {
 			// integer division
-			result = i.Visit(node.LeftOperand(), depth+1) / i.Visit(node.RightOperand(), depth+1)
+			result = i.Visit(b.Left, depth+1) / i.Visit(b.Right, depth+1)
 		}
 
 	}
