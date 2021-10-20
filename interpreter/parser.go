@@ -24,11 +24,11 @@ func (p *Parser) Init(text string) {
 	p.CurrentToken = p.Lexer.GetNextToken()
 }
 
-func (p *Parser) Error(errorCode string, token types.Token) {
+func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
 	errors.ShowError(
 		constants.PARSER_ERROR,
 		errorCode,
-		fmt.Sprintf("%s -> %s", errorCode, token.Print()),
+		fmt.Sprintf("%s -> %s \nExpected: %s", errorCode, token.Print(), tokenType),
 		token,
 	)
 }
@@ -48,7 +48,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 		p.CurrentToken = p.Lexer.GetNextToken()
 		// fmt.Println("\n\n", p.CurrentToken, "\n\n")
 	} else {
-		p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken)
+		p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken, tokenType)
 	}
 }
 

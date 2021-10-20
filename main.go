@@ -32,8 +32,7 @@ func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter)
 		langInterpreter.Init(userInput)
 		result := langInterpreter.Interpret()
 
-		fmt.Println(result)
-
+		helpers.ColorPrint(constants.LightYellow, 1, result)
 	}
 }
 

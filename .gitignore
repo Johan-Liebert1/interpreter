@@ -1,3 +1,5 @@
 testing/
 *.json
 *.jsonc
+code/
+todo.txt

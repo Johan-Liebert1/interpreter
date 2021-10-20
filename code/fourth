@@ -1,1 +1,6 @@
-output(3 + 6)
+let a, b : int;
+
+a := 10;
+b := 20;
+
+output(a + b);

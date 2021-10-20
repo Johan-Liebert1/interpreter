@@ -9,7 +9,3 @@ type AbstractSyntaxTree interface {
 	Scope(i *Interpreter)
 	// EvaluateNode() float32
 }
-
-type CompoundStatementNode interface {
-	GetChildren() []AbstractSyntaxTree
-}

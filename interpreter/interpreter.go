@@ -22,7 +22,7 @@ func (i *Interpreter) Init(text string) {
 
 	i.CallStack = callstack.CallStack{}
 
-	i.InitConcrete()
+	// i.InitConcrete()
 }
 
 func (i *Interpreter) InitConcrete() {
@@ -37,6 +37,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 	// fmt.Print("\n\n")
 	// i.spewPrinter.Dump("Depth = ", depth, "Node = ", node)
 	// fmt.Print("\n\n")
+	// helpers.ColorPrint(constants.LightGreen, 1, "node ", constants.SpewPrinter.Sdump(node))
 
 	var result float32
 
@@ -97,9 +98,20 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 	} else if f, ok := node.(FunctionCall); ok {
 
+		// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(f))
+
 		functionName := f.FunctionName
 
 		topAr, _ := i.CallStack.Peek()
+
+		actualParams := f.ActualParameters
+
+		// print to stdout if it's a print function
+		if functionName == constants.PRINT_OUTPUT {
+			for index := range actualParams {
+				return i.Visit(actualParams[index], depth+1)
+			}
+		}
 
 		ar := callstack.ActivationRecord{
 			Name:         functionName,
@@ -117,16 +129,10 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
 
 		formalParams := funcSymbol.ParamSymbols
-		actualParams := f.ActualParameters
 
 		// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
 		// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
 		// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
-		helpers.ColorPrint(
-			constants.White, 1,
-			"current scope = ", i.CurrentScope.CurrentScopeName, "  ",
-			constants.SpewPrinter.Sdump(i.CurrentScope),
-		)
 
 		for index := range formalParams {
 			fp := formalParams[index]
@@ -135,6 +141,12 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			ar.SetItem(fp.Name, i.Visit(ap, depth+1))
 		}
 
+		// helpers.ColorPrint(
+		// 	constants.LightMagenta, 1,
+		// 	"activationRecord = ",
+		// 	constants.SpewPrinter.Sdump(ar),
+		// )
+
 		i.CallStack.Push(ar)
 
 		i.Visit(funcSymbol.FunctionBlock, depth+1)
@@ -142,12 +154,12 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// pop the ActivationRecord at the top of the call stack after function execution is done
 		i.CallStack.Pop()
 
-	} else if c, ok := node.(CompoundStatementNode); ok {
+	} else if c, ok := node.(CompoundStatement); ok {
 
 		// fmt.Println("found CompoundStatement")
 		// i.spewPrinter.Dump(node)
 
-		for _, child := range c.GetChildren() {
+		for _, child := range c.Children {
 			// fmt.Println("iterating over compoundStatement child")
 
 			// use Token() here
@@ -190,7 +202,6 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		}
 
 	} else if b, ok := node.(BinaryOperationNode); ok {
-
 		// BinaryOperationNode
 		if b.Operation.Type == constants.PLUS {
 			// fmt.Print("adding \n")
