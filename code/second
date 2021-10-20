@@ -4,9 +4,13 @@ define add (a : int; b : int) {
     let x : int;
 
     x := a + b;
+
+    # output(a + b)
+
 }
 
 x := 1;
 y := 4;
+
 
 add(x, y)

@@ -30,18 +30,10 @@ func (n IntegerNumber) GetToken() types.Token {
 }
 func (in IntegerNumber) Scope(_ *Interpreter) {}
 
-func (in IntegerNumber) EvaluateNode() float32 {
-	return float32(in.Token.IntegerValue)
-}
-
 func (n FloatNumber) GetToken() types.Token {
 	return n.Token
 }
 func (fn FloatNumber) Scope(_ *Interpreter) {}
-
-func (fn FloatNumber) EvaluateNode() float32 {
-	return fn.Token.FloatValue
-}
 
 func (b BinaryOperationNode) GetToken() types.Token {
 	return b.Operation
@@ -57,12 +49,3 @@ func (u UnaryOperationNode) GetToken() types.Token {
 func (u UnaryOperationNode) Scope(s *Interpreter) {
 	u.Operand.Scope(s)
 }
-
-// func (u *UnaryOperationNode) EvaluateNode() float32 {
-// 	if u.Operation.Type == constants.PLUS {
-// 		return +u.EvaluateNode()
-
-// 	} else if u.Operation.Type == constants.MINUS {
-// 		return -u.EvaluateNode()
-// 	}
-// }

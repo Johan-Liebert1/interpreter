@@ -22,6 +22,7 @@ func (p *Parser) Init(text string) {
 	p.Lexer.Init()
 
 	p.CurrentToken = p.Lexer.GetNextToken()
+	// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
 }
 
 func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
@@ -46,7 +47,12 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
-		// fmt.Println("\n\n", p.CurrentToken, "\n\n")
+		// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+
+		if p.CurrentToken.Type == constants.INVALID {
+			p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken, "")
+		}
+
 	} else {
 		p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken, tokenType)
 	}
