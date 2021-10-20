@@ -25,19 +25,12 @@ func (p *Parser) Init(text string) {
 }
 
 func (p *Parser) Error(errorCode string, token types.Token) {
-	// log.Fatal(
-	// 	"Bad Token",
-	// 	"\nCurrent Token: ", p.CurrentToken.Print(),
-	// 	"\nToken Type to check with ", tokenType,
-	// )
-
-	parseError := errors.ParseError{
-		ErrorCode: errorCode,
-		Token:     token,
-		Message:   fmt.Sprintf("%s -> %s", errorCode, token.Print()),
-	}
-
-	parseError.Print()
+	errors.ShowError(
+		constants.PARSER_ERROR,
+		errorCode,
+		fmt.Sprintf("%s -> %s", errorCode, token.Print()),
+		token,
+	)
 }
 
 /*

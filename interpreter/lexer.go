@@ -40,11 +40,13 @@ func (lex *LexicalAnalyzer) Error() {
 		lex.Column,
 	)
 
-	lexerError := errors.LexerError{
-		Message: message,
-	}
+	errors.ShowError(
+		constants.LEXER_ERROR,
+		"",
+		message,
+		types.Token{},
+	)
 
-	lexerError.Print()
 }
 
 /*

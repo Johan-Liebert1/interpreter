@@ -71,11 +71,10 @@ func (s *ScopedSymbolsTable) LookupSymbol(symbolName string, currentScopeOnly bo
 }
 
 func (s *ScopedSymbolsTable) Error(errorCode string, token types.Token) {
-	semanticError := errors.SemanticError{
-		ErrorCode: errorCode,
-		Token:     token,
-		Message:   fmt.Sprintf("%s -> %s", errorCode, token.Print()),
-	}
-
-	semanticError.Print()
+	errors.ShowError(
+		constants.SEMANTIC_ERROR,
+		errorCode,
+		fmt.Sprintf("%s -> %s", errorCode, token.Print()),
+		token,
+	)
 }

@@ -7,8 +7,8 @@ import (
 	"programminglang/types"
 )
 
-type Error interface {
-	Print()
+type ErrorInterface interface {
+	PrintError()
 }
 
 // Errors found in LexicalAnalyzer
@@ -32,17 +32,43 @@ type SemanticError struct {
 	Message   string
 }
 
-func (lxe *LexerError) Print() {
+func (lxe *LexerError) PrintError() {
 	helpers.ColorPrint(constants.Red, 1, "LexerError: ", lxe.Message)
 	os.Exit(1)
 }
 
-func (pe *ParseError) Print() {
+func (pe *ParseError) PrintError() {
 	helpers.ColorPrint(constants.Red, 1, "ParseError: ", pe.Message)
 	os.Exit(1)
 }
 
-func (se *SemanticError) Print() {
+func (se *SemanticError) PrintError() {
 	helpers.ColorPrint(constants.Red, 1, "SemanticError: ", se.Message)
 	os.Exit(1)
+}
+
+func ShowError(errorType string, errorCode string, message string, token types.Token) {
+	var e ErrorInterface
+
+	if errorType == constants.LEXER_ERROR {
+		e = &LexerError{
+			ErrorCode: errorCode,
+			Token:     token,
+			Message:   message,
+		}
+	} else if errorType == constants.PARSER_ERROR {
+		e = &ParseError{
+			ErrorCode: errorCode,
+			Token:     token,
+			Message:   message,
+		}
+	} else if errorType == constants.SEMANTIC_ERROR {
+		e = &SemanticError{
+			ErrorCode: errorCode,
+			Token:     token,
+			Message:   message,
+		}
+	}
+
+	e.PrintError()
 }

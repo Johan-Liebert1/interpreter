@@ -77,6 +77,13 @@ const (
 	ERROR_VARAIBLE_NOT_DEFINED = "Variable not defined"
 )
 
+// error types
+const (
+	LEXER_ERROR    = "LEXER_ERROR"
+	PARSER_ERROR   = "PARSER_ERROR"
+	SEMANTIC_ERROR = "SEMANTIC_ERROR"
+)
+
 // activation record keys
 const (
 	AR_PROGRAM  = "AR_PROGRAM"

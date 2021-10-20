@@ -104,15 +104,12 @@ func (fn FunctionCall) Scope(i *Interpreter) {
 	_, exists := i.CurrentScope.LookupSymbol(fn.FunctionName, false)
 
 	if !exists {
-		errorMessage := fmt.Sprintf("Function Call, %s is not defined", fn.FunctionName)
-
-		semanticError := errors.SemanticError{
-			ErrorCode: constants.ERROR_VARAIBLE_NOT_DEFINED,
-			Token:     fn.Token,
-			Message:   errorMessage,
-		}
-
-		semanticError.Print()
+		errors.ShowError(
+			constants.SEMANTIC_ERROR,
+			constants.ERROR_VARAIBLE_NOT_DEFINED,
+			fmt.Sprintf("Function Call, %s is not defined", fn.FunctionName),
+			fn.Token,
+		)
 	}
 
 	for _, paramNode := range fn.ActualParameters {
