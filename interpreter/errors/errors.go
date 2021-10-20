@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"os"
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/types"
@@ -33,12 +34,15 @@ type SemanticError struct {
 
 func (lxe *LexerError) Print() {
 	helpers.ColorPrint(constants.Red, 1, "LexerError: ", lxe.Message)
+	os.Exit(1)
 }
 
 func (pe *ParseError) Print() {
 	helpers.ColorPrint(constants.Red, 1, "ParseError: ", pe.Message)
+	os.Exit(1)
 }
 
 func (se *SemanticError) Print() {
 	helpers.ColorPrint(constants.Red, 1, "SemanticError: ", se.Message)
+	os.Exit(1)
 }

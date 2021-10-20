@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"programminglang/constants"
+	"programminglang/interpreter/errors"
 	"programminglang/types"
 )
 
@@ -124,12 +125,21 @@ func (fn FunctionCall) RightOperand() AbstractSyntaxTree {
 }
 
 func (fn FunctionCall) Scope(i *Interpreter) {
+	_, exists := i.CurrentScope.LookupSymbol(fn.FunctionName, false)
+
+	if !exists {
+		errorMessage := fmt.Sprintf("Function Call, %s is not defined", fn.FunctionName)
+
+		semanticError := errors.SemanticError{
+			ErrorCode: constants.ERROR_VARAIBLE_NOT_DEFINED,
+			Token:     fn.Token,
+			Message:   errorMessage,
+		}
+
+		semanticError.Print()
+	}
+
 	for _, paramNode := range fn.ActualParameters {
 		paramNode.Scope(i)
 	}
-
-	// funcSymbol, _ := i.CurrentScope.LookupSymbol(fn.FunctionName, false)
-
-	// accessed by the interpreter when executing procedure call
-	// fn.FunctionSymbol = funcSymbol
 }

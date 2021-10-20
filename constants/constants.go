@@ -64,6 +64,11 @@ const (
 	FUNCTION_TYPE = "FUNCTION_TYPE"
 )
 
+// predefined functions
+const (
+	PRINT_OUTPUT = "output"
+)
+
 // error codes
 const (
 	ERROR_UNEXPECTED_TOKEN     = "Unexpected Token"

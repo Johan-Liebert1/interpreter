@@ -38,6 +38,14 @@ func (s *ScopedSymbolsTable) Init() {
 		Name: constants.FLOAT_TYPE,
 		Type: constants.BUILT_IN_TYPE,
 	})
+
+	s.DefineSymbol(
+		Symbol{
+			Name: constants.PRINT_OUTPUT,
+			Type: constants.FUNCTION_TYPE,
+		},
+	)
+
 }
 
 /*
