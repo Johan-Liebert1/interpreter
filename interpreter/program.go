@@ -10,14 +10,8 @@ type Program struct {
 	CompoundStatement AbstractSyntaxTree
 }
 
-func (p Program) Op() types.Token {
+func (p Program) GetToken() types.Token {
 	return types.Token{}
-}
-func (p Program) LeftOperand() AbstractSyntaxTree {
-	return p
-}
-func (p Program) RightOperand() AbstractSyntaxTree {
-	return p
 }
 func (p Program) Scope(i *Interpreter) {
 	var globalScope *ScopedSymbolsTable

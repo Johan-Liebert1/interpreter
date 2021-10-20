@@ -5,9 +5,7 @@ import (
 )
 
 type AbstractSyntaxTree interface {
-	Op() types.Token
-	LeftOperand() AbstractSyntaxTree
-	RightOperand() AbstractSyntaxTree
+	GetToken() types.Token
 	Scope(i *Interpreter)
 	// EvaluateNode() float32
 }

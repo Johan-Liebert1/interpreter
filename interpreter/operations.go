@@ -25,14 +25,8 @@ type UnaryOperationNode struct {
 	Operand   AbstractSyntaxTree
 }
 
-func (n IntegerNumber) Op() types.Token {
+func (n IntegerNumber) GetToken() types.Token {
 	return n.Token
-}
-func (n IntegerNumber) LeftOperand() AbstractSyntaxTree {
-	return n
-}
-func (n IntegerNumber) RightOperand() AbstractSyntaxTree {
-	return n
 }
 func (in IntegerNumber) Scope(_ *Interpreter) {}
 
@@ -40,14 +34,8 @@ func (in IntegerNumber) EvaluateNode() float32 {
 	return float32(in.Token.IntegerValue)
 }
 
-func (n FloatNumber) Op() types.Token {
+func (n FloatNumber) GetToken() types.Token {
 	return n.Token
-}
-func (n FloatNumber) LeftOperand() AbstractSyntaxTree {
-	return n
-}
-func (n FloatNumber) RightOperand() AbstractSyntaxTree {
-	return n
 }
 func (fn FloatNumber) Scope(_ *Interpreter) {}
 
@@ -55,28 +43,16 @@ func (fn FloatNumber) EvaluateNode() float32 {
 	return fn.Token.FloatValue
 }
 
-func (b BinaryOperationNode) Op() types.Token {
+func (b BinaryOperationNode) GetToken() types.Token {
 	return b.Operation
-}
-func (b BinaryOperationNode) LeftOperand() AbstractSyntaxTree {
-	return b.Left
-}
-func (b BinaryOperationNode) RightOperand() AbstractSyntaxTree {
-	return b.Right
 }
 func (b BinaryOperationNode) Scope(s *Interpreter) {
 	b.Left.Scope(s)
 	b.Right.Scope(s)
 }
 
-func (u UnaryOperationNode) Op() types.Token {
+func (u UnaryOperationNode) GetToken() types.Token {
 	return u.Operation
-}
-func (u UnaryOperationNode) LeftOperand() AbstractSyntaxTree {
-	return u.Operand
-}
-func (u UnaryOperationNode) RightOperand() AbstractSyntaxTree {
-	return u.Operand
 }
 func (u UnaryOperationNode) Scope(s *Interpreter) {
 	u.Operand.Scope(s)

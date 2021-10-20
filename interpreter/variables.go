@@ -19,21 +19,15 @@ type Variable struct {
 	Value string
 }
 
-func (v VariableDeclaration) Op() types.Token {
+func (v VariableDeclaration) GetToken() types.Token {
 	return types.Token{}
 }
-func (v VariableDeclaration) LeftOperand() AbstractSyntaxTree {
-	return v.VariableNode
-}
-func (v VariableDeclaration) RightOperand() AbstractSyntaxTree {
-	return v.TypeNode
-}
 func (v VariableDeclaration) Scope(i *Interpreter) {
-	typeName := v.TypeNode.Op().Value
+	typeName := v.TypeNode.GetToken().Value
 
 	typeSymbol, _ := i.CurrentScope.LookupSymbol(typeName, false)
 
-	variableName := v.VariableNode.Op().Value
+	variableName := v.VariableNode.GetToken().Value
 
 	// helpers.ColorPrint(constants.Green, 1, v.VariableNode)
 	// helpers.ColorPrint(constants.Green, 1, typeSymbol)
@@ -42,7 +36,7 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 		// variable alreadyDeclaredVarName has already been declared
 		i.CurrentScope.Error(
 			constants.ERROR_DUPLICATE_ID,
-			v.VariableNode.Op(),
+			v.VariableNode.GetToken(),
 		)
 	}
 
@@ -62,25 +56,13 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 
 }
 
-func (v VariableType) Op() types.Token {
+func (v VariableType) GetToken() types.Token {
 	return v.Token
-}
-func (v VariableType) LeftOperand() AbstractSyntaxTree {
-	return v
-}
-func (v VariableType) RightOperand() AbstractSyntaxTree {
-	return v
 }
 func (v VariableType) Scope(s *Interpreter) {}
 
-func (v Variable) Op() types.Token {
+func (v Variable) GetToken() types.Token {
 	return v.Token
-}
-func (v Variable) LeftOperand() AbstractSyntaxTree {
-	return v
-}
-func (v Variable) RightOperand() AbstractSyntaxTree {
-	return v
 }
 func (v Variable) Scope(i *Interpreter) {
 	varName := v.Value
@@ -89,7 +71,7 @@ func (v Variable) Scope(i *Interpreter) {
 	if !exists {
 		i.CurrentScope.Error(
 			constants.ERROR_ID_NOT_FOUND,
-			v.Op(),
+			v.GetToken(),
 		)
 	}
 

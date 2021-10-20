@@ -27,16 +27,8 @@ type FunctionCall struct {
 
 // function declaration
 
-func (fn FunctionDeclaration) Op() types.Token {
+func (fn FunctionDeclaration) GetToken() types.Token {
 	return types.Token{}
-}
-
-func (fn FunctionDeclaration) LeftOperand() AbstractSyntaxTree {
-	return fn.FunctionBlock
-}
-
-func (fn FunctionDeclaration) RightOperand() AbstractSyntaxTree {
-	return fn.FunctionBlock
 }
 
 func (fn FunctionDeclaration) Scope(i *Interpreter) {
@@ -69,10 +61,10 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	// )
 
 	for _, param := range fn.FormalParameters {
-		paramName := param.VariableNode.Op().Value
+		paramName := param.VariableNode.GetToken().Value
 
 		// this is going to be a built in type so it will definitely exist
-		paramType := param.TypeNode.Op().Value
+		paramType := param.TypeNode.GetToken().Value
 
 		paramSymbol := Symbol{
 			Name: paramName,
@@ -96,32 +88,16 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 
 // function parameters
 
-func (fn FunctionParameters) Op() types.Token {
+func (fn FunctionParameters) GetToken() types.Token {
 	return types.Token{}
-}
-
-func (fn FunctionParameters) LeftOperand() AbstractSyntaxTree {
-	return fn.VariableNode
-}
-
-func (fn FunctionParameters) RightOperand() AbstractSyntaxTree {
-	return fn.TypeNode
 }
 
 func (fn FunctionParameters) Scope(i *Interpreter) {}
 
 // function call
 
-func (fn FunctionCall) Op() types.Token {
+func (fn FunctionCall) GetToken() types.Token {
 	return types.Token{}
-}
-
-func (fn FunctionCall) LeftOperand() AbstractSyntaxTree {
-	return fn.ActualParameters[0]
-}
-
-func (fn FunctionCall) RightOperand() AbstractSyntaxTree {
-	return fn.ActualParameters[0]
 }
 
 func (fn FunctionCall) Scope(i *Interpreter) {

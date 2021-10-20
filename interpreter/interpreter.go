@@ -56,10 +56,10 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 		// fmt.Println("found UnaryOperationNode")
 
 		if u.Operation.Type == constants.PLUS {
-			result = +i.Visit(node.LeftOperand(), depth+1)
+			result = +i.Visit(u.Operand, depth+1)
 
 		} else if u.Operation.Type == constants.MINUS {
-			result = -i.Visit(node.LeftOperand(), depth+1)
+			result = -i.Visit(u.Operand, depth+1)
 		}
 
 	} else if p, ok := node.(Program); ok {
@@ -151,7 +151,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 			// fmt.Println("iterating over compoundStatement child")
 
 			// use Token() here
-			if child.Op().Type == constants.BLANK {
+			if child.GetToken().Type == constants.BLANK {
 				continue
 			}
 
@@ -160,12 +160,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree, depth int) float32 {
 
 	} else if as, ok := node.(AssignmentStatement); ok {
 
-		variableName := as.Left.Op().Value
-
-		// fmt.Println(
-		// 	"Found an assignment_statement, variableName = ", variableName,
-		// 	"node.RightOperand = ", node.RightOperand(),
-		// )
+		variableName := as.Left.GetToken().Value
 
 		variableValue := i.Visit(as.Right, depth+1)
 
