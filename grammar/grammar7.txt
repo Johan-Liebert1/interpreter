@@ -10,12 +10,14 @@ variable_declaration --> ID (COMMA ID)* COLON var_type
 var_type --> INTEGER | FLOAT
 statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
 statement --> assignment_statement | function_call | blank
+conditional_statement --> expression COMPARATOR expression
 assignment_statement --> variable ASSIGN expression
 variable --> ID
 blank --> 
 expression --> term ((PLUS | MINUS) term)*
 term --> factor ((MUL | DIV) factor)*
 factor --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | LPAREN expression RPAREN | variable
+COMPARATOR --> > | < | >= | <= | ==
 LPAREN --> (
 RPAREN --> )
 LCURLY --> {

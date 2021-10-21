@@ -22,7 +22,7 @@ func (p *Parser) Init(text string) {
 	p.Lexer.Init()
 
 	p.CurrentToken = p.Lexer.GetNextToken()
-	// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+	helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
 }
 
 func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
@@ -47,7 +47,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
-		// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+		helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
 
 		if p.CurrentToken.Type == constants.INVALID {
 			p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken, "")
@@ -178,6 +178,28 @@ func (p *Parser) Expression() AbstractSyntaxTree {
 			Right:     p.Term(),
 		}
 	}
+
+	for helpers.ValueInSlice(p.CurrentToken.Type, constants.COMPARATORS_SLICE) {
+		currentToken := p.CurrentToken
+
+		switch p.CurrentToken.Value {
+		case constants.GREATER_THAN_SYMBOL:
+			// this will advance the pointer
+			p.ValidateToken(constants.GREATER_THAN)
+
+		case constants.LESS_THAN_SYMBOL:
+			// this will advance the pointer
+			p.ValidateToken(constants.LESS_THAN)
+		}
+
+		result = ComparisonNode{
+			Left:       result,
+			Comparator: currentToken,
+			Right:      p.Factor(),
+		}
+	}
+
+	helpers.ColorPrint(constants.LightYellow, 1, "expression result ", result)
 
 	return result
 }
@@ -489,5 +511,4 @@ func (p *Parser) Variable() AbstractSyntaxTree {
 
 func (p *Parser) Parse() AbstractSyntaxTree {
 	return p.Program()
-	// return p.Expression()
 }

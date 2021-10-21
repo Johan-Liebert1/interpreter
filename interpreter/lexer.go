@@ -251,6 +251,32 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
+		if charToString == constants.GREATER_THAN_SYMBOL {
+			// need to peek for an equal sign
+			token := types.Token{
+				Type:       constants.GREATER_THAN,
+				Value:      constants.GREATER_THAN_SYMBOL,
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+
+			lex.Advance()
+			return token
+		}
+
+		if charToString == constants.LESS_THAN_SYMBOL {
+			// need to peek for an equal sign
+			token := types.Token{
+				Type:       constants.LESS_THAN,
+				Value:      constants.LESS_THAN_SYMBOL,
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+
+			lex.Advance()
+			return token
+		}
+
 		if charToString == constants.OPERANDS[constants.PLUS] {
 
 			token := types.Token{

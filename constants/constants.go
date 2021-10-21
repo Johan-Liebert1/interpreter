@@ -137,6 +137,7 @@ var RESERVED = map[string]types.Token{
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
+var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
 
 var SpewPrinter = spew.ConfigState{Indent: "\t"}
 
