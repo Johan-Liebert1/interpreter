@@ -83,6 +83,8 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 		// BinaryOperationNode
 		result = i.EvaluateBinaryOperationNode(b)
 
+	} else if c, ok := node.(ComparisonNode); ok {
+		result = i.EvaluateComparisonNode(c)
 	}
 
 	// fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)

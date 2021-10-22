@@ -92,7 +92,7 @@ func (lex *LexicalAnalyzer) ConstructInteger() string {
 		lex.Advance()
 	}
 
-	helpers.ColorPrint(constants.LightGreen, 1, "constructed integer ", s)
+	// helpers.ColorPrint(constants.LightGreen, 1, "constructed integer ", s)
 
 	return s
 }
@@ -100,18 +100,18 @@ func (lex *LexicalAnalyzer) ConstructInteger() string {
 func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
 	integerPart := lex.ConstructInteger()
 
-	helpers.ColorPrint(constants.LightCyan, 1, "integerPart = ", integerPart)
+	// helpers.ColorPrint(constants.LightCyan, 1, "integerPart = ", integerPart)
 
 	if string(lex.CurrentChar) == constants.DOT_SYMBOL {
 		// is a floating point number
-		s := string(lex.CurrentChar)
+		s := string(lex.CurrentChar) // the dot
 
-		lex.Advance()
+		lex.Advance() // start from the next digit
 
 		fractionalPart := lex.ConstructInteger()
 
 		realNumber, _ := strconv.ParseFloat(integerPart+s+fractionalPart, 64)
-		helpers.ColorPrint(constants.LightCyan, 1, "fraction = ", fractionalPart, " realNumber = ", realNumber)
+		// helpers.ColorPrint(constants.LightCyan, 1, "fraction = ", fractionalPart, " realNumber = ", realNumber)
 
 		return types.Token{
 			Type:       constants.FLOAT,
@@ -249,21 +249,28 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
-		// if charToString == constants.DOT_SYMBOL {
-		//
-		// token := types.Token{
-		// Type:       constants.DOT,
-		// Value:      constants.DOT_SYMBOL,
-		// LineNumber: lex.LineNumber,
-		// Column:     lex.Column,
-		// }
-		//
-		// lex.Advance()
-		// return token
-		// }
-
 		if charToString == constants.GREATER_THAN_SYMBOL {
 			// need to peek for an equal sign
+			peekPos := lex.Peek()
+
+			if peekPos != -1 {
+				if string(lex.Text[lex.Position]) == constants.GREATER_THAN_SYMBOL &&
+					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
+
+					token := types.Token{
+						Type:       constants.GREATER_THAN_EQUAL_TO,
+						Value:      constants.GREATER_THAN_EQUAL_TO_SYMBOL,
+						LineNumber: lex.LineNumber,
+						Column:     lex.Column,
+					}
+
+					lex.Advance()
+					lex.Advance()
+
+					return token
+				}
+			}
+
 			token := types.Token{
 				Type:       constants.GREATER_THAN,
 				Value:      constants.GREATER_THAN_SYMBOL,
@@ -277,6 +284,27 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 
 		if charToString == constants.LESS_THAN_SYMBOL {
 			// need to peek for an equal sign
+
+			peekPos := lex.Peek()
+
+			if peekPos != -1 {
+				if string(lex.Text[lex.Position]) == constants.LESS_THAN_SYMBOL &&
+					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
+
+					token := types.Token{
+						Type:       constants.LESS_THAN_EQUAL_TO,
+						Value:      constants.LESS_THAN_EQUAL_TO_SYMBOL,
+						LineNumber: lex.LineNumber,
+						Column:     lex.Column,
+					}
+
+					lex.Advance()
+					lex.Advance()
+
+					return token
+				}
+			}
+
 			token := types.Token{
 				Type:       constants.LESS_THAN,
 				Value:      constants.LESS_THAN_SYMBOL,

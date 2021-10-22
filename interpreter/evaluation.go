@@ -209,3 +209,29 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 
 	return result
 }
+
+func (i *Interpreter) EvaluateComparisonNode(c ComparisonNode) interface{} {
+	var result interface{}
+
+	left, _ := helpers.GetFloat(i.Visit(c.Left))
+	right, _ := helpers.GetFloat(i.Visit(c.Right))
+
+	switch c.Comparator.Type {
+	case constants.GREATER_THAN:
+		result = left > right
+
+	case constants.LESS_THAN:
+		result = left < right
+
+	case constants.GREATER_THAN_EQUAL_TO:
+		result = left >= right
+
+	case constants.LESS_THAN_EQUAL_TO:
+		result = left <= right
+
+	case constants.EQUALITY:
+		result = left == right
+	}
+
+	return result
+}
