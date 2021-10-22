@@ -9,7 +9,7 @@ declarations --> LET (variable_declaration SEMI)+ | function* | blank
 variable_declaration --> ID (COMMA ID)* COLON var_type
 var_type --> INTEGER | FLOAT
 statement_list --> statement SEMI_COLON | statement SEMI_COLON statement_list
-statement --> assignment_statement | function_call | blank
+statement --> assignment_statement | function_call | if_statement | blank
 conditional_statement --> expression COMPARATOR expression
 assignment_statement --> variable ASSIGN expression
 variable --> ID

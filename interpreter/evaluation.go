@@ -8,25 +8,26 @@ import (
 	"programminglang/interpreter/callstack"
 )
 
-func (i *Interpreter) EvaluateInteger(node IntegerNumber) float32 {
+func (i *Interpreter) EvaluateInteger(node IntegerNumber) interface{} {
 	return float32(node.Token.IntegerValue)
 }
 
-func (i *Interpreter) EvaluateUnaryOperator(node UnaryOperationNode) float32 {
-	var result float32
+func (i *Interpreter) EvaluateUnaryOperator(node UnaryOperationNode) interface{} {
+	var result interface{}
+
+	result1, _ := helpers.GetFloat(i.Visit(node.Operand))
 
 	if node.Operation.Type == constants.PLUS {
-		result = +i.Visit(node.Operand)
-
+		result = +result1
 	} else if node.Operation.Type == constants.MINUS {
-		result = -i.Visit(node.Operand)
+		result = -result1
 	}
 
 	return result
 }
 
-func (i *Interpreter) EvaluateProgram(p Program) float32 {
-	var result float32
+func (i *Interpreter) EvaluateProgram(p Program) interface{} {
+	var result interface{}
 
 	fmt.Println("Enter program")
 
@@ -60,8 +61,8 @@ func (i *Interpreter) EvaluateProgram(p Program) float32 {
 	return result
 }
 
-func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) float32 {
-	var result float32
+func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
+	var result interface{}
 
 	// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(f))
 
@@ -122,8 +123,8 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) float32 {
 	return result
 }
 
-func (i *Interpreter) EvaluateCompoundStatement(cs CompoundStatement) float32 {
-	var result float32
+func (i *Interpreter) EvaluateCompoundStatement(cs CompoundStatement) interface{} {
+	var result interface{}
 
 	// fmt.Println("found CompoundStatement")
 	// i.spewPrinter.Dump(node)
@@ -140,8 +141,8 @@ func (i *Interpreter) EvaluateCompoundStatement(cs CompoundStatement) float32 {
 	return result
 }
 
-func (i *Interpreter) EvaluateAssignmentStatement(as AssignmentStatement) float32 {
-	var result float32
+func (i *Interpreter) EvaluateAssignmentStatement(as AssignmentStatement) interface{} {
+	var result interface{}
 
 	variableName := as.Left.GetToken().Value
 
@@ -154,8 +155,8 @@ func (i *Interpreter) EvaluateAssignmentStatement(as AssignmentStatement) float3
 	return result
 }
 
-func (i *Interpreter) EvaluateVariable(v Variable) float32 {
-	var result float32
+func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
+	var result interface{}
 
 	// if we encounter a variable, look for it in the GlobalScope and respond accordingly
 	variableName := v.Token.Value
@@ -179,28 +180,31 @@ func (i *Interpreter) EvaluateVariable(v Variable) float32 {
 	return result
 }
 
-func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) float32 {
-	var result float32
+func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interface{} {
+	var result interface{}
+
+	leftResult, _ := helpers.GetFloat(i.Visit(b.Left))
+	rightResult, _ := helpers.GetFloat(i.Visit(b.Right))
 
 	if b.Operation.Type == constants.PLUS {
 		// fmt.Print("adding \n")
-		result = i.Visit(b.Left) + i.Visit(b.Right)
+		result = leftResult + rightResult
 		// fmt.Println("addition result = ", result)
 
 	} else if b.Operation.Type == constants.MINUS {
 
-		result = i.Visit(b.Left) - i.Visit(b.Right)
+		result = leftResult - rightResult
 
 	} else if b.Operation.Type == constants.MUL {
 
-		result = i.Visit(b.Left) * i.Visit(b.Right)
+		result = leftResult * rightResult
 
 	} else if b.Operation.Type == constants.FLOAT_DIV {
 
-		result = i.Visit(b.Left) / i.Visit(b.Right)
+		result = leftResult / rightResult
 	} else {
 		// integer division
-		result = i.Visit(b.Left) / i.Visit(b.Right)
+		result = int(leftResult / rightResult)
 	}
 
 	return result

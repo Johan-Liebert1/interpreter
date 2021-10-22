@@ -30,7 +30,7 @@ func (i *Interpreter) InitConcrete() {
 	i.CurrentScope.Init()
 }
 
-func (i *Interpreter) Visit(node AbstractSyntaxTree) float32 {
+func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 	// also need to return an empty interface here as comparisons won't be in float32
 
 	// fmt.Print("\n\n")
@@ -38,7 +38,7 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) float32 {
 	// fmt.Print("\n\n")
 	// helpers.ColorPrint(constants.LightGreen, 1, "node ", constants.SpewPrinter.Sdump(node))
 
-	var result float32
+	var result interface{}
 
 	if in, ok := node.(IntegerNumber); ok {
 		// node is a Number struct, which is the base case
@@ -99,7 +99,7 @@ func (i *Interpreter) ReleaseScope() {
 	i.CurrentScope = i.CurrentScope.EnclosingScope
 }
 
-func (i *Interpreter) Interpret() float32 {
+func (i *Interpreter) Interpret() interface{} {
 	tree := i.TextParser.Parse()
 
 	// fmt.Print(tree)

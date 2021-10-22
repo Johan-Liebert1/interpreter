@@ -92,23 +92,32 @@ func (lex *LexicalAnalyzer) ConstructInteger() string {
 		lex.Advance()
 	}
 
+	helpers.ColorPrint(constants.LightGreen, 1, "constructed integer ", s)
+
 	return s
 }
 
 func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
 	integerPart := lex.ConstructInteger()
 
-	if string(lex.CurrentChar) == "." {
+	helpers.ColorPrint(constants.LightCyan, 1, "integerPart = ", integerPart)
+
+	if string(lex.CurrentChar) == constants.DOT_SYMBOL {
 		// is a floating point number
 		s := string(lex.CurrentChar)
 
+		lex.Advance()
+
 		fractionalPart := lex.ConstructInteger()
 
-		realNumber, _ := strconv.ParseFloat(integerPart+s+fractionalPart, 32)
+		realNumber, _ := strconv.ParseFloat(integerPart+s+fractionalPart, 64)
+		helpers.ColorPrint(constants.LightCyan, 1, "fraction = ", fractionalPart, " realNumber = ", realNumber)
 
 		return types.Token{
 			Type:       constants.FLOAT,
 			FloatValue: float32(realNumber),
+			LineNumber: lex.LineNumber,
+			Column:     lex.Column,
 		}
 
 	}
@@ -118,6 +127,8 @@ func (lex *LexicalAnalyzer) ConstructNumber() types.Token {
 	return types.Token{
 		Type:         constants.INTEGER,
 		IntegerValue: integer,
+		LineNumber:   lex.LineNumber,
+		Column:       lex.Column,
 	}
 }
 
@@ -238,18 +249,18 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
-		if charToString == constants.DOT_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.DOT,
-				Value:      constants.DOT_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
-			lex.Advance()
-			return token
-		}
+		// if charToString == constants.DOT_SYMBOL {
+		//
+		// token := types.Token{
+		// Type:       constants.DOT,
+		// Value:      constants.DOT_SYMBOL,
+		// LineNumber: lex.LineNumber,
+		// Column:     lex.Column,
+		// }
+		//
+		// lex.Advance()
+		// return token
+		// }
 
 		if charToString == constants.GREATER_THAN_SYMBOL {
 			// need to peek for an equal sign
