@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"fmt"
 	"programminglang/types"
 )
 
@@ -19,7 +18,7 @@ func (p Program) Scope(i *Interpreter) {
 	// a function's innner declaration also calls this Scope function so we don't want
 	// another global scope being added when calling a function
 	if i.CurrentScope.CurrentScopeLevel == 0 {
-		fmt.Println("Entering Global Scope")
+		// fmt.Println("Entering Global Scope")
 
 		globalScope = &ScopedSymbolsTable{
 			CurrentScopeName:  "global",
@@ -41,7 +40,7 @@ func (p Program) Scope(i *Interpreter) {
 
 	p.CompoundStatement.Scope(i)
 
-	if i.CurrentScope.CurrentScopeLevel == 1 {
-		fmt.Println("Exiting global scope")
-	}
+	// if i.CurrentScope.CurrentScopeLevel == 1 {
+	// 	fmt.Println("Exiting global scope")
+	// }
 }

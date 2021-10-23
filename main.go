@@ -53,7 +53,7 @@ func interpretFile(langInterpreter interpreter.Interpreter, fileName string) {
 		os.Exit(1)
 	}
 
-	langInterpreter.Init(string(fileData), true)
+	langInterpreter.Init(string(fileData), false)
 
 	result := langInterpreter.Interpret()
 

@@ -188,8 +188,6 @@ func (lex *LexicalAnalyzer) ConstructString(quote string) types.Token {
 		LineNumber: lex.LineNumber,
 	}
 
-	helpers.ColorPrint(constants.LightGreen, 1, 1, token)
-
 	return token
 }
 

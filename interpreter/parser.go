@@ -48,9 +48,6 @@ func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
 	If not valid, prints a fatal error and exits
 */
 func (p *Parser) ValidateToken(tokenType string) {
-	// fmt.Println("Validating Token ", p.CurrentToken)
-	// fmt.Println("Validating against ", tokenType, "\n\n")
-
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
 
@@ -164,8 +161,6 @@ func (p *Parser) Factor() AbstractSyntaxTree {
 		returningValue = p.Variable()
 	}
 
-	fmt.Println("\nreturining from Factor = ", returningValue)
-
 	return returningValue
 }
 
@@ -265,7 +260,7 @@ func (p *Parser) ComparisonStatement() AbstractSyntaxTree {
 			p.ValidateToken(constants.EQUALITY)
 		}
 
-		helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
+		// helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
 
 		result = ComparisonNode{
 			Left:       result,
@@ -525,7 +520,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 	if p.CurrentToken.Type == constants.IDENTIFIER {
 		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
-			// helpers.ColorPrint(constants.Yellow, 1, "gonna call function")
+			// helpers.ColorPrint(constants.Yellow, 1, 1, "gonna call function")
 			// a function call
 			node = p.FunctionCallStatement()
 		} else if p.Lexer.PeekNextToken().Type == constants.ASSIGN {
@@ -533,20 +528,26 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			// variable definition
 			node = p.AssignmentStatement()
 		} else {
-			// helpers.ColorPrint(constants.Yellow, 1, "calling logical_statement")
+			// helpers.ColorPrint(constants.Yellow, 1, 1, "calling logical_statement")
 			node = p.LogicalStatement()
 		}
 	} else if p.CurrentToken.Type == constants.IF {
-		// helpers.ColorPrint(constants.Yellow, 1, "calling conditional_statement")
+		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling conditional_statement")
 		node = p.ConditionalStatement()
 
 	} else if p.CurrentToken.Type == constants.LOOP {
+		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling ParseLoop")
+
 		node = p.ParseLoop()
 
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
+		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
+
 		node = p.LogicalStatement()
 
 	} else {
+		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling BlankStatement")
+
 		node = BlankStatement{
 			Token: types.Token{
 				Type:  constants.BLANK,
@@ -562,6 +563,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 // loop --> LOOP FROM expression TO expression WITH variable LCURLY block RCURLY
 func (p *Parser) ParseLoop() AbstractSyntaxTree {
 	p.ValidateToken(constants.LOOP)
+
 	p.ValidateToken(constants.FROM)
 
 	low := p.CurrentToken
