@@ -316,6 +316,30 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
+		if charToString == constants.EQUAL_SYMBOL {
+			// need to peek for an equal sign
+
+			peekPos := lex.Peek()
+
+			if peekPos != -1 {
+				if string(lex.Text[lex.Position]) == constants.EQUAL_SYMBOL &&
+					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
+
+					token := types.Token{
+						Type:       constants.EQUALITY,
+						Value:      constants.EQUALITY_SYMBOL,
+						LineNumber: lex.LineNumber,
+						Column:     lex.Column,
+					}
+
+					lex.Advance()
+					lex.Advance()
+
+					return token
+				}
+			}
+		}
+
 		if charToString == constants.OPERANDS[constants.PLUS] {
 
 			token := types.Token{

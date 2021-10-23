@@ -1,6 +1,11 @@
-let a, b : int;
+let a, b, c, d : int;
 
 a := 10;
 b := 20;
+c := 30;
+d := 40;
 
-output(a + b);
+output(a > b);
+output(c > d);
+output(a + b > c + d);
+# output(b - a == d - c);

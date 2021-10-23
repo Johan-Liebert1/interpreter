@@ -198,12 +198,16 @@ func (p *Parser) Expression() AbstractSyntaxTree {
 		case constants.LESS_THAN_EQUAL_TO_SYMBOL:
 			// this will advance the pointer
 			p.ValidateToken(constants.LESS_THAN_EQUAL_TO)
+
+		case constants.EQUALITY_SYMBOL:
+			// this will advance the pointer
+			p.ValidateToken(constants.EQUALITY)
 		}
 
 		result = ComparisonNode{
 			Left:       result,
 			Comparator: currentToken,
-			Right:      p.Factor(),
+			Right:      p.Expression(),
 		}
 	}
 
@@ -461,7 +465,6 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			node = p.FunctionCallStatement()
 		} else {
 			// helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
-
 			// variable definition
 			node = p.AssignmentStatement()
 		}
