@@ -180,6 +180,31 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 	return result
 }
 
+func (i *Interpreter) EvaluateLogicalStatement(l LogicalNode) interface{} {
+
+	var result interface{}
+
+	leftResult, lok := i.Visit(l.Left).(bool)
+	rightResult, rok := i.Visit(l.Right).(bool)
+
+	helpers.ColorPrint(constants.Green, 2, "leftResult ", leftResult, " right result ", rightResult)
+
+	if lok && rok {
+
+		switch l.LogicalOperator.Type {
+		case constants.AND:
+			result = leftResult && rightResult
+
+		case constants.OR:
+			result = leftResult || rightResult
+
+		}
+
+	}
+
+	return result
+}
+
 func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interface{} {
 	var result interface{}
 

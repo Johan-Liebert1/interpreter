@@ -498,3 +498,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 		Type: constants.EOF,
 	}
 }
+
+func (lex LexicalAnalyzer) PeekNextToken() types.Token {
+	return lex.GetNextToken()
+}

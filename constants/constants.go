@@ -68,6 +68,9 @@ const (
 	IF           = "if"
 	ELSE_IF      = "elif"
 	ELSE         = "else"
+	AND          = "and"
+	OR           = "or"
+	NOT          = "not"
 )
 
 // symbol types
@@ -133,11 +136,27 @@ var RESERVED = map[string]types.Token{
 		Type:  DEFINE,
 		Value: DEFINE,
 	},
+
+	AND: {
+		Type:  AND,
+		Value: AND,
+	},
+
+	OR: {
+		Type:  OR,
+		Value: OR,
+	},
+
+	NOT: {
+		Type:  NOT,
+		Value: NOT,
+	},
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
 var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
+var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 
 var SpewPrinter = spew.ConfigState{Indent: "\t"}
 

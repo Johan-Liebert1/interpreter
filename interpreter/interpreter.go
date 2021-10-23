@@ -13,9 +13,9 @@ type Interpreter struct {
 	CurrentScope       *ScopedSymbolsTable
 }
 
-func (i *Interpreter) Init(text string) {
+func (i *Interpreter) Init(text string, printToken bool) {
 	i.TextParser = Parser{}
-	i.TextParser.Init(text)
+	i.TextParser.Init(text, printToken)
 
 	i.CallStack = callstack.CallStack{}
 
@@ -85,6 +85,11 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 
 	} else if c, ok := node.(ComparisonNode); ok {
 		result = i.EvaluateComparisonNode(c)
+
+	} else if l, ok := node.(LogicalNode); ok {
+
+		result = i.EvaluateLogicalStatement(l)
+
 	}
 
 	// fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)

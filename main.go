@@ -29,7 +29,7 @@ func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter)
 			continue
 		}
 
-		langInterpreter.Init(userInput)
+		langInterpreter.Init(userInput, true)
 		result := langInterpreter.Interpret()
 
 		helpers.ColorPrint(constants.LightYellow, 1, result)
@@ -51,7 +51,7 @@ func interpretFile(langInterpreter interpreter.Interpreter, fileName string) {
 		os.Exit(1)
 	}
 
-	langInterpreter.Init(string(fileData))
+	langInterpreter.Init(string(fileData), false)
 
 	result := langInterpreter.Interpret()
 

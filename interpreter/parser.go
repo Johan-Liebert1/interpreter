@@ -12,9 +12,10 @@ import (
 type Parser struct {
 	Lexer        LexicalAnalyzer
 	CurrentToken types.Token
+	printToken   bool
 }
 
-func (p *Parser) Init(text string) {
+func (p *Parser) Init(text string, printToken bool) {
 	p.Lexer = LexicalAnalyzer{
 		Text: text,
 	}
@@ -22,7 +23,12 @@ func (p *Parser) Init(text string) {
 	p.Lexer.Init()
 
 	p.CurrentToken = p.Lexer.GetNextToken()
-	// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+
+	p.printToken = printToken
+
+	if p.printToken {
+		helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+	}
 }
 
 func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
@@ -47,7 +53,10 @@ func (p *Parser) ValidateToken(tokenType string) {
 
 	if p.CurrentToken.Type == tokenType {
 		p.CurrentToken = p.Lexer.GetNextToken()
-		// helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+
+		if p.printToken {
+			helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+		}
 
 		if p.CurrentToken.Type == constants.INVALID {
 			p.Error(constants.ERROR_UNEXPECTED_TOKEN, p.CurrentToken, "")
@@ -179,6 +188,49 @@ func (p *Parser) Expression() AbstractSyntaxTree {
 		}
 	}
 
+	return result
+}
+
+func (p *Parser) LogicalStatement() AbstractSyntaxTree {
+	result := p.ComparisonStatement()
+
+	helpers.ColorPrint(constants.LightYellow, 1, "curren token in logical statement\n", p.CurrentToken)
+
+	for helpers.ValueInSlice(p.CurrentToken.Type, constants.LOGICAL_OPERANDS_SLICE) {
+
+		helpers.ColorPrint(constants.Red, 1, "entered if in logical statement")
+
+		currentToken := p.CurrentToken
+
+		switch p.CurrentToken.Value {
+		case constants.AND:
+			// this will advance the pointer
+			p.ValidateToken(constants.AND)
+
+		case constants.OR:
+			// this will advance the pointer
+			p.ValidateToken(constants.OR)
+
+		case constants.NOT:
+			// this will advance the pointer
+			p.ValidateToken(constants.NOT)
+		}
+
+		helpers.ColorPrint(constants.LightGreen, 1, "currentToken = ", currentToken)
+
+		result = LogicalNode{
+			Left:            result,
+			LogicalOperator: currentToken,
+			Right:           p.ComparisonStatement(),
+		}
+	}
+
+	return result
+}
+
+func (p *Parser) ComparisonStatement() AbstractSyntaxTree {
+	result := p.Expression()
+
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.COMPARATORS_SLICE) {
 		currentToken := p.CurrentToken
 
@@ -203,6 +255,8 @@ func (p *Parser) Expression() AbstractSyntaxTree {
 			// this will advance the pointer
 			p.ValidateToken(constants.EQUALITY)
 		}
+
+		helpers.ColorPrint(constants.LightGreen, 1, "currentToken = ", currentToken)
 
 		result = ComparisonNode{
 			Left:       result,
@@ -463,14 +517,16 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
 			// a function call
 			node = p.FunctionCallStatement()
-		} else {
+		} else if p.Lexer.PeekNextToken().Type == constants.ASSIGN {
 			// helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
 			// variable definition
 			node = p.AssignmentStatement()
+		} else {
+			node = p.LogicalStatement()
 		}
 
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
-		node = p.Expression()
+		node = p.LogicalStatement()
 	} else {
 		node = BlankStatement{
 			Token: types.Token{
