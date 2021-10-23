@@ -214,17 +214,11 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 
 	enterBlock, _ := i.Visit(c.Conditionals).(bool)
 
-	// helpers.ColorPrint(constants.Cyan, 1, "enterBlock? ", enterBlock)
-
 	if enterBlock {
 		result = i.Visit(c.ConditionalBlock)
 
-		// helpers.ColorPrint(constants.Green, 1, "Entered block ", result)
-
 	} else {
 		// didn't enter if block, so start traversing the else if ladder if there is any
-
-		// helpers.ColorPrint(constants.Cyan, 1, "Entered inner block ")
 
 		for _, statement := range c.Ladder {
 
@@ -236,12 +230,8 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 
 			enterInnerBlock, _ := i.Visit(statement.Conditionals).(bool)
 
-			// helpers.ColorPrint(constants.Cyan, 1, "Enter ladder? ", enterInnerBlock)
-
 			if enterInnerBlock {
 				result = i.Visit(statement.ConditionalBlock)
-				// helpers.ColorPrint(constants.Green, 1, "Entered inner block ", result)
-
 				// else if ladder, one statement was true, execute it and break the loop
 				break
 			}
@@ -262,24 +252,20 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 	leftResult, _ := helpers.GetFloat(i.Visit(b.Left))
 	rightResult, _ := helpers.GetFloat(i.Visit(b.Right))
 
-	if b.Operation.Type == constants.PLUS {
-		// fmt.Print("adding \n")
+	switch b.Operation.Type {
+	case constants.PLUS:
 		result = leftResult + rightResult
-		// fmt.Println("addition result = ", result)
 
-	} else if b.Operation.Type == constants.MINUS {
-
+	case constants.MINUS:
 		result = leftResult - rightResult
 
-	} else if b.Operation.Type == constants.MUL {
-
+	case constants.MUL:
 		result = leftResult * rightResult
 
-	} else if b.Operation.Type == constants.FLOAT_DIV {
-
+	case constants.FLOAT_DIV:
 		result = leftResult / rightResult
-	} else {
-		// integer division
+
+	case constants.INTEGER_DIV:
 		result = int(leftResult / rightResult)
 	}
 
