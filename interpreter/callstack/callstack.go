@@ -6,6 +6,9 @@ type CallStack struct {
 
 func (cs *CallStack) Push(item ActivationRecord) {
 	cs.Records = append(cs.Records, item)
+
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, "Push = ", constants.SpewPrinter.Sdump(cs.Records))
+
 }
 
 func (cs *CallStack) Pop() ActivationRecord {
@@ -18,6 +21,8 @@ func (cs *CallStack) Pop() ActivationRecord {
 	}
 
 	poppedItem, cs.Records = cs.Records[len(cs.Records)-1], cs.Records[:len(cs.Records)-1]
+
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, "Pop = ", constants.SpewPrinter.Sdump(cs.Records))
 
 	return poppedItem
 }

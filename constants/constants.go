@@ -108,6 +108,7 @@ const (
 const (
 	AR_PROGRAM  = "AR_PROGRAM"
 	AR_FUNCTION = "AR_FUNCTION"
+	AR_LOOP     = "AR_LOOP"
 )
 
 /*

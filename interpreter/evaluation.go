@@ -55,8 +55,11 @@ func (i *Interpreter) EvaluateProgram(p Program) interface{} {
 	result = i.Visit(p.CompoundStatement)
 
 	// fmt.Println("Leave program")
-
-	i.CallStack.Pop()
+	if topAr, ok := i.CallStack.Peek(); ok {
+		if topAr.Name == constants.AR_PROGRAM {
+			i.CallStack.Pop()
+		}
+	}
 
 	return result
 }
@@ -115,6 +118,7 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 		Name:         functionName,
 		Type:         constants.AR_FUNCTION,
 		NestingLevel: topAr.NestingLevel + 1,
+		AboveNode:    &topAr,
 	}
 	ar.Init()
 
@@ -189,7 +193,7 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 
 	if varValue == nil {
 		helpers.ColorPrint(constants.Red, 1, 1, varValue, " ", variableName, " ", constants.SpewPrinter.Sdump(i.CallStack))
-		helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CurrentScope))
+		// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CurrentScope))
 		os.Exit(1)
 	}
 
@@ -273,25 +277,34 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	// helpers.ColorPrint(constants.LightYellow, 1, 1, "loop = ", constants.SpewPrinter.Sdump(l))
 
+	low := l.Low.IntegerValue
+	high := l.High.IntegerValue
+	iteratorName := l.IdentifierToken.Value
+
 	topAr, _ := i.CallStack.Peek()
 
-	ar := callstack.ActivationRecord{
-		Name:         constants.AR_PROGRAM,
-		Type:         constants.AR_PROGRAM,
+	ar := &callstack.ActivationRecord{
+		Name:         constants.AR_LOOP,
+		Type:         constants.AR_LOOP,
 		NestingLevel: topAr.NestingLevel + 1,
+		AboveNode:    &topAr,
 	}
 	ar.Init()
 
-	i.CallStack.Push(ar)
+	// ar.SetItem(iteratorName, low)
+
+	i.CallStack.Push(*ar)
+
+	// i.Visit(l.IdentifierToken)
 
 	var result interface{}
 
-	low := l.Low.IntegerValue
-	high := l.High.IntegerValue
-
 	for counter := low; counter <= high; counter++ {
+		ar.SetItem(iteratorName, counter)
 		i.Visit(l.Block)
 	}
+
+	i.CallStack.Pop()
 
 	return result
 }
