@@ -14,6 +14,7 @@ const (
 	MUL                   = "MUL"
 	INTEGER_DIV           = "INTEGER_DIV"
 	FLOAT_DIV             = "FLOAT_DIV"
+	MODULO                = "MODULO"
 	EQUALITY              = "EQUALITY"
 	GREATER_THAN          = "GREATER_THAN"
 	LESS_THAN             = "LESS_THAN"
@@ -41,6 +42,7 @@ const (
 	MUL_SYMBOL                   = "*"
 	INTEGER_DIV_SYMBOL           = "//"
 	FLOAT_DIV_SYMBOL             = "/"
+	MODULO_SYMBOL                = "%"
 	EQUALITY_SYMBOL              = "=="
 	GREATER_THAN_SYMBOL          = ">"
 	LESS_THAN_SYMBOL             = "<"
@@ -194,7 +196,7 @@ var RESERVED = map[string]types.Token{
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
-var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
+var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV, MODULO}
 var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
 var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}

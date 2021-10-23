@@ -93,6 +93,10 @@ func (p *Parser) Term() AbstractSyntaxTree {
 
 		case constants.MUL:
 			p.ValidateToken(constants.MUL)
+
+		case constants.MODULO:
+			p.ValidateToken(constants.MODULO)
+
 		}
 
 		returningValue = BinaryOperationNode{

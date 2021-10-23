@@ -425,6 +425,19 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
+		if charToString == constants.MODULO_SYMBOL {
+			token := types.Token{
+				Type:       constants.MODULO,
+				Value:      constants.MODULO_SYMBOL,
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+
+			lex.Advance()
+
+			return token
+		}
+
 		if charToString == constants.LPAREN_SYMBOL {
 
 			token := types.Token{

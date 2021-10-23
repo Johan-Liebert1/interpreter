@@ -193,7 +193,6 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 
 	if varValue == nil {
 		helpers.ColorPrint(constants.Red, 1, 1, varValue, " ", variableName, " ", constants.SpewPrinter.Sdump(i.CallStack))
-		// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CurrentScope))
 		os.Exit(1)
 	}
 
@@ -330,6 +329,10 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 
 	case constants.INTEGER_DIV:
 		result = int(leftResult / rightResult)
+
+	case constants.MODULO:
+		result = int(leftResult) % int(rightResult)
+
 	}
 
 	return result
