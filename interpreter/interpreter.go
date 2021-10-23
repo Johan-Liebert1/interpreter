@@ -92,6 +92,8 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 
 	} else if c, ok := node.(ConditionalStatement); ok {
 		result = i.EvaluateConditionalStatement(c)
+	} else if l, ok := node.(RangeLoop); ok {
+		result = i.EvaluateRangeLoop(l)
 	}
 
 	// fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)
@@ -117,7 +119,7 @@ func (i *Interpreter) Interpret() interface{} {
 	printTree := false
 
 	if printTree {
-		helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(tree))
+		helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(tree))
 	}
 
 	tree.Scope(i)

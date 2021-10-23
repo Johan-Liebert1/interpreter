@@ -1,8 +1,8 @@
 package interpreter
 
 import (
-	"fmt"
 	"log"
+	"os"
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
@@ -29,7 +29,7 @@ func (i *Interpreter) EvaluateUnaryOperator(node UnaryOperationNode) interface{}
 func (i *Interpreter) EvaluateProgram(p Program) interface{} {
 	var result interface{}
 
-	fmt.Println("Enter program")
+	// fmt.Println("Enter program")
 
 	_, exists := i.CallStack.Peek()
 
@@ -54,7 +54,7 @@ func (i *Interpreter) EvaluateProgram(p Program) interface{} {
 
 	result = i.Visit(p.CompoundStatement)
 
-	fmt.Println("Leave program")
+	// fmt.Println("Leave program")
 
 	i.CallStack.Pop()
 
@@ -64,27 +64,13 @@ func (i *Interpreter) EvaluateProgram(p Program) interface{} {
 func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	var result interface{}
 
-	// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(f))
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(i.CallStack))
 
 	functionName := f.FunctionName
 
 	topAr, _ := i.CallStack.Peek()
 
 	actualParams := f.ActualParameters
-
-	// print to stdout if it's a print function
-	if functionName == constants.PRINT_OUTPUT {
-		for index := range actualParams {
-			return i.Visit(actualParams[index])
-		}
-	}
-
-	ar := callstack.ActivationRecord{
-		Name:         functionName,
-		Type:         constants.AR_FUNCTION,
-		NestingLevel: topAr.NestingLevel + 1,
-	}
-	ar.Init()
 
 	/*
 		1. Get a list of the function's formal parameters
@@ -93,8 +79,44 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	*/
 
 	funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
-
 	formalParams := funcSymbol.ParamSymbols
+
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(formalParams))
+
+	// print to stdout if it's a print function
+	if functionName == constants.PRINT_OUTPUT {
+		for index := range actualParams {
+			param := actualParams[index]
+
+			// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(param))
+
+			var value interface{} = param.GetToken().Value
+
+			if len(param.GetToken().Value) == 0 {
+				switch param.GetToken().Type {
+				case constants.INTEGER:
+					value = param.GetToken().IntegerValue
+				case constants.FLOAT:
+					value = param.GetToken().FloatValue
+				}
+			}
+
+			if v, ok := param.(Variable); ok {
+				value = i.EvaluateVariable(v)
+			}
+
+			helpers.ColorPrint(constants.LightYellow, 0, 1, value)
+			// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(actualParams[index]))
+		}
+		return result
+	}
+
+	ar := callstack.ActivationRecord{
+		Name:         functionName,
+		Type:         constants.AR_FUNCTION,
+		NestingLevel: topAr.NestingLevel + 1,
+	}
+	ar.Init()
 
 	// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
 	// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
@@ -166,7 +188,9 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 	varValue, exists := activationRecord.GetItem(variableName)
 
 	if varValue == nil {
-		helpers.ColorPrint(constants.Red, 1, varValue, " ", variableName, constants.SpewPrinter.Sdump(i.CallStack))
+		helpers.ColorPrint(constants.Red, 1, 1, varValue, " ", variableName, " ", constants.SpewPrinter.Sdump(i.CallStack))
+		helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CurrentScope))
+		os.Exit(1)
 	}
 
 	floatValue, isFloat := helpers.GetFloat(varValue)
@@ -187,7 +211,7 @@ func (i *Interpreter) EvaluateLogicalStatement(l LogicalNode) interface{} {
 	leftResult, lok := i.Visit(l.Left).(bool)
 	rightResult, rok := i.Visit(l.Right).(bool)
 
-	helpers.ColorPrint(constants.Green, 2, "leftResult ", leftResult, " right result ", rightResult)
+	// helpers.ColorPrint(constants.Green, 2, "leftResult ", leftResult, " right result ", rightResult)
 
 	if lok && rok {
 
@@ -241,6 +265,32 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 
 	if visitElse {
 		result = i.Visit(elseBlock.ConditionalBlock)
+	}
+
+	return result
+}
+
+func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
+	// helpers.ColorPrint(constants.LightYellow, 1, 1, "loop = ", constants.SpewPrinter.Sdump(l))
+
+	topAr, _ := i.CallStack.Peek()
+
+	ar := callstack.ActivationRecord{
+		Name:         constants.AR_PROGRAM,
+		Type:         constants.AR_PROGRAM,
+		NestingLevel: topAr.NestingLevel + 1,
+	}
+	ar.Init()
+
+	i.CallStack.Push(ar)
+
+	var result interface{}
+
+	low := l.Low.IntegerValue
+	high := l.High.IntegerValue
+
+	for counter := low; counter <= high; counter++ {
+		i.Visit(l.Block)
 	}
 
 	return result

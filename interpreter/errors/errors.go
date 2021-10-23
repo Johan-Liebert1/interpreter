@@ -33,17 +33,17 @@ type SemanticError struct {
 }
 
 func (lxe *LexerError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, "LexerError: ", lxe.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, "LexerError: ", lxe.Message)
 	os.Exit(1)
 }
 
 func (pe *ParseError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, "ParseError: ", pe.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, "ParseError: ", pe.Message)
 	os.Exit(1)
 }
 
 func (se *SemanticError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, "SemanticError: ", se.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, "SemanticError: ", se.Message)
 	os.Exit(1)
 }
 

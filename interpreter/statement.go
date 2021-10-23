@@ -13,7 +13,7 @@ type CompoundStatement struct {
 }
 
 type AssignmentStatement struct {
-	Left  AbstractSyntaxTree
+	Left  AbstractSyntaxTree // variable struct
 	Token types.Token
 	Right AbstractSyntaxTree
 }

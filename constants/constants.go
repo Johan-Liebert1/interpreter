@@ -71,6 +71,10 @@ const (
 	AND          = "and"
 	OR           = "or"
 	NOT          = "not"
+	LOOP         = "loop"
+	FROM         = "from"
+	TO           = "to"
+	WITH         = "with"
 )
 
 // symbol types
@@ -165,6 +169,26 @@ var RESERVED = map[string]types.Token{
 	ELSE: {
 		Type:  ELSE,
 		Value: ELSE,
+	},
+
+	LOOP: {
+		Type:  LOOP,
+		Value: LOOP,
+	},
+
+	FROM: {
+		Type:  FROM,
+		Value: FROM,
+	},
+
+	TO: {
+		Type:  TO,
+		Value: TO,
+	},
+
+	WITH: {
+		Type:  WITH,
+		Value: WITH,
 	},
 }
 

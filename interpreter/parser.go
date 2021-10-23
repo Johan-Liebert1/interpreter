@@ -27,7 +27,7 @@ func (p *Parser) Init(text string, printToken bool) {
 	p.printToken = printToken
 
 	if p.printToken {
-		helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+		helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
 	}
 }
 
@@ -55,7 +55,7 @@ func (p *Parser) ValidateToken(tokenType string) {
 		p.CurrentToken = p.Lexer.GetNextToken()
 
 		if p.printToken {
-			helpers.ColorPrint(constants.LightCyan, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
+			helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(p.CurrentToken))
 		}
 
 		if p.CurrentToken.Type == constants.INVALID {
@@ -199,7 +199,7 @@ func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.LOGICAL_OPERANDS_SLICE) {
 
-		helpers.ColorPrint(constants.Red, 1, "entered if in logical statement")
+		helpers.ColorPrint(constants.Red, 1, 1, "entered if in logical statement")
 
 		currentToken := p.CurrentToken
 
@@ -217,7 +217,7 @@ func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 			p.ValidateToken(constants.NOT)
 		}
 
-		helpers.ColorPrint(constants.LightGreen, 1, "currentToken = ", currentToken)
+		helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
 
 		result = LogicalNode{
 			Left:            result,
@@ -258,7 +258,7 @@ func (p *Parser) ComparisonStatement() AbstractSyntaxTree {
 			p.ValidateToken(constants.EQUALITY)
 		}
 
-		helpers.ColorPrint(constants.LightGreen, 1, "currentToken = ", currentToken)
+		helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
 
 		result = ComparisonNode{
 			Left:       result,
@@ -520,7 +520,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			// a function call
 			node = p.FunctionCallStatement()
 		} else if p.Lexer.PeekNextToken().Type == constants.ASSIGN {
-			// helpers.ColorPrint(constants.Yellow, 1, "calling assignment_statement")
+			// helpers.ColorPrint(constants.Yellow, 0, 1, "calling assignment_statement")
 			// variable definition
 			node = p.AssignmentStatement()
 		} else {
@@ -528,12 +528,15 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			node = p.LogicalStatement()
 		}
 	} else if p.CurrentToken.Type == constants.IF {
-
 		// helpers.ColorPrint(constants.Yellow, 1, "calling conditional_statement")
 		node = p.ConditionalStatement()
 
+	} else if p.CurrentToken.Type == constants.LOOP {
+		node = p.ParseLoop()
+
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
 		node = p.LogicalStatement()
+
 	} else {
 		node = BlankStatement{
 			Token: types.Token{
@@ -545,6 +548,38 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 	return node
 
+}
+
+// loop --> LOOP FROM expression TO expression WITH variable LCURLY block RCURLY
+func (p *Parser) ParseLoop() AbstractSyntaxTree {
+	p.ValidateToken(constants.LOOP)
+	p.ValidateToken(constants.FROM)
+
+	low := p.CurrentToken
+	p.ValidateToken(constants.INTEGER)
+
+	p.ValidateToken(constants.TO)
+
+	high := p.CurrentToken
+	p.ValidateToken(constants.INTEGER)
+
+	p.ValidateToken(constants.WITH)
+
+	loopCounter := p.CurrentToken
+	p.ValidateToken(constants.IDENTIFIER)
+
+	p.ValidateToken(constants.LCURLY)
+	loopBlock := p.Program()
+	p.ValidateToken(constants.RCURLY)
+
+	node := RangeLoop{
+		IdentifierToken: loopCounter,
+		Low:             low,
+		High:            high,
+		Block:           loopBlock,
+	}
+
+	return node
 }
 
 /*
@@ -624,7 +659,12 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 
 	right := p.Expression()
 
-	// helpers.ColorPrint(constants.Yellow, 1, "\n\n Variable AssignmentStatement \n\n", left, token, right)
+	// helpers.ColorPrint(
+	// 	constants.LightYellow, 1, 1,
+	// 	"\n\n Variable AssignmentStatement \n\n",
+	// 	constants.SpewPrinter.Sdump(left), constants.SpewPrinter.Sdump(token),
+	// 	constants.SpewPrinter.Sdump(right),
+	// )
 
 	return AssignmentStatement{
 		Left:  left,

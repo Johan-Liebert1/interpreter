@@ -27,7 +27,7 @@ func GetFloat(value interface{}) (float32, bool) {
 	v = reflect.Indirect(v)
 	var floatType = reflect.TypeOf(float32(0))
 
-	// ColorPrint(constants.Blue, 1, "reflect.ValueOf(value) = ", v, " value = ", value)
+	// ColorPrint(constants.Blue, 1, 1, "reflect.ValueOf(value) = ", v, " value = ", value)
 
 	if v.Type().ConvertibleTo(floatType) {
 		return float32(v.Convert(floatType).Float()), true
@@ -36,14 +36,18 @@ func GetFloat(value interface{}) (float32, bool) {
 	return 0.0, false
 }
 
-func ColorPrint(color string, newLines int, toPrint ...interface{}) {
-	var nl string = ""
+func ColorPrint(color string, newLinesTop int, newLinesBottom int, toPrint ...interface{}) {
+	nlt, nlb := "", ""
 
-	for i := 0; i < newLines; i++ {
-		nl += "\n"
+	for i := 0; i < newLinesTop; i++ {
+		nlt += "\n"
 	}
 
-	fmt.Print(nl, color)
+	for i := 0; i < newLinesTop; i++ {
+		nlb += "\n"
+	}
+
+	fmt.Print(nlt, color)
 	fmt.Print(toPrint...)
-	fmt.Print(nl, constants.Reset)
+	fmt.Println(nlb, constants.Reset)
 }
