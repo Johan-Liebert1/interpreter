@@ -191,10 +191,11 @@ func (p *Parser) Expression() AbstractSyntaxTree {
 	return result
 }
 
+// logical_statement --> NOT* (comparator ((AND | OR) comparator)*)
 func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 	result := p.ComparisonStatement()
 
-	helpers.ColorPrint(constants.LightYellow, 1, "curren token in logical statement\n", p.CurrentToken)
+	// helpers.ColorPrint(constants.LightYellow, 1, "curren token in logical statement\n", p.CurrentToken)
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.LOGICAL_OPERANDS_SLICE) {
 
@@ -228,6 +229,7 @@ func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 	return result
 }
 
+// comparison --> expression comparator expression
 func (p *Parser) ComparisonStatement() AbstractSyntaxTree {
 	result := p.Expression()
 
@@ -501,9 +503,7 @@ func (p *Parser) StatementList() []AbstractSyntaxTree {
 	return results
 }
 
-/*
-	statement --> assignment_statement | blank
-*/
+// statement --> assignment_statement | function_call | conditional_statement | blank
 func (p *Parser) Statement() AbstractSyntaxTree {
 	var node AbstractSyntaxTree
 
@@ -512,9 +512,11 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 	// helpers.ColorPrint(constants.Yellow, 1, "calling statement", p.CurrentToken)
 
+	// fmt.Print("next token", p.Lexer.PeekNextToken())
+
 	if p.CurrentToken.Type == constants.IDENTIFIER {
-		// helpers.ColorPrint(constants.Yellow, 1, "gonna call assignment_statement")
 		if string(p.Lexer.CurrentChar) == constants.LPAREN_SYMBOL {
+			// helpers.ColorPrint(constants.Yellow, 1, "gonna call function")
 			// a function call
 			node = p.FunctionCallStatement()
 		} else if p.Lexer.PeekNextToken().Type == constants.ASSIGN {
@@ -522,8 +524,13 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			// variable definition
 			node = p.AssignmentStatement()
 		} else {
+			// helpers.ColorPrint(constants.Yellow, 1, "calling logical_statement")
 			node = p.LogicalStatement()
 		}
+	} else if p.CurrentToken.Type == constants.IF {
+
+		// helpers.ColorPrint(constants.Yellow, 1, "calling conditional_statement")
+		node = p.ConditionalStatement()
 
 	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
 		node = p.LogicalStatement()
@@ -538,6 +545,72 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 	return node
 
+}
+
+/*
+conditional_statement --> IF logical_statement LCURLY statement_list RCURLY
+(ELIF logical_statement LCURLY statement_list RCURLY)* (ELSE LCURLY statement_list RCURLY){0,1}
+*/
+func (p *Parser) ConditionalStatement() AbstractSyntaxTree {
+	currentToken := p.CurrentToken
+
+	p.ValidateToken(constants.IF)
+
+	condition := p.LogicalStatement()
+
+	p.ValidateToken(constants.LCURLY)
+	ifBlock := p.Program()
+	p.ValidateToken(constants.RCURLY)
+
+	node := ConditionalStatement{
+		Type:             currentToken.Type,
+		Token:            currentToken,
+		Conditionals:     condition,
+		ConditionalBlock: ifBlock,
+	}
+
+	for p.CurrentToken.Type == constants.ELSE_IF {
+		currentToken := p.CurrentToken
+
+		p.ValidateToken(constants.ELSE_IF)
+
+		condition := p.LogicalStatement()
+
+		p.ValidateToken(constants.LCURLY)
+		ifBlock := p.Program()
+		p.ValidateToken(constants.RCURLY)
+
+		elseIfNode := ConditionalStatement{
+			Type:             currentToken.Type,
+			Token:            currentToken,
+			Conditionals:     condition,
+			ConditionalBlock: ifBlock,
+		}
+
+		node.Ladder = append(node.Ladder, elseIfNode)
+	}
+
+	if p.CurrentToken.Type == constants.ELSE {
+		currentToken := p.CurrentToken
+
+		p.ValidateToken(constants.ELSE)
+
+		p.ValidateToken(constants.LCURLY)
+		ifBlock := p.Program()
+		p.ValidateToken(constants.RCURLY)
+
+		elseNode := ConditionalStatement{
+			Type:             currentToken.Type,
+			Token:            currentToken,
+			ConditionalBlock: ifBlock,
+		}
+
+		node.Ladder = append(node.Ladder, elseNode)
+	}
+
+	// helpers.ColorPrint(constants.LightGreen, 1, "conditional_statement ", constants.SpewPrinter.Sdump(node))
+
+	return node
 }
 
 /*

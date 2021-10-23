@@ -27,7 +27,7 @@ func GetFloat(value interface{}) (float32, bool) {
 	v = reflect.Indirect(v)
 	var floatType = reflect.TypeOf(float32(0))
 
-	ColorPrint(constants.Blue, 1, "reflect.ValueOf(value) = ", v, " value = ", value)
+	// ColorPrint(constants.Blue, 1, "reflect.ValueOf(value) = ", v, " value = ", value)
 
 	if v.Type().ConvertibleTo(floatType) {
 		return float32(v.Convert(floatType).Float()), true

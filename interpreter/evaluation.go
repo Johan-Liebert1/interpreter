@@ -205,6 +205,57 @@ func (i *Interpreter) EvaluateLogicalStatement(l LogicalNode) interface{} {
 	return result
 }
 
+func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) interface{} {
+	var result interface{}
+	var (
+		elseBlock ConditionalStatement
+		visitElse bool = false
+	)
+
+	enterBlock, _ := i.Visit(c.Conditionals).(bool)
+
+	// helpers.ColorPrint(constants.Cyan, 1, "enterBlock? ", enterBlock)
+
+	if enterBlock {
+		result = i.Visit(c.ConditionalBlock)
+
+		// helpers.ColorPrint(constants.Green, 1, "Entered block ", result)
+
+	} else {
+		// didn't enter if block, so start traversing the else if ladder if there is any
+
+		// helpers.ColorPrint(constants.Cyan, 1, "Entered inner block ")
+
+		for _, statement := range c.Ladder {
+
+			if statement.Type == constants.ELSE {
+				// since we reached the else block, every other block failed
+				elseBlock = statement
+				visitElse = true
+			}
+
+			enterInnerBlock, _ := i.Visit(statement.Conditionals).(bool)
+
+			// helpers.ColorPrint(constants.Cyan, 1, "Enter ladder? ", enterInnerBlock)
+
+			if enterInnerBlock {
+				result = i.Visit(statement.ConditionalBlock)
+				// helpers.ColorPrint(constants.Green, 1, "Entered inner block ", result)
+
+				// else if ladder, one statement was true, execute it and break the loop
+				break
+			}
+
+		}
+	}
+
+	if visitElse {
+		result = i.Visit(elseBlock.ConditionalBlock)
+	}
+
+	return result
+}
+
 func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interface{} {
 	var result interface{}
 

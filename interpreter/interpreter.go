@@ -90,6 +90,8 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 
 		result = i.EvaluateLogicalStatement(l)
 
+	} else if c, ok := node.(ConditionalStatement); ok {
+		result = i.EvaluateConditionalStatement(c)
 	}
 
 	// fmt.Printf("\n\n result at Depth %d = %f \n\n", depth, result)

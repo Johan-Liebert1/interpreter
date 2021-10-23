@@ -151,12 +151,28 @@ var RESERVED = map[string]types.Token{
 		Type:  NOT,
 		Value: NOT,
 	},
+
+	IF: {
+		Type:  IF,
+		Value: IF,
+	},
+
+	ELSE_IF: {
+		Type:  ELSE_IF,
+		Value: ELSE_IF,
+	},
+
+	ELSE: {
+		Type:  ELSE,
+		Value: ELSE,
+	},
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV}
 var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
 var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
+var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}
 
 var SpewPrinter = spew.ConfigState{Indent: "\t"}
 
