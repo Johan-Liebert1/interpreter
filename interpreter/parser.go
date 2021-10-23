@@ -148,6 +148,13 @@ func (p *Parser) Factor() AbstractSyntaxTree {
 			Value: token.FloatValue,
 		}
 
+	case constants.STRING:
+		p.ValidateToken(constants.STRING)
+		returningValue = String{
+			Token: token,
+			Value: token.Value,
+		}
+
 	case constants.LPAREN:
 		p.ValidateToken(constants.LPAREN)
 		returningValue = p.Expression()
@@ -157,7 +164,7 @@ func (p *Parser) Factor() AbstractSyntaxTree {
 		returningValue = p.Variable()
 	}
 
-	// fmt.Println("\nreturining from Factor = ", returningValue)
+	fmt.Println("\nreturining from Factor = ", returningValue)
 
 	return returningValue
 }
@@ -203,8 +210,6 @@ func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 
 	for helpers.ValueInSlice(p.CurrentToken.Type, constants.LOGICAL_OPERANDS_SLICE) {
 
-		helpers.ColorPrint(constants.Red, 1, 1, "entered if in logical statement")
-
 		currentToken := p.CurrentToken
 
 		switch p.CurrentToken.Value {
@@ -220,8 +225,6 @@ func (p *Parser) LogicalStatement() AbstractSyntaxTree {
 			// this will advance the pointer
 			p.ValidateToken(constants.NOT)
 		}
-
-		helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
 
 		result = LogicalNode{
 			Left:            result,
@@ -469,8 +472,10 @@ func (p *Parser) VarType() AbstractSyntaxTree {
 
 	if token.Type == constants.INTEGER_TYPE {
 		p.ValidateToken(constants.INTEGER_TYPE)
-	} else {
+	} else if token.Type == constants.FLOAT_TYPE {
 		p.ValidateToken(constants.FLOAT_TYPE)
+	} else if token.Type == constants.STRING_TYPE {
+		p.ValidateToken(constants.STRING_TYPE)
 	}
 
 	return VariableType{
@@ -661,7 +666,13 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 	token := p.CurrentToken
 	p.ValidateToken(constants.ASSIGN)
 
-	right := p.Expression()
+	var right AbstractSyntaxTree
+
+	if p.Lexer.PeekNextToken().Type == constants.STRING {
+		right = p.Factor()
+	} else {
+		right = p.Expression()
+	}
 
 	// helpers.ColorPrint(
 	// 	constants.LightYellow, 1, 1,

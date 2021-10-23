@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
@@ -51,6 +52,10 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 		// node is a Number struct, which is the base case
 		// fmt.Println("found float")
 		result = f.Token.FloatValue
+
+	} else if s, ok := node.(String); ok {
+		fmt.Println(s)
+		result = s.Token.Value
 
 	} else if u, ok := node.(UnaryOperationNode); ok {
 		// fmt.Println("found UnaryOperationNode")

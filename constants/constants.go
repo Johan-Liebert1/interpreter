@@ -9,6 +9,7 @@ import (
 const (
 	INTEGER               = "INTEGER"
 	FLOAT                 = "FLOAT"
+	STRING                = "STRING"
 	PLUS                  = "PLUS"
 	MINUS                 = "MINUS"
 	MUL                   = "MUL"
@@ -34,6 +35,8 @@ const (
 	DOT                   = "DOT"
 	BLANK                 = "BLANK"
 	COMMA                 = "COMMA"
+	SINGLE_QUOTE          = "SINGLE_QUOTE"
+	DOUBLE_QOUTE          = "DOUBLE_QOUTE"
 )
 
 const (
@@ -59,6 +62,8 @@ const (
 	ASSIGN_SYMBOL                = ":="
 	COMMENT_SYMBOL               = "#"
 	COMMA_SYMBOL                 = ","
+	SINGLE_QUOTE_SYMBOL          = "\""
+	DOUBLE_QOUTE_SYMBOL          = "'"
 )
 
 // keywords
@@ -66,6 +71,7 @@ const (
 	LET          = "let"
 	INTEGER_TYPE = "int"
 	FLOAT_TYPE   = "float"
+	STRING_TYPE  = "str"
 	DEFINE       = "define"
 	IF           = "if"
 	ELSE_IF      = "elif"
@@ -139,6 +145,11 @@ var RESERVED = map[string]types.Token{
 		Value: FLOAT_TYPE,
 	},
 
+	STRING_TYPE: {
+		Type:  STRING_TYPE,
+		Value: STRING_TYPE,
+	},
+
 	DEFINE: {
 		Type:  DEFINE,
 		Value: DEFINE,
@@ -200,6 +211,7 @@ var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV, MODULO}
 var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
 var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}
+var QUOTES_SLICE = []string{DOUBLE_QOUTE_SYMBOL, SINGLE_QUOTE_SYMBOL}
 
 var SpewPrinter = spew.ConfigState{Indent: "\t"}
 

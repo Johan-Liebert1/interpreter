@@ -166,6 +166,33 @@ func (lex *LexicalAnalyzer) Identifier() types.Token {
 	}
 }
 
+func (lex *LexicalAnalyzer) ConstructString(quote string) types.Token {
+	str := ""
+
+	currentChar := string(lex.Text[lex.Position])
+
+	for !lex.EndOfInput && currentChar != quote {
+		str += currentChar
+
+		lex.Advance()
+		currentChar = string(lex.Text[lex.Position])
+	}
+
+	// for the last quote
+	lex.Advance()
+
+	token := types.Token{
+		Type:       constants.STRING,
+		Value:      str,
+		Column:     lex.Column,
+		LineNumber: lex.LineNumber,
+	}
+
+	helpers.ColorPrint(constants.LightGreen, 1, 1, token)
+
+	return token
+}
+
 /*
 	The lexical analyzer / scanner / tokenizer which will convert the input string to
 	tokens
@@ -198,6 +225,14 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 
 			return identifier
 
+		}
+
+		if helpers.ValueInSlice(charToString, constants.QUOTES_SLICE) {
+			lex.Advance()
+
+			token := lex.ConstructString(charToString)
+
+			return token
 		}
 
 		if charToString == constants.COLON_SYMBOL {
