@@ -5,13 +5,14 @@ import (
 	"log"
 	"math"
 	"os"
+
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
 )
 
 func (i *Interpreter) EvaluateInteger(node IntegerNumber) interface{} {
-	return float32(node.Token.IntegerValue)
+	return node.Token.IntegerValue
 }
 
 func (i *Interpreter) EvaluateUnaryOperator(node UnaryOperationNode) interface{} {

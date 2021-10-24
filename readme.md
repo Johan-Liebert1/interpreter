@@ -1,3 +1,7 @@
+# Overview
+
+A small programming language and interpreter. Use it in shell mode or pass a file to interpret.
+
 # Grammar
 
 ```
@@ -30,6 +34,104 @@ RPAREN                --> )
 LCURLY                --> {
 RCURLY                --> }
 HASH                  --> #
+```
+
+# Syntax
+
+### Variable Declaration
+
+```
+let varName1: int;
+let varName2: float;
+let varName3: bool;
+let varName4: str;
+
+let varName1, varName2, varName3: int;
+```
+
+### Variable Definition
+
+```
+varName1 := 20;
+varName2 := 34.85;
+varName3 := "This is a string";
+```
+
+### Comment
+
+```
+# this is a comment
+```
+
+### Arithmetic Operations on Variables
+
+```
+Addition : a + b;
+Subtraction : a - b;
+Multiplication : a * b;
+Float Division : a / b;
+Integer Division : a // b;
+Modulo : a % b;
+Exponent : a ^ b;
+```
+
+### Logical Operations on Variables
+
+```
+Greater Than, Greater than equal to : a > b, a >= b;
+Less Than, Less than equal to : a <> b, a <>= b;
+Equal to, Not Equal to : ==, !=
+Logical AND, OR and NOT : and, or, not
+
+Ex: not(a > b and (b != c or d <= 3))
+```
+
+### Printing to stdout
+
+```
+let variable: int;
+variable := 32;
+
+output("This will print to stdout");
+output(1 + 34);
+output(variable);
+```
+
+### Loop
+
+```
+loop from 1 to 10 using iterator {
+    # do stuff 10 times
+}
+```
+
+### Conditionals
+
+```
+let var : int;
+var := 6;
+
+if var > 0 and var <= 5 {
+    output("Between 0 and 5");
+} elif var > 5 and var <= 10 {
+    output("Between 5 and 10");
+} else {
+    output("Greater than 10")
+}
+
+```
+
+### Functions
+
+```
+define add(a, b : int) {
+    return a + b;
+}
+
+var c : int;
+
+# Calling
+c := add(1, 2);
 ```
 
 # FizzBuzz

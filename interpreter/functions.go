@@ -53,7 +53,7 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 	i.CurrentScope = &funcScope
 	defer i.ReleaseScope()
 
-	fmt.Println("Entering Scope, ", funcName)
+	// fmt.Println("Entering Scope, ", funcName)
 
 	// helpers.ColorPrint(
 	// 	constants.Blue, 2,
@@ -85,7 +85,7 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 
 	fn.FunctionBlock.Scope(i)
 
-	fmt.Println("Exit Scope, ", funcName)
+	// fmt.Println("Exit Scope, ", funcName)
 
 }
 
@@ -110,7 +110,7 @@ func (fn FunctionCall) Scope(i *Interpreter) {
 		errors.ShowError(
 			constants.SEMANTIC_ERROR,
 			constants.ERROR_VARAIBLE_NOT_DEFINED,
-			fmt.Sprintf("Function Call, %s is not defined", fn.FunctionName),
+			fmt.Sprintf("Function %s is not defined", fn.FunctionName),
 			fn.Token,
 		)
 	}

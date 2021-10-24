@@ -21,7 +21,7 @@ comment               --> HASH (UNICODE_CHARACTER)* \n
 expression            --> term ((PLUS | MINUS) term)*
 term                  --> factor ((MUL | DIV | EXPONENT) factor)*
 factor                --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | STRING | BOOLEAN | LPAREN expression RPAREN | variable
-comparator            --> > | < | >= | <= | ==
+comparator            --> > | < | >= | <= | == | !=
 LPAREN                --> (
 RPAREN                --> )
 LCURLY                --> {

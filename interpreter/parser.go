@@ -174,7 +174,11 @@ func (p *Parser) Factor() AbstractSyntaxTree {
 		p.ValidateToken(constants.RPAREN)
 
 	default:
-		returningValue = p.Variable()
+		if p.Lexer.PeekNextToken(1).Type == constants.LPAREN {
+			returningValue = p.FunctionCallStatement()
+		} else {
+			returningValue = p.Variable()
+		}
 	}
 
 	return returningValue
