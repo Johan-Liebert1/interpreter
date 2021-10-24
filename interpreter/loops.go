@@ -5,8 +5,8 @@ import "programminglang/types"
 // loops that range over some values. Ex - loop from 1 to 10 with id
 type RangeLoop struct {
 	IdentifierToken types.Token
-	Low             types.Token
-	High            types.Token
+	Low             AbstractSyntaxTree
+	High            AbstractSyntaxTree
 	Block           AbstractSyntaxTree
 }
 

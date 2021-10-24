@@ -276,8 +276,12 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	// helpers.ColorPrint(constants.LightYellow, 1, 1, "loop = ", constants.SpewPrinter.Sdump(l))
 
-	low := l.Low.IntegerValue
-	high := l.High.IntegerValue
+	ll := i.Visit(l.Low).(float32)
+	h := i.Visit(l.High).(float32)
+
+	low := int(ll)
+	high := int(h)
+
 	iteratorName := l.IdentifierToken.Value
 
 	topAr, _ := i.CallStack.Peek()

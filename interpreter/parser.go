@@ -566,15 +566,13 @@ func (p *Parser) ParseLoop() AbstractSyntaxTree {
 
 	p.ValidateToken(constants.FROM)
 
-	low := p.CurrentToken
-	p.ValidateToken(constants.INTEGER)
+	low := p.Expression()
 
 	p.ValidateToken(constants.TO)
 
-	high := p.CurrentToken
-	p.ValidateToken(constants.INTEGER)
+	high := p.Expression()
 
-	p.ValidateToken(constants.WITH)
+	p.ValidateToken(constants.USING)
 
 	loopCounter := p.CurrentToken
 	p.ValidateToken(constants.IDENTIFIER)

@@ -82,7 +82,7 @@ const (
 	LOOP         = "loop"
 	FROM         = "from"
 	TO           = "to"
-	WITH         = "with"
+	USING        = "using"
 )
 
 // symbol types
@@ -200,9 +200,9 @@ var RESERVED = map[string]types.Token{
 		Value: TO,
 	},
 
-	WITH: {
-		Type:  WITH,
-		Value: WITH,
+	USING: {
+		Type:  USING,
+		Value: USING,
 	},
 }
 
