@@ -46,7 +46,7 @@ let varName2: float;
 let varName3: bool;
 let varName4: str;
 
-let varName1, varName2, varName3: int;
+let varName5, varName6, varName7: int;
 ```
 
 ### Variable Definition
@@ -79,7 +79,7 @@ Exponent : a ^ b;
 
 ```
 Greater Than, Greater than equal to : a > b, a >= b;
-Less Than, Less than equal to : a <> b, a <>= b;
+Less Than, Less than equal to : a < b, a <= b;
 Equal to, Not Equal to : ==, !=
 Logical AND, OR and NOT : and, or, not
 
@@ -195,7 +195,7 @@ interpreter.Init(`
 let p : bool;
 
 define isPrime(n : int) {
-    let value : int;
+    let value : bool;
     value := true;
 
     loop from 2 to n ^ 0.5 using a {
