@@ -551,7 +551,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 			// helpers.ColorPrint(constants.Yellow, 1, 1, "gonna call function")
 			// a function call
 			node = p.FunctionCallStatement()
-		} else if p.Lexer.PeekNextToken().Type == constants.ASSIGN {
+		} else if p.Lexer.PeekNextToken(1).Type == constants.ASSIGN {
 			// helpers.ColorPrint(constants.Yellow, 0, 1, "calling assignment_statement")
 			// variable definition
 			node = p.AssignmentStatement()
@@ -696,8 +696,11 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 
 	var right AbstractSyntaxTree
 
-	if p.Lexer.PeekNextToken().Type == constants.STRING {
+	if p.Lexer.PeekNextToken(1).Type == constants.STRING {
 		right = p.Factor()
+	} else if p.Lexer.PeekNextToken(1).Type == constants.LPAREN {
+		// assignment to function call
+		right = p.FunctionCallStatement()
 	} else {
 		right = p.LogicalStatement()
 	}

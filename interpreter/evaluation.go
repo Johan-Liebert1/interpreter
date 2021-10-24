@@ -128,7 +128,7 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	}
 
 	// helpers.ColorPrint(
-	// 	constants.LightMagenta, 1,
+	// 	constants.LightMagenta, 1, 0,
 	// 	"activationRecord = ",
 	// 	constants.SpewPrinter.Sdump(ar),
 	// )
@@ -141,6 +141,7 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 		result = i.Visit(funcSymbol.ReturningValue)
 	}
 
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(i.CallStack))
 	// helpers.ColorPrint(constants.Green, 1, 1, "returning from function ", result)
 
 	// pop the ActivationRecord at the top of the call stack after function execution is done
@@ -156,7 +157,6 @@ func (i *Interpreter) EvaluateCompoundStatement(cs CompoundStatement) interface{
 	// i.spewPrinter.Dump(node)
 
 	for _, child := range cs.Children {
-		// use Token() here
 		if child.GetToken().Type == constants.BLANK {
 			continue
 		}
@@ -274,8 +274,25 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	// helpers.ColorPrint(constants.LightYellow, 1, 1, "loop = ", constants.SpewPrinter.Sdump(l))
 
-	low := i.Visit(l.Low).(float32)
-	high := i.Visit(l.High).(float32)
+	var (
+		low  int
+		high int
+	)
+
+	visitLow := i.Visit(l.Low)
+	visitHigh := i.Visit(l.High)
+
+	if val, ok := visitLow.(float32); ok {
+		low = int(val)
+	} else {
+		low = visitLow.(int)
+	}
+
+	if val, ok := visitHigh.(float32); ok {
+		high = int(val)
+	} else {
+		high = visitHigh.(int)
+	}
 
 	iteratorName := l.IdentifierToken.Value
 
@@ -290,6 +307,8 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	ar.Init()
 
 	i.CallStack.Push(*ar)
+
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(i.CallStack))
 
 	var result interface{}
 

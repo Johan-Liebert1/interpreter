@@ -545,6 +545,12 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 	}
 }
 
-func (lex LexicalAnalyzer) PeekNextToken() types.Token {
-	return lex.GetNextToken()
+func (lex LexicalAnalyzer) PeekNextToken(num int) types.Token {
+	var token types.Token
+
+	for i := 0; i < num; i++ {
+		token = lex.GetNextToken()
+	}
+
+	return token
 }
