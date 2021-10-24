@@ -83,6 +83,9 @@ const (
 	FROM         = "from"
 	TO           = "to"
 	USING        = "using"
+	RETURN       = "return"
+	TRUE         = "true"
+	FALSE        = "false"
 )
 
 // symbol types
@@ -203,6 +206,21 @@ var RESERVED = map[string]types.Token{
 	USING: {
 		Type:  USING,
 		Value: USING,
+	},
+
+	RETURN: {
+		Type:  RETURN,
+		Value: RETURN,
+	},
+
+	TRUE: {
+		Type:  TRUE,
+		Value: TRUE,
+	},
+
+	FALSE: {
+		Type:  FALSE,
+		Value: FALSE,
 	},
 }
 

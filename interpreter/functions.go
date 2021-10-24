@@ -16,6 +16,7 @@ type FunctionDeclaration struct {
 	FunctionName     string
 	FunctionBlock    AbstractSyntaxTree // a Program struct
 	FormalParameters []FunctionParameters
+	ReturningValue   AbstractSyntaxTree
 }
 
 type FunctionCall struct {
@@ -76,6 +77,8 @@ func (fn FunctionDeclaration) Scope(i *Interpreter) {
 		// add all the parameters symbols
 		funcSymbol.ParamSymbols = append(funcSymbol.ParamSymbols, paramSymbol)
 	}
+
+	funcSymbol.ReturningValue = fn.ReturningValue
 
 	// we've already created a new scope, so need to add the funcSymbol to the enclosing scope
 	i.CurrentScope.EnclosingScope.DefineSymbol(funcSymbol)

@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"fmt"
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
@@ -43,8 +42,9 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 		result = f.Token.FloatValue
 
 	} else if s, ok := node.(String); ok {
-		fmt.Println(s)
 		result = s.Token.Value
+	} else if b, ok := node.(Boolean); ok {
+		result = b.Value
 
 	} else if u, ok := node.(UnaryOperationNode); ok {
 		result = i.EvaluateUnaryOperator(u)

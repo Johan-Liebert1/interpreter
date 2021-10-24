@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"programminglang/constants"
@@ -84,33 +85,26 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	funcSymbol, _ := i.CurrentScope.LookupSymbol(functionName, false)
 	formalParams := funcSymbol.ParamSymbols
 
-	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(formalParams))
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(funcSymbol))
 
 	// print to stdout if it's a print function
 	if functionName == constants.PRINT_OUTPUT {
 		for index := range actualParams {
 			param := actualParams[index]
 
-			// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(param))
+			color := constants.LightYellow
 
-			var value interface{} = param.GetToken().Value
-
-			if len(param.GetToken().Value) == 0 {
-				switch param.GetToken().Type {
-				case constants.INTEGER:
-					value = param.GetToken().IntegerValue
-				case constants.FLOAT:
-					value = param.GetToken().FloatValue
-				}
+			if _, ok := param.(ComparisonNode); ok {
+				color = constants.LightCyan
 			}
 
-			if v, ok := param.(Variable); ok {
-				value = i.EvaluateVariable(v)
+			if _, ok := param.(String); ok {
+				color = constants.LightGreen
 			}
 
-			helpers.ColorPrint(constants.LightYellow, 0, 1, value)
-			// helpers.ColorPrint(constants.LightGreen, 1, constants.SpewPrinter.Sdump(actualParams[index]))
+			helpers.ColorPrint(color, 0, 0, i.Visit(param))
 		}
+		fmt.Println()
 		return result
 	}
 
@@ -122,7 +116,7 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	}
 	ar.Init()
 
-	// helpers.ColorPrint(constants.White, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
 	// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
 	// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
 
@@ -142,6 +136,12 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	i.CallStack.Push(ar)
 
 	i.Visit(funcSymbol.FunctionBlock)
+
+	if funcSymbol.ReturningValue != nil {
+		result = i.Visit(funcSymbol.ReturningValue)
+	}
+
+	// helpers.ColorPrint(constants.Green, 1, 1, "returning from function ", result)
 
 	// pop the ActivationRecord at the top of the call stack after function execution is done
 	i.CallStack.Pop()
@@ -196,10 +196,8 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 		os.Exit(1)
 	}
 
-	floatValue, isFloat := helpers.GetFloat(varValue)
-
-	if exists && isFloat {
-		result = floatValue
+	if exists {
+		result = varValue
 	} else {
 		log.Fatal("Variable ", varValue, " not defined.")
 	}
@@ -276,11 +274,8 @@ func (i *Interpreter) EvaluateConditionalStatement(c ConditionalStatement) inter
 func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	// helpers.ColorPrint(constants.LightYellow, 1, 1, "loop = ", constants.SpewPrinter.Sdump(l))
 
-	ll := i.Visit(l.Low).(float32)
-	h := i.Visit(l.High).(float32)
-
-	low := int(ll)
-	high := int(h)
+	low := i.Visit(l.Low).(float32)
+	high := i.Visit(l.High).(float32)
 
 	iteratorName := l.IdentifierToken.Value
 
@@ -294,15 +289,11 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	}
 	ar.Init()
 
-	// ar.SetItem(iteratorName, low)
-
 	i.CallStack.Push(*ar)
-
-	// i.Visit(l.IdentifierToken)
 
 	var result interface{}
 
-	for counter := low; counter <= high; counter++ {
+	for counter := int(low); counter <= int(high); counter++ {
 		ar.SetItem(iteratorName, counter)
 		i.Visit(l.Block)
 	}

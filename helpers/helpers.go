@@ -49,5 +49,5 @@ func ColorPrint(color string, newLinesTop int, newLinesBottom int, toPrint ...in
 
 	fmt.Print(nlt, color)
 	fmt.Print(toPrint...)
-	fmt.Println(nlb, constants.Reset)
+	fmt.Print(nlb, constants.Reset)
 }

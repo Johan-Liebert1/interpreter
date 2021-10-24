@@ -152,6 +152,20 @@ func (p *Parser) Factor() AbstractSyntaxTree {
 			Value: token.Value,
 		}
 
+	case constants.TRUE:
+		p.ValidateToken(constants.TRUE)
+		returningValue = Boolean{
+			Token: token,
+			Value: true,
+		}
+
+	case constants.FALSE:
+		p.ValidateToken(constants.FALSE)
+		returningValue = Boolean{
+			Token: token,
+			Value: false,
+		}
+
 	case constants.LPAREN:
 		p.ValidateToken(constants.LPAREN)
 		returningValue = p.Expression()
@@ -359,14 +373,14 @@ func (p *Parser) FunctionCallStatement() AbstractSyntaxTree {
 
 	if p.CurrentToken.Type != constants.RPAREN {
 		// has actual arguments and isn't just function()
-		node := p.Expression()
+		node := p.LogicalStatement()
 		actualParameters = append(actualParameters, node)
 	}
 
 	// could be any number of parameters delimited by a comma
 	for p.CurrentToken.Type == constants.COMMA {
 		p.ValidateToken(constants.COMMA)
-		node := p.Expression()
+		node := p.LogicalStatement()
 		actualParameters = append(actualParameters, node)
 	}
 
@@ -391,6 +405,7 @@ func (p *Parser) FunctionDeclaration() AbstractSyntaxTree {
 	p.ValidateToken(constants.IDENTIFIER)
 
 	var parametersList []FunctionParameters
+	var returnStatement AbstractSyntaxTree
 
 	if p.CurrentToken.Type == constants.LPAREN {
 		p.ValidateToken(constants.LPAREN)
@@ -400,13 +415,26 @@ func (p *Parser) FunctionDeclaration() AbstractSyntaxTree {
 
 	p.ValidateToken(constants.LCURLY)
 	functionBlock := p.Program()
+
+	if p.CurrentToken.Type == constants.RETURN {
+		p.ValidateToken(constants.RETURN)
+		returnStatement = p.LogicalStatement()
+	}
+
+	if p.CurrentToken.Type == constants.SEMI_COLON {
+		p.ValidateToken(constants.SEMI_COLON)
+	}
+
 	p.ValidateToken(constants.RCURLY)
 
 	function := FunctionDeclaration{
 		FunctionName:     functionName,
 		FunctionBlock:    functionBlock,
 		FormalParameters: parametersList,
+		ReturningValue:   returnStatement,
 	}
+
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(function))
 
 	return function
 }
@@ -671,7 +699,7 @@ func (p *Parser) AssignmentStatement() AbstractSyntaxTree {
 	if p.Lexer.PeekNextToken().Type == constants.STRING {
 		right = p.Factor()
 	} else {
-		right = p.Expression()
+		right = p.LogicalStatement()
 	}
 
 	// helpers.ColorPrint(

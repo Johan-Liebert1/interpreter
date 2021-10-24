@@ -8,11 +8,13 @@ import (
 )
 
 type Symbol struct {
-	Name          string             // name of the identifier / symbol
-	Category      string             // whether the symbol is a built in type, or a variable, or a function name
-	Type          string             // integer, float, string, etc
-	ParamSymbols  []Symbol           // all the parameter symbols for functions
-	FunctionBlock AbstractSyntaxTree // the function's block (executable) code
+	Name     string // name of the identifier / symbol
+	Category string // whether the symbol is a built in type, or a variable, or a function name
+	Type     string // integer, float, string, etc
+
+	ParamSymbols   []Symbol           // all the parameter symbols for functions
+	FunctionBlock  AbstractSyntaxTree // the function's block (executable) code
+	ReturningValue AbstractSyntaxTree
 }
 
 type ScopedSymbolsTable struct {
@@ -36,6 +38,11 @@ func (s *ScopedSymbolsTable) Init() {
 
 	s.DefineSymbol(Symbol{
 		Name: constants.FLOAT_TYPE,
+		Type: constants.BUILT_IN_TYPE,
+	})
+
+	s.DefineSymbol(Symbol{
+		Name: constants.STRING_TYPE,
 		Type: constants.BUILT_IN_TYPE,
 	})
 

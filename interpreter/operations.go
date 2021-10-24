@@ -19,6 +19,11 @@ type String struct {
 	Value string
 }
 
+type Boolean struct {
+	Token types.Token
+	Value bool
+}
+
 type BinaryOperationNode struct {
 	Left      AbstractSyntaxTree
 	Operation types.Token
@@ -44,6 +49,11 @@ func (s String) GetToken() types.Token {
 	return s.Token
 }
 func (s String) Scope(_ *Interpreter) {}
+
+func (b Boolean) GetToken() types.Token {
+	return b.Token
+}
+func (b Boolean) Scope(_ *Interpreter) {}
 
 func (b BinaryOperationNode) GetToken() types.Token {
 	return b.Operation
