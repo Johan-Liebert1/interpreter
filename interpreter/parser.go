@@ -274,9 +274,10 @@ func (p *Parser) ComparisonStatement() AbstractSyntaxTree {
 		case constants.EQUALITY_SYMBOL:
 			// this will advance the pointer
 			p.ValidateToken(constants.EQUALITY)
-		}
 
-		// helpers.ColorPrint(constants.LightGreen, 1, 1, "currentToken = ", currentToken)
+		case constants.NOT_EQUAL_TO_SYMBOL:
+			p.ValidateToken(constants.NOT_EQUAL_TO)
+		}
 
 		result = ComparisonNode{
 			Left:       result,
@@ -577,7 +578,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 		p.CurrentToken.Type,
 		[]string{constants.LPAREN, constants.FLOAT, constants.INTEGER, constants.NOT},
 	) {
-		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
+		helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
 
 		node = p.LogicalStatement()
 

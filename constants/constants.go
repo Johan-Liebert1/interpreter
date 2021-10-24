@@ -18,6 +18,7 @@ const (
 	FLOAT_DIV             = "FLOAT_DIV"
 	MODULO                = "MODULO"
 	EQUALITY              = "EQUALITY"
+	NOT_EQUAL_TO          = "NOT_EQUAL_TO"
 	GREATER_THAN          = "GREATER_THAN"
 	LESS_THAN             = "LESS_THAN"
 	GREATER_THAN_EQUAL_TO = "GREATER_THAN_EQUAL_TO"
@@ -49,6 +50,7 @@ const (
 	FLOAT_DIV_SYMBOL             = "/"
 	MODULO_SYMBOL                = "%"
 	EQUALITY_SYMBOL              = "=="
+	NOT_EQUAL_TO_SYMBOL          = "!="
 	GREATER_THAN_SYMBOL          = ">"
 	LESS_THAN_SYMBOL             = "<"
 	GREATER_THAN_EQUAL_TO_SYMBOL = ">="
@@ -61,6 +63,7 @@ const (
 	COLON_SYMBOL                 = ":"
 	SEMI_COLON_SYMBOL            = ";"
 	DOT_SYMBOL                   = "."
+	EXCLAMATION_SYMBOL           = "!"
 	ASSIGN_SYMBOL                = ":="
 	COMMENT_SYMBOL               = "#"
 	COMMA_SYMBOL                 = ","
@@ -235,7 +238,7 @@ var RESERVED = map[string]types.Token{
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
 var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV, MODULO, EXPONENT}
-var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
+var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY, NOT_EQUAL_TO}
 var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}
 var QUOTES_SLICE = []string{DOUBLE_QOUTE_SYMBOL, SINGLE_QUOTE_SYMBOL}

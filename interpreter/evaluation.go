@@ -381,6 +381,10 @@ func (i *Interpreter) EvaluateComparisonNode(c ComparisonNode) interface{} {
 
 	case constants.EQUALITY:
 		result = left == right
+
+	case constants.NOT_EQUAL_TO:
+		result = left != right
+
 	}
 
 	return result

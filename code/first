@@ -1,7 +1,0 @@
-let a, b : int;
-
-define myFunction () {}
-
-a := 10;
-b := a + 20;
-a + b;
