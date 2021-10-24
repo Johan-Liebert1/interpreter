@@ -415,6 +415,18 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			return token
 		}
 
+		if charToString == constants.OPERANDS[constants.EXPONENT] {
+
+			token := types.Token{
+				Type:       constants.EXPONENT,
+				Value:      constants.OPERANDS[constants.EXPONENT],
+				LineNumber: lex.LineNumber,
+				Column:     lex.Column,
+			}
+			lex.Advance()
+			return token
+		}
+
 		// could be an integer division or a float division
 		// need to peek
 		if charToString == constants.OPERANDS[constants.DIV] {

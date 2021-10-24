@@ -13,6 +13,7 @@ const (
 	PLUS                  = "PLUS"
 	MINUS                 = "MINUS"
 	MUL                   = "MUL"
+	EXPONENT              = "EXPONENT"
 	INTEGER_DIV           = "INTEGER_DIV"
 	FLOAT_DIV             = "FLOAT_DIV"
 	MODULO                = "MODULO"
@@ -43,6 +44,7 @@ const (
 	PLUS_SYMBOL                  = "+"
 	MINUS_SYMBOL                 = "-"
 	MUL_SYMBOL                   = "*"
+	EXPONENT_SYMBOL              = "^"
 	INTEGER_DIV_SYMBOL           = "//"
 	FLOAT_DIV_SYMBOL             = "/"
 	MODULO_SYMBOL                = "%"
@@ -127,10 +129,11 @@ const (
 	Maps "PLUS" to "+", "MINUS" to "-", "MUL" to "*" and "DIV" to "/"
 */
 var OPERANDS = map[string]string{
-	PLUS:  PLUS_SYMBOL,
-	MINUS: MINUS_SYMBOL,
-	MUL:   MUL_SYMBOL,
-	DIV:   FLOAT_DIV_SYMBOL,
+	PLUS:     PLUS_SYMBOL,
+	MINUS:    MINUS_SYMBOL,
+	MUL:      MUL_SYMBOL,
+	DIV:      FLOAT_DIV_SYMBOL,
+	EXPONENT: EXPONENT_SYMBOL,
 }
 
 var RESERVED = map[string]types.Token{
@@ -231,7 +234,7 @@ var RESERVED = map[string]types.Token{
 }
 
 var PLUS_MINUS_SLICE = []string{PLUS, MINUS}
-var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV, MODULO}
+var MUL_DIV_SLICE = []string{MUL, INTEGER_DIV, FLOAT_DIV, MODULO, EXPONENT}
 var COMPARATORS_SLICE = []string{GREATER_THAN, LESS_THAN, GREATER_THAN_EQUAL_TO, LESS_THAN_EQUAL_TO, EQUALITY}
 var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}

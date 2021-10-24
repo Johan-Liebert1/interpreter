@@ -29,7 +29,7 @@ func getUserInput(reader *bufio.Reader, langInterpreter interpreter.Interpreter)
 			continue
 		}
 
-		langInterpreter.Init(userInput, true)
+		langInterpreter.Init(userInput, false)
 		result := langInterpreter.Interpret()
 
 		if result != nil {

@@ -3,7 +3,7 @@
 ```
 PROGRAM               --> block
 block                 --> declarations statement_list
-function              --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block RCURLY
+function              --> DEFINE ID LPAREN formal_parameters_list? RPAREN LCURLY block (RETURN expression)? RCURLY
 formal_parameter_list --> formal_parameters | formal_parameters SEMI_COLON formal_parameter_list
 formal_parameters     --> ID (COMMA ID)* COLON type_spec
 function_call         --> ID LPAREN (expression (COMMA expression)*)? RPAREN
@@ -12,7 +12,7 @@ conditional_statement --> IF logical_statement LCURLY block RCURLY (ELIF logical
 loop                  --> LOOP FROM expression TO expression WITH variable LCURLY block RCURLY
 declarations          --> LET (variable_declaration SEMI)+ | function* | blank
 variable_declaration  --> ID (COMMA ID)* COLON var_type
-var_type              --> INTEGER | FLOAT
+var_type              --> INTEGER | FLOAT | STRING
 statement_list        --> statement SEMI_COLON | statement SEMI_COLON statement_list
 statement             --> assignment_statement | function_call | conditional_statement | blank
 comparison            --> expression comparator expression
@@ -20,14 +20,16 @@ assignment_statement  --> variable ASSIGN expression
 logical_statement     --> NOT* (comparator ((AND | OR) comparator)*)
 variable              --> ID
 blank                 -->
+comment               --> HASH (UNICODE_CHARACTER)* \n
 expression            --> term ((PLUS | MINUS) term)*
-term                  --> factor ((MUL | DIV) factor)*
-factor                --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | STRING | LPAREN expression RPAREN | variable
+term                  --> factor ((MUL | DIV | EXPONENT) factor)*
+factor                --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | STRING | BOOLEAN | LPAREN expression RPAREN | variable
 comparator            --> > | < | >= | <= | ==
 LPAREN                --> (
 RPAREN                --> )
 LCURLY                --> {
 RCURLY                --> }
+HASH                  --> #
 ```
 
 # FizzBuzz
@@ -47,7 +49,7 @@ loop from 1 to 50 using i {
     } else {
         output(i)
     }
-}`)
+}`, false)
 
 result := interpreter.Interpret()
 fmt.Println(result)
@@ -75,7 +77,7 @@ loop from 1 to 20 using i {
     first := second;
     second := third;
     third := first + second;
-}`)
+}`, false)
 
 result := interpreter.Interpret()
 fmt.Println(result)
@@ -94,7 +96,7 @@ define isPrime(n : int) {
     let value : int;
     value := true;
 
-    loop from 2 to n // 2 using a {
+    loop from 2 to n ^ 0.5 using a {
         if n % a == 0 {
             value := false;
         }
@@ -109,7 +111,7 @@ loop from 1 to 50 using i {
     if p == true {
         output(i, " is prime = ", p);
     }
-}`)
+}`, false)
 
 result := interpreter.Interpret()
 fmt.Println(result)

@@ -94,6 +94,8 @@ func (p *Parser) Term() AbstractSyntaxTree {
 		case constants.MODULO:
 			p.ValidateToken(constants.MODULO)
 
+		case constants.EXPONENT:
+			p.ValidateToken(constants.EXPONENT)
 		}
 
 		returningValue = BinaryOperationNode{
@@ -571,7 +573,10 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 		node = p.ParseLoop()
 
-	} else if p.CurrentToken.Type == constants.INTEGER || p.CurrentToken.Type == constants.FLOAT {
+	} else if helpers.ValueInSlice(
+		p.CurrentToken.Type,
+		[]string{constants.LPAREN, constants.FLOAT, constants.INTEGER, constants.NOT},
+	) {
 		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
 
 		node = p.LogicalStatement()

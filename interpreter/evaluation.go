@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"programminglang/constants"
 	"programminglang/helpers"
@@ -284,11 +285,15 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 
 	if val, ok := visitLow.(float32); ok {
 		low = int(val)
+	} else if val, ok := visitLow.(float64); ok {
+		low = int(val)
 	} else {
 		low = visitLow.(int)
 	}
 
 	if val, ok := visitHigh.(float32); ok {
+		high = int(val)
+	} else if val, ok := visitHigh.(float64); ok {
 		high = int(val)
 	} else {
 		high = visitHigh.(int)
@@ -337,6 +342,9 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 
 	case constants.MUL:
 		result = leftResult * rightResult
+
+	case constants.EXPONENT:
+		result = math.Pow(float64(leftResult), float64(rightResult))
 
 	case constants.FLOAT_DIV:
 		result = leftResult / rightResult
