@@ -17,11 +17,13 @@ assignment_statement  --> variable ASSIGN expression
 logical_statement     --> NOT* (comparator ((AND | OR) comparator)*)
 variable              --> ID
 blank                 --> 
+comment               --> HASH (unicode)* \n
 expression            --> term ((PLUS | MINUS) term)*
 term                  --> factor ((MUL | DIV) factor)*
-factor                --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | STRING | LPAREN expression RPAREN | variable
+factor                --> ((PLUS | MINUS) factor) | INTEGER | FLOAT | STRING | BOOLEAN | LPAREN expression RPAREN | variable
 comparator            --> > | < | >= | <= | ==
 LPAREN                --> (
 RPAREN                --> )
 LCURLY                --> {
 RCURLY                --> }
+HASH                  --> #

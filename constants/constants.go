@@ -72,6 +72,7 @@ const (
 	INTEGER_TYPE = "int"
 	FLOAT_TYPE   = "float"
 	STRING_TYPE  = "str"
+	BOOLEAN_TYPE = "bool"
 	DEFINE       = "define"
 	IF           = "if"
 	ELSE_IF      = "elif"
@@ -151,6 +152,11 @@ var RESERVED = map[string]types.Token{
 	STRING_TYPE: {
 		Type:  STRING_TYPE,
 		Value: STRING_TYPE,
+	},
+
+	BOOLEAN_TYPE: {
+		Type:  BOOLEAN_TYPE,
+		Value: BOOLEAN_TYPE,
 	},
 
 	DEFINE: {

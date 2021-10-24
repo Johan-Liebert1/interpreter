@@ -37,7 +37,7 @@ interpreter := Interpreter{}
 interpreter.InitConcrete()
 
 interpreter.Init(`
-loop from 1 to 50 with i {
+loop from 1 to 50 using i {
     if i % 3 == 0 and i % 5 == 0 {
         output("FizzBuzz")
     } elif i % 3 == 0 {
@@ -70,11 +70,45 @@ third := first + second;
 output(first);
 output(second);
 
-loop from 1 to 20 with i {
+loop from 1 to 20 using i {
     output(third);
     first := second;
     second := third;
     third := first + second;
+}`)
+
+result := interpreter.Interpret()
+fmt.Println(result)
+```
+
+# Prime Numbers up to a range
+
+```go
+interpreter := Interpreter{}
+interpreter.InitConcrete()
+
+interpreter.Init(`
+let p : bool;
+
+define isPrime(n : int) {
+    let value : int;
+    value := true;
+
+    loop from 2 to n // 2 using a {
+        if n % a == 0 {
+            value := false;
+        }
+    }
+
+    return value;
+}
+
+loop from 1 to 50 using i {
+    p := isPrime(i);
+
+    if p == true {
+        output(i, " is prime = ", p);
+    }
 }`)
 
 result := interpreter.Interpret()

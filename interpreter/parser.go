@@ -493,12 +493,15 @@ func (p *Parser) FormalParameters() []FunctionParameters {
 func (p *Parser) VarType() AbstractSyntaxTree {
 	token := p.CurrentToken
 
-	if token.Type == constants.INTEGER_TYPE {
+	switch token.Type {
+	case constants.INTEGER_TYPE:
 		p.ValidateToken(constants.INTEGER_TYPE)
-	} else if token.Type == constants.FLOAT_TYPE {
+	case constants.FLOAT_TYPE:
 		p.ValidateToken(constants.FLOAT_TYPE)
-	} else if token.Type == constants.STRING_TYPE {
+	case constants.STRING_TYPE:
 		p.ValidateToken(constants.STRING_TYPE)
+	case constants.BOOLEAN_TYPE:
+		p.ValidateToken(constants.BOOLEAN_TYPE)
 	}
 
 	return VariableType{
