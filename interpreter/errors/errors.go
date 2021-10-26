@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"fmt"
 	"os"
 	"programminglang/constants"
 	"programminglang/helpers"
@@ -32,18 +33,29 @@ type SemanticError struct {
 	Message   string
 }
 
+type RuntimeError struct {
+	ErrorCode string
+	Token     types.Token
+	Message   string
+}
+
 func (lxe *LexerError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, 1, "LexerError: ", lxe.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("LexerError: %s. %s", lxe.Message, lxe.Token.PrintLineCol()))
 	os.Exit(1)
 }
 
 func (pe *ParseError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, 1, "ParseError: ", pe.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("ParseError: %s. %s", pe.Message, pe.Token.PrintLineCol()))
 	os.Exit(1)
 }
 
 func (se *SemanticError) PrintError() {
-	helpers.ColorPrint(constants.Red, 1, 1, "SemanticError: ", se.Message)
+	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("SemanticError: %s. %s", se.Message, se.Token.PrintLineCol()))
+	os.Exit(1)
+}
+
+func (re *RuntimeError) PrintError() {
+	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("RuntimeError: %s. %s", re.Message, re.Token.PrintLineCol()))
 	os.Exit(1)
 }
 
@@ -64,6 +76,12 @@ func ShowError(errorType string, errorCode string, message string, token types.T
 		}
 	} else if errorType == constants.SEMANTIC_ERROR {
 		e = &SemanticError{
+			ErrorCode: errorCode,
+			Token:     token,
+			Message:   message,
+		}
+	} else if errorType == constants.RUNTIME_ERROR {
+		e = &RuntimeError{
 			ErrorCode: errorCode,
 			Token:     token,
 			Message:   message,

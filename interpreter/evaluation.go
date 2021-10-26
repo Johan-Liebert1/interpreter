@@ -2,13 +2,12 @@ package interpreter
 
 import (
 	"fmt"
-	"log"
 	"math"
-	"os"
 
 	"programminglang/constants"
 	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
+	"programminglang/interpreter/errors"
 )
 
 func (i *Interpreter) EvaluateInteger(node IntegerNumber) interface{} {
@@ -193,15 +192,15 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 
 	varValue, exists := activationRecord.GetItem(variableName)
 
-	if varValue == nil {
-		helpers.ColorPrint(constants.Red, 1, 1, varValue, " ", variableName, " ", constants.SpewPrinter.Sdump(i.CallStack))
-		os.Exit(1)
-	}
-
 	if exists {
 		result = varValue
 	} else {
-		log.Fatal("Variable ", varValue, " not defined.")
+		errors.ShowError(
+			constants.SEMANTIC_ERROR,
+			constants.ERROR_VARAIBLE_NOT_DEFINED,
+			fmt.Sprintf("Variable '%s' is not defined.", variableName),
+			v.Token,
+		)
 	}
 
 	return result
@@ -334,6 +333,17 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 	leftResult, _ := helpers.GetFloat(i.Visit(b.Left))
 	rightResult, _ := helpers.GetFloat(i.Visit(b.Right))
 
+	divideByZero := func() {
+
+		fmt.Print(b.Right.GetToken())
+		errors.ShowError(
+			constants.RUNTIME_ERROR,
+			constants.LOGICAL_ERROR,
+			fmt.Sprintf("Cannot divide by zero. %s", b.Right.GetToken().PrintLineCol()),
+			b.Right.GetToken(),
+		)
+	}
+
 	switch b.Operation.Type {
 	case constants.PLUS:
 		result = leftResult + rightResult
@@ -348,9 +358,15 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 		result = math.Pow(float64(leftResult), float64(rightResult))
 
 	case constants.FLOAT_DIV:
+		if rightResult == 0.0 {
+			divideByZero()
+		}
 		result = leftResult / rightResult
 
 	case constants.INTEGER_DIV:
+		if rightResult == 0.0 {
+			divideByZero()
+		}
 		result = int(leftResult / rightResult)
 
 	case constants.MODULO:

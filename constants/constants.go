@@ -112,6 +112,8 @@ const (
 	ERROR_ID_NOT_FOUND         = "Identifier not found"
 	ERROR_DUPLICATE_ID         = "Duplicate identifier found"
 	ERROR_VARAIBLE_NOT_DEFINED = "Variable not defined"
+	INVALID_SYNTAX             = "Invalid Syntax"
+	LOGICAL_ERROR              = "Logical Error"
 )
 
 // error types
@@ -119,6 +121,7 @@ const (
 	LEXER_ERROR    = "LEXER_ERROR"
 	PARSER_ERROR   = "PARSER_ERROR"
 	SEMANTIC_ERROR = "SEMANTIC_ERROR"
+	RUNTIME_ERROR  = "RUNTIME_ERROR"
 )
 
 // activation record keys
@@ -126,6 +129,9 @@ const (
 	AR_PROGRAM  = "AR_PROGRAM"
 	AR_FUNCTION = "AR_FUNCTION"
 	AR_LOOP     = "AR_LOOP"
+	AR_IF       = "AR_IF"
+	AR_ELSE_IF  = "AR_ELSE_IF"
+	AR_ELSE     = "AR_ELSE"
 )
 
 /*

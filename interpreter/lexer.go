@@ -158,12 +158,9 @@ func (lex *LexicalAnalyzer) Identifier() types.Token {
 		return token
 	}
 
-	return types.Token{
-		Type:       constants.IDENTIFIER,
-		Value:      identifier,
-		LineNumber: lex.LineNumber,
-		Column:     lex.Column,
-	}
+	token := lex.GetToken(constants.IDENTIFIER, identifier)
+
+	return token
 }
 
 func (lex *LexicalAnalyzer) ConstructString(quote string) types.Token {
@@ -181,12 +178,7 @@ func (lex *LexicalAnalyzer) ConstructString(quote string) types.Token {
 	// for the last quote
 	lex.Advance()
 
-	token := types.Token{
-		Type:       constants.STRING,
-		Value:      str,
-		Column:     lex.Column,
-		LineNumber: lex.LineNumber,
-	}
+	token := lex.GetToken(constants.STRING, str)
 
 	return token
 }
@@ -241,14 +233,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.COLON_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
-
-					token := types.Token{
-						Type:       constants.ASSIGN,
-						Value:      constants.ASSIGN_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
-
+					token := lex.GetToken(constants.ASSIGN, constants.ASSIGN_SYMBOL)
 					lex.Advance()
 					lex.Advance()
 
@@ -257,27 +242,13 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			}
 
 			// just a colon
-			token := types.Token{
-				Type:       constants.COLON,
-				Value:      constants.COLON_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.COLON, constants.COLON_SYMBOL)
 			lex.Advance()
-
 			return token
 		}
 
 		if charToString == constants.SEMI_COLON_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.SEMI_COLON,
-				Value:      constants.SEMI_COLON_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.SEMI_COLON, constants.SEMI_COLON_SYMBOL)
 			lex.Advance()
 			return token
 		}
@@ -289,13 +260,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.GREATER_THAN_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
-
-					token := types.Token{
-						Type:       constants.GREATER_THAN_EQUAL_TO,
-						Value:      constants.GREATER_THAN_EQUAL_TO_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
+					token := lex.GetToken(constants.GREATER_THAN_EQUAL_TO, constants.GREATER_THAN_EQUAL_TO_SYMBOL)
 
 					lex.Advance()
 					lex.Advance()
@@ -304,13 +269,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 				}
 			}
 
-			token := types.Token{
-				Type:       constants.GREATER_THAN,
-				Value:      constants.GREATER_THAN_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.GREATER_THAN, constants.GREATER_THAN_SYMBOL)
 			lex.Advance()
 			return token
 		}
@@ -323,13 +282,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.LESS_THAN_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
-
-					token := types.Token{
-						Type:       constants.LESS_THAN_EQUAL_TO,
-						Value:      constants.LESS_THAN_EQUAL_TO_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
+					token := lex.GetToken(constants.LESS_THAN_EQUAL_TO, constants.LESS_THAN_EQUAL_TO_SYMBOL)
 
 					lex.Advance()
 					lex.Advance()
@@ -338,13 +291,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 				}
 			}
 
-			token := types.Token{
-				Type:       constants.LESS_THAN,
-				Value:      constants.LESS_THAN_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.LESS_THAN, constants.LESS_THAN_SYMBOL)
 			lex.Advance()
 			return token
 		}
@@ -357,13 +304,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.EQUAL_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
-
-					token := types.Token{
-						Type:       constants.EQUALITY,
-						Value:      constants.EQUALITY_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
+					token := lex.GetToken(constants.EQUALITY, constants.EQUALITY_SYMBOL)
 
 					lex.Advance()
 					lex.Advance()
@@ -380,13 +321,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[lex.Position]) == constants.EXCLAMATION_SYMBOL &&
 					string(lex.Text[peekPos]) == constants.EQUAL_SYMBOL {
-
-					token := types.Token{
-						Type:       constants.NOT_EQUAL_TO,
-						Value:      constants.NOT_EQUAL_TO_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
+					token := lex.GetToken(constants.NOT_EQUAL_TO, constants.NOT_EQUAL_TO_SYMBOL)
 
 					lex.Advance()
 					lex.Advance()
@@ -397,55 +332,25 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 		}
 
 		if charToString == constants.OPERANDS[constants.PLUS] {
-
-			token := types.Token{
-				Type:       constants.PLUS,
-				Value:      constants.OPERANDS[constants.PLUS],
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.PLUS, constants.OPERANDS[constants.PLUS])
 			lex.Advance()
-
 			return token
-
 		}
 
 		if charToString == constants.OPERANDS[constants.MINUS] {
-
-			token := types.Token{
-				Type:       constants.MINUS,
-				Value:      constants.OPERANDS[constants.MINUS],
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.MINUS, constants.OPERANDS[constants.MINUS])
 			lex.Advance()
-
 			return token
-
 		}
 
 		if charToString == constants.OPERANDS[constants.MUL] {
-
-			token := types.Token{
-				Type:       constants.MUL,
-				Value:      constants.OPERANDS[constants.MUL],
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.MUL, constants.OPERANDS[constants.MUL])
 			lex.Advance()
 			return token
 		}
 
 		if charToString == constants.OPERANDS[constants.EXPONENT] {
-
-			token := types.Token{
-				Type:       constants.EXPONENT,
-				Value:      constants.OPERANDS[constants.EXPONENT],
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.EXPONENT, constants.OPERANDS[constants.EXPONENT])
 			lex.Advance()
 			return token
 		}
@@ -458,13 +363,7 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 			if peekPos != -1 {
 				if string(lex.Text[peekPos]) == constants.OPERANDS[constants.DIV] {
 					// integer division
-
-					token := types.Token{
-						Type:       constants.INTEGER_DIV,
-						Value:      constants.INTEGER_DIV_SYMBOL,
-						LineNumber: lex.LineNumber,
-						Column:     lex.Column,
-					}
+					token := lex.GetToken(constants.INTEGER_DIV, constants.INTEGER_DIV_SYMBOL)
 
 					lex.Advance()
 					lex.Advance()
@@ -479,104 +378,63 @@ func (lex *LexicalAnalyzer) GetNextToken() types.Token {
 
 			// otherwise float division
 
-			// fmt.Println("adding a division token")
-
-			token := types.Token{
-				Type:       constants.FLOAT_DIV,
-				Value:      constants.FLOAT_DIV_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.FLOAT_DIV, constants.FLOAT_DIV_SYMBOL)
 			lex.Advance()
 
 			return token
 		}
 
 		if charToString == constants.MODULO_SYMBOL {
-			token := types.Token{
-				Type:       constants.MODULO,
-				Value:      constants.MODULO_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
-
+			token := lex.GetToken(constants.MODULO, constants.MODULO_SYMBOL)
 			lex.Advance()
-
 			return token
 		}
 
 		if charToString == constants.LPAREN_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.LPAREN,
-				Value:      constants.LPAREN_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.LPAREN, constants.LPAREN_SYMBOL)
 			lex.Advance()
 			return token
 		}
 
 		if charToString == constants.RPAREN_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.RPAREN,
-				Value:      constants.RPAREN_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.RPAREN, constants.RPAREN_SYMBOL)
 			lex.Advance()
 			return token
 		}
 
 		if charToString == constants.LCURLY_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.LCURLY,
-				Value:      constants.LCURLY_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.LCURLY, constants.LCURLY_SYMBOL)
 			lex.Advance()
 			return token
 		}
 
 		if charToString == constants.RCURLY_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.RCURLY,
-				Value:      constants.RCURLY_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.RCURLY, constants.RCURLY_SYMBOL)
 			lex.Advance()
 			return token
 		}
 
 		if charToString == constants.COMMA_SYMBOL {
-
-			token := types.Token{
-				Type:       constants.COMMA,
-				Value:      constants.COMMA_SYMBOL,
-				LineNumber: lex.LineNumber,
-				Column:     lex.Column,
-			}
+			token := lex.GetToken(constants.COMMA, constants.COMMA_SYMBOL)
 			lex.Advance()
 			return token
 		}
 
-		return types.Token{
-			Type:       constants.INVALID,
-			Value:      charToString,
-			LineNumber: lex.LineNumber,
-			Column:     lex.Column,
-		}
+		return lex.GetToken(constants.INVALID, charToString)
 
 	}
 
 	return types.Token{
 		Type: constants.EOF,
+	}
+}
+
+func (lex *LexicalAnalyzer) GetToken(tokenType string, tokenValue string) types.Token {
+	return types.Token{
+		Type:       tokenType,
+		Value:      tokenValue,
+		LineNumber: lex.LineNumber,
+		Column:     lex.Column,
 	}
 }
 

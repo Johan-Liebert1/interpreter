@@ -42,7 +42,7 @@ func (as AssignmentStatement) Scope(i *Interpreter) {
 		errors.ShowError(
 			constants.SEMANTIC_ERROR,
 			constants.ERROR_VARAIBLE_NOT_DEFINED,
-			fmt.Sprintf("AssignmentStatement %s is not defined", variableName),
+			fmt.Sprintf("AssignmentStatement '%s' is not defined", variableName),
 			as.Left.GetToken(),
 		)
 	}

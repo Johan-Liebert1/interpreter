@@ -36,7 +36,7 @@ func (p *Parser) Error(errorCode string, token types.Token, tokenType string) {
 		constants.PARSER_ERROR,
 		errorCode,
 		fmt.Sprintf("%s -> %s \nExpected: %s", errorCode, token.Print(), tokenType),
-		token,
+		types.Token{},
 	)
 }
 
@@ -573,6 +573,15 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling conditional_statement")
 		node = p.ConditionalStatement()
 
+	} else if helpers.ValueInSlice(p.CurrentToken.Type, []string{constants.ELSE, constants.ELSE_IF}) {
+
+		errors.ShowError(
+			constants.PARSER_ERROR,
+			constants.INVALID_SYNTAX,
+			fmt.Sprintf("No corresponding 'if' statement found for the '%s' statement", p.CurrentToken.Value),
+			p.CurrentToken,
+		)
+
 	} else if p.CurrentToken.Type == constants.LOOP {
 		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling ParseLoop")
 
@@ -582,12 +591,12 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 		p.CurrentToken.Type,
 		[]string{constants.LPAREN, constants.FLOAT, constants.INTEGER, constants.NOT},
 	) {
-		helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
+		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
 
 		node = p.LogicalStatement()
 
 	} else {
-		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling BlankStatement")
+		// helpers.ColorPrint(constants.Yellow, 1, 1, fmt.Sprintf("calling BlankStatement %+v", p.CurrentToken))
 
 		node = BlankStatement{
 			Token: types.Token{
@@ -656,7 +665,6 @@ func (p *Parser) ConditionalStatement() AbstractSyntaxTree {
 
 	for p.CurrentToken.Type == constants.ELSE_IF {
 		currentToken := p.CurrentToken
-
 		p.ValidateToken(constants.ELSE_IF)
 
 		condition := p.LogicalStatement()
