@@ -53,10 +53,12 @@ var ALLOWED_OPERATIONS_ON_TYPES = map[string]map[string]map[string]bool{
 		INTEGER: {
 			FLOAT:   true,
 			INTEGER: true,
-			STRING:  true,
 		},
 		FLOAT: {
 			FLOAT:   true,
+			INTEGER: true,
+		},
+		STRING: {
 			INTEGER: true,
 		},
 	},

@@ -332,8 +332,13 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 
 	var result interface{}
 
-	leftResult, _ := helpers.GetFloat(i.Visit(b.Left))
-	rightResult, _ := helpers.GetFloat(i.Visit(b.Right))
+	leftVisit := i.Visit(b.Left)
+	rightVisit := i.Visit(b.Right)
+
+	leftResult, isLeftFloat := leftVisit.(float32)
+	rightResult, _ := rightVisit.(float32)
+
+	_, isLeftInt := leftVisit.(int)
 
 	divideByZero := func() {
 
@@ -348,13 +353,57 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 
 	switch b.Operation.Type {
 	case constants.PLUS:
-		result = leftResult + rightResult
+		{
+			if isLeftFloat || isLeftInt {
+				result = leftResult + rightResult
+			} else {
+				// TODO: left and right are string
+				s := ""
+
+				if ls, ok := leftVisit.(string); ok {
+					for i := 0; i < len(ls); i++ {
+						s += string(ls[i])
+					}
+				}
+
+				if rs, ok := leftVisit.(string); ok {
+					for i := 0; i < len(rs); i++ {
+						s += string(rs[i])
+					}
+				}
+
+				result = s
+			}
+		}
 
 	case constants.MINUS:
 		result = leftResult - rightResult
 
 	case constants.MUL:
-		result = leftResult * rightResult
+		{
+			if isLeftFloat || isLeftInt {
+				result = leftResult * rightResult
+			} else {
+				// TODO: left and right are string
+				temp := ""
+
+				if ls, ok := leftVisit.(string); ok {
+					for i := 0; i < len(ls); i++ {
+						temp += string(ls[i])
+					}
+				}
+
+				s := ""
+
+				if rightInt, ok := rightVisit.(int); ok {
+					for i := 0; i < rightInt; i++ {
+						s += temp
+					}
+				}
+
+				result = s
+			}
+		}
 
 	case constants.EXPONENT:
 		result = math.Pow(float64(leftResult), float64(rightResult))

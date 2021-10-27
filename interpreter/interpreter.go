@@ -97,7 +97,7 @@ func (i *Interpreter) Interpret() interface{} {
 	tree := i.TextParser.Parse()
 
 	// fmt.Print(tree)
-	helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(tree))
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(tree))
 
 	printTree := false
 

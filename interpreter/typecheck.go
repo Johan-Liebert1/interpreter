@@ -3,7 +3,6 @@ package interpreter
 import (
 	"fmt"
 	"programminglang/constants"
-	"programminglang/helpers"
 	"programminglang/interpreter/errors"
 	"programminglang/types"
 )
@@ -15,7 +14,7 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 
 	if !ok {
 		errors.ShowError(
-			constants.RUNTIME_ERROR,
+			constants.TYPE_ERROR,
 			constants.TYPE_ERROR,
 			fmt.Sprintf("Operand '%s' not defined for type %s", opeartionToken.Value, leftType),
 			opeartionToken,
@@ -26,7 +25,7 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 
 	if !ok {
 		errors.ShowError(
-			constants.RUNTIME_ERROR,
+			constants.TYPE_ERROR,
 			constants.TYPE_ERROR,
 			fmt.Sprintf("Unsupported operand types for '%s' : %s and %s", opeartionToken.Value, leftType, rightType),
 			opeartionToken,
@@ -49,7 +48,7 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 }
 
 func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
-	helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(c))
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(c))
 
 	if _, ok := c.Left.(Variable); ok {
 		// no checks for identifies yet

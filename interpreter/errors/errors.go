@@ -39,6 +39,12 @@ type RuntimeError struct {
 	Message   string
 }
 
+type TypeError struct {
+	ErrorCode string
+	Token     types.Token
+	Message   string
+}
+
 func (lxe *LexerError) PrintError() {
 	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("LexerError: %s. %s", lxe.Message, lxe.Token.PrintLineCol()))
 	os.Exit(1)
@@ -56,6 +62,11 @@ func (se *SemanticError) PrintError() {
 
 func (re *RuntimeError) PrintError() {
 	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("RuntimeError: %s. %s", re.Message, re.Token.PrintLineCol()))
+	os.Exit(1)
+}
+
+func (te *TypeError) PrintError() {
+	helpers.ColorPrint(constants.Red, 1, 1, fmt.Sprintf("TypeError: %s. %s", te.Message, te.Token.PrintLineCol()))
 	os.Exit(1)
 }
 
@@ -82,6 +93,12 @@ func ShowError(errorType string, errorCode string, message string, token types.T
 		}
 	} else if errorType == constants.RUNTIME_ERROR {
 		e = &RuntimeError{
+			ErrorCode: errorCode,
+			Token:     token,
+			Message:   message,
+		}
+	} else if errorType == constants.TYPE_ERROR {
+		e = &TypeError{
 			ErrorCode: errorCode,
 			Token:     token,
 			Message:   message,

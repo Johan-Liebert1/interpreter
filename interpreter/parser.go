@@ -589,7 +589,7 @@ func (p *Parser) Statement() AbstractSyntaxTree {
 
 	} else if helpers.ValueInSlice(
 		p.CurrentToken.Type,
-		[]string{constants.LPAREN, constants.FLOAT, constants.INTEGER, constants.NOT},
+		[]string{constants.LPAREN, constants.FLOAT, constants.INTEGER, constants.NOT, constants.STRING, constants.TRUE, constants.FALSE},
 	) {
 		// helpers.ColorPrint(constants.Yellow, 1, 1, "calling LogicalStatement")
 
