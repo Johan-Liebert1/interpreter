@@ -328,6 +328,8 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 }
 
 func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interface{} {
+	i.TypeCheckBinaryOperationNode(b)
+
 	var result interface{}
 
 	leftResult, _ := helpers.GetFloat(i.Visit(b.Left))
@@ -378,6 +380,8 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 }
 
 func (i *Interpreter) EvaluateComparisonNode(c ComparisonNode) interface{} {
+	i.TypeCheckComparisonOperationNode(c)
+
 	var result interface{}
 
 	left, _ := helpers.GetFloat(i.Visit(c.Left))

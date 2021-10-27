@@ -122,6 +122,7 @@ const (
 	PARSER_ERROR   = "PARSER_ERROR"
 	SEMANTIC_ERROR = "SEMANTIC_ERROR"
 	RUNTIME_ERROR  = "RUNTIME_ERROR"
+	TYPE_ERROR     = "TYPE_ERROR"
 )
 
 // activation record keys

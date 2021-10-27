@@ -17,6 +17,7 @@ type VariableType struct {
 type Variable struct {
 	Token types.Token
 	Value string
+	// Type  VariableType
 }
 
 func (v VariableDeclaration) GetToken() types.Token {
