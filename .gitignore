@@ -3,3 +3,4 @@ testing/
 *.jsonc
 code/
 todo.txt
+bin/

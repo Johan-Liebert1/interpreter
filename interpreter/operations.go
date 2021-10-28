@@ -63,6 +63,14 @@ func (b BinaryOperationNode) Scope(s *Interpreter) {
 	b.Right.Scope(s)
 }
 
+func (b BinaryOperationNode) GetLeftOperandToken() types.Token {
+	return b.Left.GetToken()
+}
+
+func (b BinaryOperationNode) GetRightOperandToken() types.Token {
+	return b.Right.GetToken()
+}
+
 func (u UnaryOperationNode) GetToken() types.Token {
 	return u.Operation
 }

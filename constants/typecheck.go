@@ -62,6 +62,11 @@ var ALLOWED_OPERATIONS_ON_TYPES = map[string]map[string]map[string]bool{
 			INTEGER: true,
 		},
 	},
+	MODULO: {
+		INTEGER: {
+			INTEGER: true,
+		},
+	},
 	MINUS:       INT_FLOAT_OPERATIONS,
 	FLOAT_DIV:   INT_FLOAT_OPERATIONS,
 	INTEGER_DIV: INT_FLOAT_OPERATIONS,

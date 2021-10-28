@@ -335,10 +335,31 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 	leftVisit := i.Visit(b.Left)
 	rightVisit := i.Visit(b.Right)
 
-	leftResult, isLeftFloat := leftVisit.(float32)
-	rightResult, _ := rightVisit.(float32)
+	var (
+		leftResult     float32
+		leftIntResult  int
+		rightResult    float32
+		rightIntResult int
+		isLeftFloat    bool
+		isLeftInt      bool
+		isRightInt     bool
+	)
 
-	_, isLeftInt := leftVisit.(int)
+	// 6 ^ 2 - 16
+
+	leftResult, isLeftFloat = leftVisit.(float32)
+	rightResult, _ = rightVisit.(float32)
+
+	leftIntResult, isLeftInt = leftVisit.(int)
+	rightIntResult, isRightInt = rightVisit.(int)
+
+	if isLeftInt {
+		leftResult = float32(leftIntResult)
+	}
+
+	if isRightInt {
+		rightResult = float32(rightIntResult)
+	}
 
 	divideByZero := func() {
 
@@ -406,7 +427,7 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 		}
 
 	case constants.EXPONENT:
-		result = math.Pow(float64(leftResult), float64(rightResult))
+		result = float32(math.Pow(float64(leftResult), float64(rightResult)))
 
 	case constants.FLOAT_DIV:
 		if rightResult == 0.0 {
@@ -433,27 +454,85 @@ func (i *Interpreter) EvaluateComparisonNode(c ComparisonNode) interface{} {
 
 	var result interface{}
 
-	left, _ := helpers.GetFloat(i.Visit(c.Left))
-	right, _ := helpers.GetFloat(i.Visit(c.Right))
+	leftVisit := i.Visit(c.Left)
+	rightVisit := i.Visit(c.Right)
+
+	var (
+		leftResult      float32
+		leftIntResult   int
+		rightResult     float32
+		rightIntResult  int
+		isLeftInt       bool
+		isRightInt      bool
+		isLeftStr       bool
+		leftStrResult   string
+		rightStrResult  string
+		areStringsEqual bool = true
+	)
+
+	leftResult, _ = leftVisit.(float32)
+	rightResult, _ = rightVisit.(float32)
+
+	leftIntResult, isLeftInt = leftVisit.(int)
+	rightIntResult, isRightInt = rightVisit.(int)
+
+	leftStrResult, isLeftStr = leftVisit.(string)
+	rightStrResult, _ = rightVisit.(string)
+
+	if isLeftInt {
+		leftResult = float32(leftIntResult)
+	}
+
+	if isRightInt {
+		rightResult = float32(rightIntResult)
+	}
+
+	if isLeftStr {
+		leftResult = float32(len(leftStrResult))
+		rightResult = float32(len(rightStrResult))
+
+		// check for string equality right here
+
+		if leftResult != rightResult {
+			areStringsEqual = false
+		} else {
+			for i := 0; i < len(leftStrResult); i++ {
+				if leftStrResult[i] != rightStrResult[i] {
+					areStringsEqual = false
+					break
+				}
+			}
+
+		}
+
+	}
 
 	switch c.Comparator.Type {
 	case constants.GREATER_THAN:
-		result = left > right
+		result = leftResult > rightResult
 
 	case constants.LESS_THAN:
-		result = left < right
+		result = leftResult < rightResult
 
 	case constants.GREATER_THAN_EQUAL_TO:
-		result = left >= right
+		result = leftResult >= rightResult
 
 	case constants.LESS_THAN_EQUAL_TO:
-		result = left <= right
+		result = leftResult <= rightResult
 
 	case constants.EQUALITY:
-		result = left == right
+		if isLeftStr {
+			result = areStringsEqual
+		} else {
+			result = leftResult == rightResult
+		}
 
 	case constants.NOT_EQUAL_TO:
-		result = left != right
+		if isLeftStr {
+			result = !areStringsEqual
+		} else {
+			result = leftResult != rightResult
+		}
 
 	}
 

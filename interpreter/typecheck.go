@@ -34,15 +34,21 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 }
 
 func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(b))
 
-	if _, ok := b.Left.(Variable); ok {
+	leftType := b.GetLeftOperandToken().Type
+	rightType := b.GetRightOperandToken().Type
+	operation := b.Operation.Type
+
+	if leftType != constants.INTEGER && leftType != constants.FLOAT && leftType != constants.STRING {
 		// no checks for identifies yet
 		return
 	}
 
-	leftType := b.Left.GetToken().Type
-	rightType := b.Right.GetToken().Type
-	operation := b.Operation.Type
+	if rightType != constants.INTEGER && rightType != constants.FLOAT && rightType != constants.STRING {
+		// no checks for identifies yet
+		return
+	}
 
 	abstractTypeCheck(leftType, operation, rightType, b.Operation)
 }
@@ -50,14 +56,19 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(c))
 
-	if _, ok := c.Left.(Variable); ok {
+	leftType := c.GetLeftOperandToken().Type
+	rightType := c.GetRightOperandToken().Type
+	operation := c.Comparator.Type
+
+	if leftType != constants.INTEGER && leftType != constants.FLOAT && leftType != constants.STRING {
 		// no checks for identifies yet
 		return
 	}
 
-	leftType := c.Left.GetToken().Type
-	rightType := c.Right.GetToken().Type
-	operation := c.Comparator.Type
+	if rightType != constants.INTEGER && rightType != constants.FLOAT && rightType != constants.STRING {
+		// no checks for identifies yet
+		return
+	}
 
 	abstractTypeCheck(leftType, operation, rightType, c.Comparator)
 }

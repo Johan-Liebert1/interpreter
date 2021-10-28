@@ -1,8 +1,6 @@
 package interpreter
 
 import (
-	"programminglang/constants"
-	"programminglang/helpers"
 	"programminglang/interpreter/callstack"
 )
 
@@ -96,14 +94,7 @@ func (i *Interpreter) ReleaseScope() {
 func (i *Interpreter) Interpret() interface{} {
 	tree := i.TextParser.Parse()
 
-	// fmt.Print(tree)
-	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(tree))
-
-	printTree := false
-
-	if printTree {
-		helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(tree))
-	}
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(tree))
 
 	tree.Scope(i)
 

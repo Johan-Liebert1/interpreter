@@ -24,6 +24,3 @@ def count_lines(directory, depth=0):
                 total_lines += len(file.readlines())
 
     return total_lines
-
-
-print(count_lines(BASE_DIR))
