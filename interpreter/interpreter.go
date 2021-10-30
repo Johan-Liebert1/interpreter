@@ -56,6 +56,9 @@ func (i *Interpreter) Visit(node AbstractSyntaxTree) interface{} {
 	} else if c, ok := node.(CompoundStatement); ok {
 		result = i.EvaluateCompoundStatement(c)
 
+	} else if vd, ok := node.(VariableDeclaration); ok {
+		result = i.EvaluateVariableDeclaration(vd)
+
 	} else if as, ok := node.(AssignmentStatement); ok {
 		result = i.EvaluateAssignmentStatement(as)
 
@@ -98,7 +101,7 @@ func (i *Interpreter) Interpret() interface{} {
 
 	tree.Scope(i)
 
-	// constants.SpewPrinter.Dump(i.CurrentScope)
+	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(i.CurrentScope))
 
 	return i.Visit(tree)
 }

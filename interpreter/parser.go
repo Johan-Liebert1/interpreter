@@ -349,8 +349,9 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	for _, varToken := range variableTokens {
 
 		varNode := Variable{
-			Token: varToken,
-			Value: varToken.Value,
+			Token:   varToken,
+			Value:   varToken.Value,
+			VarType: &variableType,
 		}
 
 		// helpers.ColorPrint(constants.Blue, 1, 1, "variable node = ", constants.SpewPrinter.Sdump(varNode))
@@ -483,8 +484,9 @@ func (p *Parser) FormalParameters() []FunctionParameters {
 	for _, parameterToken := range paramTokens {
 		paramNodes = append(paramNodes, FunctionParameters{
 			VariableNode: Variable{
-				Token: parameterToken,
-				Value: parameterToken.Value,
+				Token:   parameterToken,
+				Value:   parameterToken.Value,
+				VarType: &typeNode,
 			},
 			TypeNode: typeNode,
 		})

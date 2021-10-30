@@ -43,12 +43,22 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 	if leftType == constants.IDENTIFIER {
 		varNode, _ := i.CurrentScope.LookupSymbol(b.GetLeftOperandToken().Value, false)
 		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
+		return
 	}
 
 	if rightType == constants.IDENTIFIER {
 		varNode, _ := i.CurrentScope.LookupSymbol(b.GetRightOperandToken().Value, false)
 		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
+		return
 	}
+
+	// helpers.ColorPrint(
+	// 	constants.LightCyan, 1, 1,
+	// 	"left = ", constants.SpewPrinter.Sdump(b.Left),
+	// 	" right = ", constants.SpewPrinter.Sdump(b.Right),
+	// 	" leftType = ", leftType,
+	// 	" rightType = ", rightType,
+	// )
 
 	abstractTypeCheck(leftType, operation, rightType, b.Operation)
 }
@@ -63,11 +73,13 @@ func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	if leftType == constants.IDENTIFIER {
 		varNode, _ := i.CurrentScope.LookupSymbol(c.GetLeftOperandToken().Value, false)
 		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
+		return
 	}
 
 	if rightType == constants.IDENTIFIER {
 		varNode, _ := i.CurrentScope.LookupSymbol(c.GetRightOperandToken().Value, false)
 		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
+		return
 	}
 
 	abstractTypeCheck(leftType, operation, rightType, c.Comparator)

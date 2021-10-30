@@ -46,12 +46,15 @@ func (s *ScopedSymbolsTable) Init() {
 		Type: constants.BUILT_IN_TYPE,
 	})
 
-	s.DefineSymbol(
-		Symbol{
-			Name: constants.PRINT_OUTPUT,
-			Type: constants.FUNCTION_TYPE,
-		},
-	)
+	s.DefineSymbol(Symbol{
+		Name: constants.BOOLEAN_TYPE,
+		Type: constants.BUILT_IN_TYPE,
+	})
+
+	s.DefineSymbol(Symbol{
+		Name: constants.PRINT_OUTPUT,
+		Type: constants.FUNCTION_TYPE,
+	})
 
 }
 

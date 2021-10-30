@@ -251,7 +251,7 @@ var LOGICAL_OPERANDS_SLICE = []string{AND, OR, NOT}
 var CONDITIONAL_KEYWORDS = []string{ELSE_IF, ELSE}
 var QUOTES_SLICE = []string{DOUBLE_QOUTE_SYMBOL, SINGLE_QUOTE_SYMBOL}
 
-var SpewPrinter = spew.ConfigState{Indent: "\t"}
+var SpewPrinter = spew.ConfigState{Indent: "  "}
 
 // colors
 const (

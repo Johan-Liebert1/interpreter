@@ -15,8 +15,9 @@ type VariableType struct {
 }
 
 type Variable struct {
-	Token types.Token
-	Value string
+	Token   types.Token
+	Value   string
+	VarType *AbstractSyntaxTree
 }
 
 func (v VariableDeclaration) GetToken() types.Token {
@@ -46,10 +47,11 @@ func (v VariableDeclaration) Scope(i *Interpreter) {
 	}
 
 	// helpers.ColorPrint(
-	// 	constants.Green, 1,
-	// 	"defining symbol", symbol,
-	// 	"\nin scope ", i.CurrentScope,
-	// 	"\ncurrent scope address", &i.CurrentScope,
+	// 	constants.Green, 1, 1,
+	// 	"defining symbol", constants.SpewPrinter.Sdump(symbol),
+	// 	"\nin scope ", i.CurrentScope.CurrentScopeName,
+	// 	"\ntypeName = ", typeName,
+	// 	"\ntypesymbol = ", typeSymbol,
 	// )
 
 	i.CurrentScope.DefineSymbol(symbol)

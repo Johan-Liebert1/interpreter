@@ -118,12 +118,18 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 	ar.Init()
 
 	// helpers.ColorPrint(constants.LightCyan, 1, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
-	// helpers.ColorPrint(constants.Magenta, 1, "Formal Params = ", formalParams)
-	// helpers.ColorPrint(constants.Cyan, 1, "Actual Params = ", actualParams)
+	// helpers.ColorPrint(constants.Magenta, 1, 1, "CurrentScopename = ", i.CurrentScope.CurrentScopeName)
+	// helpers.ColorPrint(constants.Magenta, 1, 1, "Formal Params = ", formalParams)
+	// helpers.ColorPrint(constants.Cyan, 1, 1, "Actual Params = ", actualParams)
 
 	for index := range formalParams {
 		fp := formalParams[index]
 		ap := actualParams[index]
+
+		// value := map[string]interface{}{
+		// 	'type': ,
+		// 	'value': ,
+		// }
 
 		ar.SetItem(fp.Name, i.Visit(ap))
 	}
@@ -147,6 +153,14 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 
 	// pop the ActivationRecord at the top of the call stack after function execution is done
 	i.CallStack.Pop()
+
+	return result
+}
+
+func (i *Interpreter) EvaluateVariableDeclaration(vd VariableDeclaration) interface{} {
+	var result interface{}
+
+	// helpers.ColorPrint(constants.Blue, 1, 1, constants.SpewPrinter.Sdump(vd))
 
 	return result
 }
