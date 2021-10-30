@@ -310,15 +310,12 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 	var declarations []AbstractSyntaxTree
 
 	// variables are defined as, let varialble_name(s) : variable_type;
-	if p.CurrentToken.Type == constants.LET {
+	for p.CurrentToken.Type == constants.LET {
 		p.ValidateToken(constants.LET)
 
-		// for p.CurrentToken.Type == constants.IDENTIFIER {
 		varDeclaration := p.VariableDeclaration()
 		declarations = append(declarations, varDeclaration...)
 		p.ValidateToken(constants.SEMI_COLON)
-		// }
-
 	}
 
 	// for functions
@@ -350,13 +347,17 @@ func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
 	variableType := p.VarType()
 
 	for _, varToken := range variableTokens {
+
+		varNode := Variable{
+			Token: varToken,
+			Value: varToken.Value,
+		}
+
+		// helpers.ColorPrint(constants.Blue, 1, 1, "variable node = ", constants.SpewPrinter.Sdump(varNode))
+
 		variableDeclarations = append(variableDeclarations, VariableDeclaration{
-			VariableNode: Variable{
-				Token: varToken,
-				Value: varToken.Value,
-				Type:  &variableType,
-			},
-			TypeNode: variableType,
+			VariableNode: varNode,
+			TypeNode:     variableType,
 		})
 	}
 
@@ -484,7 +485,6 @@ func (p *Parser) FormalParameters() []FunctionParameters {
 			VariableNode: Variable{
 				Token: parameterToken,
 				Value: parameterToken.Value,
-				Type:  &typeNode,
 			},
 			TypeNode: typeNode,
 		})
@@ -508,6 +508,10 @@ func (p *Parser) VarType() AbstractSyntaxTree {
 	case constants.BOOLEAN_TYPE:
 		p.ValidateToken(constants.BOOLEAN_TYPE)
 	}
+
+	// if p.CurrentToken.Type == constants.SEMI_COLON {
+	// 	p.ValidateToken(constants.SEMI_COLON)
+	// }
 
 	return VariableType{
 		Token: token,

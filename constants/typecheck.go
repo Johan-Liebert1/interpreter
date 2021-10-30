@@ -25,6 +25,13 @@ var INT_FLOAT_STRING_OPERATIONS = map[string]map[string]bool{
 	},
 }
 
+var VAR_TYPE_TO_TOKEN_TYPE = map[string]string{
+	INTEGER_TYPE: INTEGER,
+	FLOAT_TYPE:   FLOAT,
+	STRING_TYPE:  STRING,
+	BOOLEAN_TYPE: BOOLEAN,
+}
+
 /*
 allowedOperation = {
 	PLUS (the operation): {

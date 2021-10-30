@@ -40,14 +40,14 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 	rightType := b.GetRightOperandToken().Type
 	operation := b.Operation.Type
 
-	if leftType != constants.INTEGER && leftType != constants.FLOAT && leftType != constants.STRING {
-		// no checks for identifies yet
-		return
+	if leftType == constants.IDENTIFIER {
+		varNode, _ := i.CurrentScope.LookupSymbol(b.GetLeftOperandToken().Value, false)
+		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
 	}
 
-	if rightType != constants.INTEGER && rightType != constants.FLOAT && rightType != constants.STRING {
-		// no checks for identifies yet
-		return
+	if rightType == constants.IDENTIFIER {
+		varNode, _ := i.CurrentScope.LookupSymbol(b.GetRightOperandToken().Value, false)
+		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
 	}
 
 	abstractTypeCheck(leftType, operation, rightType, b.Operation)
@@ -60,14 +60,14 @@ func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	rightType := c.GetRightOperandToken().Type
 	operation := c.Comparator.Type
 
-	if leftType != constants.INTEGER && leftType != constants.FLOAT && leftType != constants.STRING {
-		// no checks for identifies yet
-		return
+	if leftType == constants.IDENTIFIER {
+		varNode, _ := i.CurrentScope.LookupSymbol(c.GetLeftOperandToken().Value, false)
+		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
 	}
 
-	if rightType != constants.INTEGER && rightType != constants.FLOAT && rightType != constants.STRING {
-		// no checks for identifies yet
-		return
+	if rightType == constants.IDENTIFIER {
+		varNode, _ := i.CurrentScope.LookupSymbol(c.GetRightOperandToken().Value, false)
+		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
 	}
 
 	abstractTypeCheck(leftType, operation, rightType, c.Comparator)

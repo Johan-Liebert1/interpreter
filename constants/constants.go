@@ -10,6 +10,7 @@ const (
 	INTEGER               = "INTEGER"
 	FLOAT                 = "FLOAT"
 	STRING                = "STRING"
+	BOOLEAN               = "BOOLEAN"
 	PLUS                  = "PLUS"
 	MINUS                 = "MINUS"
 	MUL                   = "MUL"
