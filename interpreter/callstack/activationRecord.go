@@ -1,15 +1,28 @@
 package callstack
 
+import (
+	"programminglang/constants"
+)
+
+/*
+Members = {
+	varName: {
+		varValue: interface{},
+		varType: string,
+	}
+}
+*/
+
 type ActivationRecord struct {
 	Name         string
 	Type         string
 	NestingLevel int
-	Members      map[string]interface{}
+	Members      map[string]map[string]interface{}
 	AboveNode    *ActivationRecord
 }
 
 func (ar *ActivationRecord) Init() {
-	ar.Members = map[string]interface{}{}
+	ar.Members = map[string]map[string]interface{}{}
 }
 
 func (ar *ActivationRecord) GetActivaionRecordWithKey(key string) *ActivationRecord {
@@ -22,15 +35,33 @@ func (ar *ActivationRecord) GetActivaionRecordWithKey(key string) *ActivationRec
 	return result
 }
 
-func (ar *ActivationRecord) SetItem(key string, value interface{}) {
-	// helpers.ColorPrint(constants.LightMagenta, 1, 0, "setting key = ", key, " value = ", value)
+func (ar *ActivationRecord) SetItem(key string, value map[string]interface{}, setVarType bool) {
 
 	arToSet := ar.GetActivaionRecordWithKey(key)
 
-	arToSet.Members[key] = value
+	var (
+		typeToSet  interface{}
+		valueToSet interface{} = value[constants.AR_KEY_VALUE]
+	)
+
+	// set variable type at var decl, loop counter and function params
+	if setVarType {
+		typeToSet = value[constants.AR_KEY_TYPE]
+	} else {
+		typeToSet = arToSet.Members[key][constants.AR_KEY_TYPE]
+	}
+
+	finalValue := map[string]interface{}{
+		constants.AR_KEY_TYPE:  typeToSet,
+		constants.AR_KEY_VALUE: valueToSet,
+	}
+
+	// helpers.ColorPrint(constants.LightMagenta, 1, 0, "setting key = ", key, " value = ", finalValue)
+
+	arToSet.Members[key] = finalValue
 }
 
-func (ar *ActivationRecord) GetItem(key string) (interface{}, bool) {
+func (ar *ActivationRecord) GetItem(key string) (map[string]interface{}, bool) {
 	value, exists := ar.Members[key]
 
 	if !exists && ar.AboveNode != nil {

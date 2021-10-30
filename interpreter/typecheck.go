@@ -36,26 +36,30 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(b))
 
-	leftType := b.GetLeftOperandToken().Type
-	rightType := b.GetRightOperandToken().Type
+	leftToken := b.GetLeftOperandToken()
+	rightToken := b.GetRightOperandToken()
+
+	leftType := leftToken.Type
+	rightType := rightToken.Type
 	operation := b.Operation.Type
 
+	activationRecord, _ := i.CallStack.Peek()
+
 	if leftType == constants.IDENTIFIER {
-		varNode, _ := i.CurrentScope.LookupSymbol(b.GetLeftOperandToken().Value, false)
-		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
-		return
+		// this has "int" and not INTEGER
+		val, _ := activationRecord.GetItem(leftToken.Value)
+		leftType = val[constants.AR_KEY_TYPE].(string)
+		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[leftType]
 	}
 
 	if rightType == constants.IDENTIFIER {
-		varNode, _ := i.CurrentScope.LookupSymbol(b.GetRightOperandToken().Value, false)
-		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
-		return
+		val, _ := activationRecord.GetItem(rightToken.Value)
+		rightType = val[constants.AR_KEY_TYPE].(string)
+		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[rightType]
 	}
 
 	// helpers.ColorPrint(
 	// 	constants.LightCyan, 1, 1,
-	// 	"left = ", constants.SpewPrinter.Sdump(b.Left),
-	// 	" right = ", constants.SpewPrinter.Sdump(b.Right),
 	// 	" leftType = ", leftType,
 	// 	" rightType = ", rightType,
 	// )
@@ -66,20 +70,26 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(c))
 
-	leftType := c.GetLeftOperandToken().Type
-	rightType := c.GetRightOperandToken().Type
+	leftToken := c.GetLeftOperandToken()
+	rightToken := c.GetRightOperandToken()
+
+	leftType := leftToken.Type
+	rightType := rightToken.Type
 	operation := c.Comparator.Type
 
+	activationRecord, _ := i.CallStack.Peek()
+
 	if leftType == constants.IDENTIFIER {
-		varNode, _ := i.CurrentScope.LookupSymbol(c.GetLeftOperandToken().Value, false)
-		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
-		return
+		// this has "int" and not INTEGER
+		val, _ := activationRecord.GetItem(leftToken.Value)
+		leftType = val[constants.AR_KEY_TYPE].(string)
+		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[leftType]
 	}
 
 	if rightType == constants.IDENTIFIER {
-		varNode, _ := i.CurrentScope.LookupSymbol(c.GetRightOperandToken().Value, false)
-		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[varNode.Type]
-		return
+		val, _ := activationRecord.GetItem(rightToken.Value)
+		rightType = val[constants.AR_KEY_TYPE].(string)
+		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[rightType]
 	}
 
 	abstractTypeCheck(leftType, operation, rightType, c.Comparator)

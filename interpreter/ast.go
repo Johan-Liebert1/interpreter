@@ -7,5 +7,4 @@ import (
 type AbstractSyntaxTree interface {
 	GetToken() types.Token
 	Scope(i *Interpreter)
-	// EvaluateNode() float32
 }

@@ -126,12 +126,12 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 		fp := formalParams[index]
 		ap := actualParams[index]
 
-		// value := map[string]interface{}{
-		// 	'type': ,
-		// 	'value': ,
-		// }
+		value := map[string]interface{}{
+			constants.AR_KEY_TYPE:  "varType",
+			constants.AR_KEY_VALUE: i.Visit(ap),
+		}
 
-		ar.SetItem(fp.Name, i.Visit(ap))
+		ar.SetItem(fp.Name, value, false)
 	}
 
 	// helpers.ColorPrint(
@@ -160,7 +160,22 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 func (i *Interpreter) EvaluateVariableDeclaration(vd VariableDeclaration) interface{} {
 	var result interface{}
 
-	// helpers.ColorPrint(constants.Blue, 1, 1, constants.SpewPrinter.Sdump(vd))
+	variableName := vd.VariableNode.GetToken().Value
+
+	varType := vd.TypeNode.GetToken().Value
+
+	// helpers.ColorPrint(constants.Blue, 1, 1, varType, " ", constants.SpewPrinter.Sdump(vd))
+
+	activationRecord, _ := i.CallStack.Peek()
+
+	arValue := map[string]interface{}{
+		constants.AR_KEY_TYPE:  varType,
+		constants.AR_KEY_VALUE: nil,
+	}
+
+	activationRecord.SetItem(variableName, arValue, true)
+
+	// helpers.ColorPrint(constants.Blue, 1, 1, varType, " ", constants.SpewPrinter.Sdump(activationRecord))
 
 	return result
 }
@@ -191,7 +206,14 @@ func (i *Interpreter) EvaluateAssignmentStatement(as AssignmentStatement) interf
 
 	activationRecord, _ := i.CallStack.Peek()
 
-	activationRecord.SetItem(variableName, variableValue)
+	// helpers.ColorPrint(constants.Blue, 1, 1, constants.SpewPrinter.Sdump(as))
+
+	arValue := map[string]interface{}{
+		constants.AR_KEY_TYPE:  "varType",
+		constants.AR_KEY_VALUE: variableValue,
+	}
+
+	activationRecord.SetItem(variableName, arValue, false)
 
 	return result
 }
@@ -207,7 +229,7 @@ func (i *Interpreter) EvaluateVariable(v Variable) interface{} {
 	varValue, exists := activationRecord.GetItem(variableName)
 
 	if exists {
-		result = varValue
+		result = varValue[constants.AR_KEY_VALUE]
 	} else {
 		errors.ShowError(
 			constants.SEMANTIC_ERROR,
@@ -332,7 +354,12 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	var result interface{}
 
 	for counter := int(low); counter <= int(high); counter++ {
-		ar.SetItem(iteratorName, counter)
+		arValue := map[string]interface{}{
+			constants.AR_KEY_TYPE:  constants.INTEGER,
+			constants.AR_KEY_VALUE: counter,
+		}
+
+		ar.SetItem(iteratorName, arValue, true)
 		i.Visit(l.Block)
 	}
 
