@@ -332,35 +332,32 @@ func (p *Parser) Declarations() []AbstractSyntaxTree {
 
 // variable_declaration --> ID (COMMA ID)* COLON var_type
 func (p *Parser) VariableDeclaration() []AbstractSyntaxTree {
-	// current node is a variable node
-	variableNodes := []AbstractSyntaxTree{Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value}}
+	// make a new slice to store all the variable declarations
+	var variableDeclarations []AbstractSyntaxTree
+
+	variableTokens := []types.Token{p.CurrentToken}
+
 	p.ValidateToken(constants.IDENTIFIER)
 
-	// variables can be separated by comma so keep iterating while there's a comma
 	for p.CurrentToken.Type == constants.COMMA {
 		p.ValidateToken(constants.COMMA)
-
-		variableNodes = append(variableNodes, Variable{Token: p.CurrentToken, Value: p.CurrentToken.Value})
-
+		variableTokens = append(variableTokens, p.CurrentToken)
 		p.ValidateToken(constants.IDENTIFIER)
 	}
 
-	// var variableName : variableType
-	// variable name and type will be separated by a colon
 	p.ValidateToken(constants.COLON)
 
 	variableType := p.VarType()
 
-	// make a new slice to store all the variable declarations
-	var variableDeclarations []AbstractSyntaxTree
-
-	for _, node := range variableNodes {
-		newVarDeclr := VariableDeclaration{
-			VariableNode: node,
-			TypeNode:     variableType,
-		}
-
-		variableDeclarations = append(variableDeclarations, newVarDeclr)
+	for _, varToken := range variableTokens {
+		variableDeclarations = append(variableDeclarations, VariableDeclaration{
+			VariableNode: Variable{
+				Token: varToken,
+				Value: varToken.Value,
+				Type:  &variableType,
+			},
+			TypeNode: variableType,
+		})
 	}
 
 	return variableDeclarations
@@ -487,6 +484,7 @@ func (p *Parser) FormalParameters() []FunctionParameters {
 			VariableNode: Variable{
 				Token: parameterToken,
 				Value: parameterToken.Value,
+				Type:  &typeNode,
 			},
 			TypeNode: typeNode,
 		})
@@ -496,7 +494,7 @@ func (p *Parser) FormalParameters() []FunctionParameters {
 
 }
 
-// var_type --> INTEGER_TYPE | FLOAT_TYPE
+// var_type --> INTEGER_TYPE | FLOAT_TYPE | STRING_TYPE | BOOLEAN_TYPE
 func (p *Parser) VarType() AbstractSyntaxTree {
 	token := p.CurrentToken
 
