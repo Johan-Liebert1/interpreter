@@ -25,6 +25,25 @@ var INT_FLOAT_STRING_OPERATIONS = map[string]map[string]bool{
 	},
 }
 
+var INT_FLOAT_STRING_BOOL_OPERATIONS = map[string]map[string]bool{
+	INTEGER: {
+		FLOAT:   true,
+		INTEGER: true,
+	},
+	FLOAT: {
+		FLOAT:   true,
+		INTEGER: true,
+	},
+	STRING: {
+		STRING: true,
+	},
+	BOOLEAN: {
+		BOOLEAN: true,
+		TRUE:    true,
+		FALSE:   true,
+	},
+}
+
 var VAR_TYPE_TO_TOKEN_TYPE = map[string]string{
 	INTEGER_TYPE: INTEGER,
 	FLOAT_TYPE:   FLOAT,
@@ -83,6 +102,7 @@ var ALLOWED_OPERATIONS_ON_TYPES = map[string]map[string]map[string]bool{
 	GREATER_THAN_EQUAL_TO: INT_FLOAT_STRING_OPERATIONS,
 	LESS_THAN:             INT_FLOAT_STRING_OPERATIONS,
 	LESS_THAN_EQUAL_TO:    INT_FLOAT_STRING_OPERATIONS,
-	EQUALITY:              INT_FLOAT_STRING_OPERATIONS,
-	NOT_EQUAL_TO:          INT_FLOAT_STRING_OPERATIONS,
+
+	EQUALITY:     INT_FLOAT_STRING_BOOL_OPERATIONS,
+	NOT_EQUAL_TO: INT_FLOAT_STRING_BOOL_OPERATIONS,
 }

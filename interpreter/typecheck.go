@@ -34,7 +34,7 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 }
 
 func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
-	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(b))
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CallStack.Peek()))
 
 	leftToken := b.GetLeftOperandToken()
 	rightToken := b.GetRightOperandToken()
@@ -45,23 +45,38 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 
 	activationRecord, _ := i.CallStack.Peek()
 
+	// helpers.ColorPrint(
+	// 	constants.Cyan, 1, 1,
+	// 	" leftType = ", leftType,
+	// 	" rightType = ", rightType,
+	// 	" operand = ", operation,
+	// )
+
 	if leftType == constants.IDENTIFIER {
 		// this has "int" and not INTEGER
 		val, _ := activationRecord.GetItem(leftToken.Value)
 		leftType = val[constants.AR_KEY_TYPE].(string)
-		leftType = constants.VAR_TYPE_TO_TOKEN_TYPE[leftType]
+
+		if actualType, exists := constants.VAR_TYPE_TO_TOKEN_TYPE[leftType]; exists {
+			leftType = actualType
+		}
 	}
 
 	if rightType == constants.IDENTIFIER {
 		val, _ := activationRecord.GetItem(rightToken.Value)
+
 		rightType = val[constants.AR_KEY_TYPE].(string)
-		rightType = constants.VAR_TYPE_TO_TOKEN_TYPE[rightType]
+
+		if actualType, exists := constants.VAR_TYPE_TO_TOKEN_TYPE[rightType]; exists {
+			rightType = actualType
+		}
 	}
 
 	// helpers.ColorPrint(
-	// 	constants.LightCyan, 1, 1,
-	// 	" leftType = ", leftType,
-	// 	" rightType = ", rightType,
+	// 	constants.Cyan, 1, 1,
+	// 	" leftToken = ", leftToken,
+	// 	" rightToken = ", rightToken,
+	// 	" operand = ", operation,
 	// )
 
 	abstractTypeCheck(leftType, operation, rightType, b.Operation)

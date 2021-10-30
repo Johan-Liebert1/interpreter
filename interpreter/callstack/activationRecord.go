@@ -44,6 +44,8 @@ func (ar *ActivationRecord) SetItem(key string, value map[string]interface{}, se
 		valueToSet interface{} = value[constants.AR_KEY_VALUE]
 	)
 
+	// helpers.ColorPrint(constants.LightMagenta, 1, 1, constants.SpewPrinter.Sdump(key, value, setVarType))
+
 	// set variable type at var decl, loop counter and function params
 	if setVarType {
 		typeToSet = value[constants.AR_KEY_TYPE]

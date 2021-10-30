@@ -119,19 +119,19 @@ func (i *Interpreter) EvaluateFunctionCall(f FunctionCall) interface{} {
 
 	// helpers.ColorPrint(constants.LightCyan, 1, 1, "funcsymbol = ", constants.SpewPrinter.Sdump(funcSymbol))
 	// helpers.ColorPrint(constants.Magenta, 1, 1, "CurrentScopename = ", i.CurrentScope.CurrentScopeName)
-	// helpers.ColorPrint(constants.Magenta, 1, 1, "Formal Params = ", formalParams)
-	// helpers.ColorPrint(constants.Cyan, 1, 1, "Actual Params = ", actualParams)
+	// helpers.ColorPrint(constants.Magenta, 1, 1, "Formal Params = ", constants.SpewPrinter.Sdump(formalParams))
+	// helpers.ColorPrint(constants.Cyan, 1, 1, "Actual Params = ", constants.SpewPrinter.Sdump(actualParams))/
 
 	for index := range formalParams {
 		fp := formalParams[index]
 		ap := actualParams[index]
 
 		value := map[string]interface{}{
-			constants.AR_KEY_TYPE:  "varType",
+			constants.AR_KEY_TYPE:  fp.Type,
 			constants.AR_KEY_VALUE: i.Visit(ap),
 		}
 
-		ar.SetItem(fp.Name, value, false)
+		ar.SetItem(fp.Name, value, true)
 	}
 
 	// helpers.ColorPrint(
@@ -339,7 +339,7 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 
 	topAr, _ := i.CallStack.Peek()
 
-	ar := &callstack.ActivationRecord{
+	ar := callstack.ActivationRecord{
 		Name:         constants.AR_LOOP,
 		Type:         constants.AR_LOOP,
 		NestingLevel: topAr.NestingLevel + 1,
@@ -347,7 +347,13 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 	}
 	ar.Init()
 
-	i.CallStack.Push(*ar)
+	i.CallStack.Push(ar)
+
+	arValue := map[string]interface{}{
+		constants.AR_KEY_TYPE:  constants.INTEGER,
+		constants.AR_KEY_VALUE: low,
+	}
+	ar.SetItem(iteratorName, arValue, true)
 
 	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(i.CallStack))
 
@@ -358,8 +364,8 @@ func (i *Interpreter) EvaluateRangeLoop(l RangeLoop) interface{} {
 			constants.AR_KEY_TYPE:  constants.INTEGER,
 			constants.AR_KEY_VALUE: counter,
 		}
-
 		ar.SetItem(iteratorName, arValue, true)
+
 		i.Visit(l.Block)
 	}
 
