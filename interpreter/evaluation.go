@@ -434,7 +434,7 @@ func (i *Interpreter) EvaluateBinaryOperationNode(b BinaryOperationNode) interfa
 					}
 				}
 
-				if rs, ok := leftVisit.(string); ok {
+				if rs, ok := rightVisit.(string); ok {
 					for i := 0; i < len(rs); i++ {
 						s += string(rs[i])
 					}

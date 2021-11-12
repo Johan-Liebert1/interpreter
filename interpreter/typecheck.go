@@ -33,8 +33,9 @@ func abstractTypeCheck(leftType, operation, rightType string, opeartionToken typ
 	}
 }
 
-func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
+func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) string {
 	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(i.CallStack.Peek()))
+	// helpers.ColorPrint(constants.LightCyan, 1, 1, constants.SpewPrinter.Sdump(b))
 
 	leftToken := b.GetLeftOperandToken()
 	rightToken := b.GetRightOperandToken()
@@ -42,6 +43,14 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 	leftType := leftToken.Type
 	rightType := rightToken.Type
 	operation := b.Operation.Type
+
+	if bLeft, ok := b.Left.(BinaryOperationNode); ok {
+		leftType = i.TypeCheckBinaryOperationNode(bLeft)
+	}
+
+	if bRight, ok := b.Right.(BinaryOperationNode); ok {
+		rightType = i.TypeCheckBinaryOperationNode(bRight)
+	}
 
 	activationRecord, _ := i.CallStack.Peek()
 
@@ -80,9 +89,11 @@ func (i *Interpreter) TypeCheckBinaryOperationNode(b BinaryOperationNode) {
 	// )
 
 	abstractTypeCheck(leftType, operation, rightType, b.Operation)
+
+	return leftType
 }
 
-func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
+func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) string {
 	// helpers.ColorPrint(constants.LightGreen, 1, 1, constants.SpewPrinter.Sdump(c))
 
 	leftToken := c.GetLeftOperandToken()
@@ -91,6 +102,19 @@ func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	leftType := leftToken.Type
 	rightType := rightToken.Type
 	operation := c.Comparator.Type
+
+	// recursive type checking
+	if cLeft, ok := c.Left.(ComparisonNode); ok {
+		leftType = i.TypeCheckComparisonOperationNode(cLeft)
+	} else if cLeft, ok := c.Left.(BinaryOperationNode); ok {
+		leftType = i.TypeCheckBinaryOperationNode(cLeft)
+	}
+
+	if cRight, ok := c.Right.(ComparisonNode); ok {
+		rightType = i.TypeCheckComparisonOperationNode(cRight)
+	} else if cRight, ok := c.Right.(BinaryOperationNode); ok {
+		rightType = i.TypeCheckBinaryOperationNode(cRight)
+	}
 
 	activationRecord, _ := i.CallStack.Peek()
 
@@ -108,4 +132,6 @@ func (i *Interpreter) TypeCheckComparisonOperationNode(c ComparisonNode) {
 	}
 
 	abstractTypeCheck(leftType, operation, rightType, c.Comparator)
+
+	return leftType
 }
